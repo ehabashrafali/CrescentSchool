@@ -22,6 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\CrescentSchool.BLL\CrescentSchool.BLL.csproj" />
+	  <ProjectReference Include="..\CrescentSchool.BLL\CrescentSchool.BLL.csproj" />
 	</ItemGroup>
 </Project>
