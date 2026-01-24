@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="Dockerfile" />
   </Folder>
   <Project Path="../CrescentSchool.API/CrescentSchool.API.csproj" Id="464a0b05-e0f2-478a-ae42-ce5a745ac219" />
   <Project Path="../CrescentSchool.BLL/CrescentSchool.BLL.csproj" />
