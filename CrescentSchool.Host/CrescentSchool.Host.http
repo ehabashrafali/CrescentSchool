@@ -1,0 +1,6 @@
+@CrescentSchool.Host_HostAddress = http://localhost:5276
+
+GET {{CrescentSchool.Host_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

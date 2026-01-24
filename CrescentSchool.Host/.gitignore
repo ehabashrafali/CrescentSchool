@@ -1,0 +1,77 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosf
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.log
+*.pdb
+*.ilk
+*.aps
+*.bsc
+*.ncb
+*.sbr
+*.res
+*.pch
+*.idb
+*.opt
+*.exp
+*.lib
+*.exe
+*.dll
+*.tlb
+*.tlh
+*.tmp
+*.bak
+*.old
+*.obj
+*.o
+*.lo
+*.rej
+*.scc
+*.vspscc
+*.vssscc
+_ReSharper.*/
+*.[Cc]ache/
+*.pidb
+*.booproj
+*.dep
+*.resharper
+*.dotCover
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget/
+packages/
+.nuget/packages/
+project.assets.json
+project.nuget.dgspec.json
+*.cache
+
+# Rider
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
+
+# NCrunch
+*.ncrunchsolution
+*.ncrunchproj
+
+# StyleCop
+StyleCop.Cache
+
+# Test Results
+TestResults/
+*.trx
+
+# User-specific files
+*.user
