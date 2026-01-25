@@ -138,7 +138,7 @@ public class StudentsService(IStudentsRepository studentsRepository, ISessionsRe
                     {
                         SessionDateTime = sessionDateTime,
                         ZoomMeeting = student.ZoomMeeting,
-                        InstructorName = [.. student.Instructors.Select(i => i.FullName)],
+                        InstructorName = student.Instructor.FullName,
                         CourseName = [.. student.Courses.Select(c => c.Name)]
 
                     });

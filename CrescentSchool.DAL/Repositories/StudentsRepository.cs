@@ -9,7 +9,9 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
 {
     public async Task<List<Student>> GetStudentsByIdsAsync(List<Guid> studentIds, CancellationToken cancellation = default)
     {
-        var query = context.Students.Include(s => s.Instructors).Where(s => s.IsActive);
+        var query = context.Students
+            .Include(s => s.Instructor)
+            .Where(s => s.IsActive);
 
         if (studentIds.Count == 0)
             return await query.ToListAsync(cancellation);
@@ -20,7 +22,7 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
     public async Task<Student?> GetStudentByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await context.Students
-            .Include(s => s.Instructors)
+            .Include(s => s.Instructor)
             .Include(s => s.WeeklyAppointments)
             .FirstOrDefaultAsync(s => s.Id == id && s.IsActive, cancellationToken);
     }

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CrescentSchool.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingTablesIntial : Migration
+    public partial class AddingTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -250,6 +250,7 @@ namespace CrescentSchool.DAL.Migrations
                     Country = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    InstructorId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     ParentId = table.Column<Guid>(type: "uuid", nullable: true),
                     ZoomMeeting = table.Column<string>(type: "text", nullable: false),
@@ -258,6 +259,12 @@ namespace CrescentSchool.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Students", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Students_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Students_Parents_ParentId",
                         column: x => x.ParentId,
@@ -283,30 +290,6 @@ namespace CrescentSchool.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CourseStudent_Students_StudentsId",
-                        column: x => x.StudentsId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "InstructorStudent",
-                columns: table => new
-                {
-                    InstructorsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    StudentsId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InstructorStudent", x => new { x.InstructorsId, x.StudentsId });
-                    table.ForeignKey(
-                        name: "FK_InstructorStudent_Instructors_InstructorsId",
-                        column: x => x.InstructorsId,
-                        principalTable: "Instructors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InstructorStudent_Students_StudentsId",
                         column: x => x.StudentsId,
                         principalTable: "Students",
                         principalColumn: "Id",
@@ -447,11 +430,6 @@ namespace CrescentSchool.DAL.Migrations
                 column: "StudentsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InstructorStudent_StudentsId",
-                table: "InstructorStudent",
-                column: "StudentsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sessions_CourseId",
                 table: "Sessions",
                 column: "CourseId");
@@ -470,6 +448,11 @@ namespace CrescentSchool.DAL.Migrations
                 name: "IX_StudentMonthlyReports_StudentId",
                 table: "StudentMonthlyReports",
                 column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_InstructorId",
+                table: "Students",
+                column: "InstructorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_ParentId",
@@ -507,9 +490,6 @@ namespace CrescentSchool.DAL.Migrations
                 name: "CourseStudent");
 
             migrationBuilder.DropTable(
-                name: "InstructorStudent");
-
-            migrationBuilder.DropTable(
                 name: "Sessions");
 
             migrationBuilder.DropTable(
@@ -528,10 +508,10 @@ namespace CrescentSchool.DAL.Migrations
                 name: "Courses");
 
             migrationBuilder.DropTable(
-                name: "Instructors");
+                name: "Students");
 
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "Instructors");
 
             migrationBuilder.DropTable(
                 name: "Parents");

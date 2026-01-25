@@ -17,17 +17,15 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(s => s.ParentName)
-            .HasMaxLength(100);
-
         builder.Property(s => s.LastName)
-            .IsRequired()
+            .IsRequired(false)
             .HasMaxLength(100);
 
         builder.Property(s => s.Email)
             .IsRequired();
 
         builder.Property(s => s.PhoneNumber)
+            .IsRequired(false)
             .HasMaxLength(20);
 
         builder.Property(s => s.Country)
@@ -40,14 +38,8 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .HasMaxLength(500);
 
         builder.Property(s => s.DateOfBirth)
-            .IsRequired()
+            .IsRequired(false)
             .HasColumnType("date");
-
-        builder
-            .HasOne(s => s.Parent)
-            .WithMany(p => p.Students)
-            .HasForeignKey("ParentId")
-            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasMany(s => s.StudentMonthlyReports)
@@ -56,9 +48,10 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasMany(s => s.Instructors)
+            .HasOne(s => s.Instructor)
             .WithMany(i => i.Students)
-            .UsingEntity(j => j.ToTable("StudentInstructors"));
+            .HasForeignKey("InstructorId")
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasMany(s => s.Courses)

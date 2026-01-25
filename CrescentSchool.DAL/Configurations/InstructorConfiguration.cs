@@ -42,10 +42,5 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
             .HasForeignKey("InstructorId")
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder
-           .HasMany(i => i.Students)
-           .WithMany(s => s.Instructors)
-           .UsingEntity(j => j.ToTable("InstructorStudents"));
-
     }
 }

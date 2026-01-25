@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CrescentSchool.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260118182436_AddingTablesIntial")]
-    partial class AddingTablesIntial
+    [Migration("20260125164535_AddingTables")]
+    partial class AddingTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -299,6 +299,9 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("InstructorId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -322,6 +325,8 @@ namespace CrescentSchool.DAL.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InstructorId");
 
                     b.HasIndex("ParentId");
 
@@ -411,21 +416,6 @@ namespace CrescentSchool.DAL.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("WeeklyAppointment");
-                });
-
-            modelBuilder.Entity("InstructorStudent", b =>
-                {
-                    b.Property<Guid>("InstructorsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("StudentsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("InstructorsId", "StudentsId");
-
-                    b.HasIndex("StudentsId");
-
-                    b.ToTable("InstructorStudent");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -615,9 +605,17 @@ namespace CrescentSchool.DAL.Migrations
 
             modelBuilder.Entity("CrescentSchool.Models.Student", b =>
                 {
+                    b.HasOne("CrescentSchool.Models.Instructor", "Instructor")
+                        .WithMany("Students")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CrescentSchool.Models.Parent", "Parent")
                         .WithMany("Students")
                         .HasForeignKey("ParentId");
+
+                    b.Navigation("Instructor");
 
                     b.Navigation("Parent");
                 });
@@ -642,21 +640,6 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("InstructorStudent", b =>
-                {
-                    b.HasOne("CrescentSchool.Models.Instructor", null)
-                        .WithMany()
-                        .HasForeignKey("InstructorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CrescentSchool.Models.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -718,6 +701,8 @@ namespace CrescentSchool.DAL.Migrations
             modelBuilder.Entity("CrescentSchool.Models.Instructor", b =>
                 {
                     b.Navigation("Sessions");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("CrescentSchool.Models.Parent", b =>

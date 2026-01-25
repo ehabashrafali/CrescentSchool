@@ -1,6 +1,6 @@
 ﻿namespace CrescentSchool.Models;
 
-public class Instructor : AuditableEntity
+public class Instructor
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; } = string.Empty;
