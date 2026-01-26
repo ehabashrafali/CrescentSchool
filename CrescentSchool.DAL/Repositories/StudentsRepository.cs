@@ -38,7 +38,8 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             return;
         var monthlyReport = new StudentMonthlyReport
         {
-            Date = studentMonthlyReportDto.Date,
+            Date = DateTime.SpecifyKind(studentMonthlyReportDto.Date,
+                                        DateTimeKind.Utc),
             Memorization = studentMonthlyReportDto.Memorization,
             Reading = studentMonthlyReportDto.Reading,
             NoOfMemorizationAyah = studentMonthlyReportDto.NoOfMemorizationAyah,
