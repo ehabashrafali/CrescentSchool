@@ -41,6 +41,10 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .IsRequired(false)
             .HasColumnType("date");
 
+        builder.Property(s => s.Fees)
+            .HasColumnType("decimal(18,2)")
+            .HasDefaultValue(0.00m);
+
         builder
             .HasMany(s => s.StudentMonthlyReports)
             .WithOne(r => r.Student)

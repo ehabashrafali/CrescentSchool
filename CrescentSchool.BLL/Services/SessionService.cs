@@ -9,8 +9,8 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
 {
     public Task<List<SessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
         => sessionsRepository.GetSessionsByStudentIdAsync(studentId, cancellationToken);
-    public async Task<Guid?> CreateSession(Guid id, SessionDto sessionDto, CancellationToken cancellationToken)
-        => await sessionsRepository.CreateSession(id, sessionDto, cancellationToken);
+    public async Task<Guid?> CreateSession(SessionDto sessionDto, CancellationToken cancellationToken)
+        => await sessionsRepository.CreateSession(sessionDto, cancellationToken);
 
     public async Task<List<SessionDto>> GetSessionsOfCurrentMonthAndYear(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
     {

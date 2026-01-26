@@ -10,17 +10,25 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
     {
         builder.HasKey(s => s.Id);
 
-        builder.Property(s => s.StartTime)
-            .IsRequired();
+        builder.Property(s => s.Date)
+               .IsRequired();
 
-        builder.Property(s => s.EndTime)
-            .IsRequired(false);
+        builder.Property(s => s.StudentStatus)
+               .IsRequired();
 
-        builder.Property(s => s.Status)
-            .IsRequired();
+        builder.Property(s => s.InstructorStatus)
+               .IsRequired();
 
-        builder.Property(s => s.CreatedAt)
-            .IsRequired();
+        builder.HasOne(s => s.Student)
+               .WithMany()
+               .HasForeignKey(s => s.StudentId)
+               .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(s => s.Instructor)
+               .WithMany()
+               .HasForeignKey(s => s.InstructorId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ToTable("Sessions");
     }
 }

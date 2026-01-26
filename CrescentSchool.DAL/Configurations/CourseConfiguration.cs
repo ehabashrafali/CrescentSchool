@@ -32,11 +32,5 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
             .HasMany(c => c.Instructors)
             .WithMany(i => i.Courses)
             .UsingEntity(j => j.ToTable("CourseInstructors"));
-
-        builder
-            .HasMany(c => c.Sessions)
-            .WithOne(sess => sess.Course)
-            .HasForeignKey("CourseId")
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -24,10 +24,10 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("join-session/{id:guid}")]
-    public async Task<IActionResult> JoinSession([FromRoute] Guid id, SessionDto sessionDto, CancellationToken cancellationToken)
+    [HttpPost("create-session")]
+    public async Task<IActionResult> CreateSession(SessionDto sessionDto, CancellationToken cancellationToken)
     {
-        var result = await sessionService.CreateSession(id, sessionDto, cancellationToken);
+        var result = await sessionService.CreateSession(sessionDto, cancellationToken);
 
         if (result is null)
             return NotFound("Not Active Student");

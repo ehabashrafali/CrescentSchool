@@ -1,4 +1,6 @@
-﻿namespace CrescentSchool.BLL.DTOs
+﻿using CrescentSchool.BLL.Enums;
+
+namespace CrescentSchool.BLL.DTOs
 {
     public class InstructorDto
     {
@@ -12,5 +14,6 @@
         public DateOnly DateOfBirth { get; set; }
         public int Age => DateTime.Now.Year - DateOfBirth.Year;
         public bool IsActive { get; set; }
+        public string Role => Roles.Instructor.ToString();
     }
 }

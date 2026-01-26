@@ -34,6 +34,16 @@ namespace CrescentSchool.DAL.Repositories
             return await query.Where(i => instructorIds.Contains(i.Id)).ToListAsync();
         }
 
+        public Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken = default)
+        {
+            var query = context.Instructors.Where(i => i.IsActive);
+
+            if (instructorIds.Count == 0)
+                return query.ToListAsync(cancellationToken);
+
+            return query.Where(i => instructorIds.Contains(i.Id)).ToListAsync(cancellationToken);
+        }
+
         public async Task<List<Student>> GetInstuctorStudents(Guid instructorId)
         {
             return await context.Instructors

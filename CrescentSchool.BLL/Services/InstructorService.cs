@@ -25,6 +25,22 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
 
         };
     }
+
+    public async Task<List<InstructorDto>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken)
+    {
+        var instructors = await instructorsRepository.GetInstructorsAsync(instructorIds, cancellationToken);
+        return [.. instructors.Select(i => new InstructorDto
+        {
+            Id = i.Id,
+            FirstName = i.FirstName,
+            LastName = i.LastName,
+            Email = i.Email,
+            PhoneNumber = i.PhoneNumber,
+            IsActive = i.IsActive,
+            Country = i.Country,
+        })];
+    }
+
     public async Task<List<StudentDto>> GetInstructorStudents(Guid id)
     {
         var students = await instructorsRepository.GetInstuctorStudents(id);

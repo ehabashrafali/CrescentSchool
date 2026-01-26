@@ -17,4 +17,5 @@ public class Student
     public List<Session> Sessions { get; set; } = [];
     public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];
     public string FullName => FirstName + ' ' + LastName;
+    public decimal Fees { get; set; }
 }

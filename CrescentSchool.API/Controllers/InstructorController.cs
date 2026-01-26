@@ -21,5 +21,11 @@ public class InstructorController(IInsructorService instructorService) : Control
         var result = await instructorService.GetInstructorByIdAsync(instructorId);
         return Ok(result);
     }
+    [HttpPost]
+    public async Task<IActionResult> GetInstructorsByIds([FromBody] List<Guid> instructorIds, CancellationToken cancellationToken)
+    {
+        var result = await instructorService.GetInstructorsAsync(instructorIds, cancellationToken);
+        return Ok(result);
+    }
 
 }

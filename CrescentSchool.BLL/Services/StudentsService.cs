@@ -25,6 +25,7 @@ public class StudentsService(IStudentsRepository studentsRepository, ISessionsRe
             ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.DateOfBirth,
             IsActive = student.IsActive,
+            Fees = student.Fees,
             MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportDto
             {
                 Id = r.Id,
@@ -41,7 +42,7 @@ public class StudentsService(IStudentsRepository studentsRepository, ISessionsRe
                 IslamicStudiesComments = r.IslamicStudiesComments,
                 IslamicStudiesTopics = r.IslamicStudiesTopics,
                 IslamicStudiesBooks = r.IslamicStudiesBooks,
-                IslamicStudiesProgress = r.IslamicStudiesProgress
+                IslamicStudiesProgress = r.IslamicStudiesProgress,
             })],
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
@@ -66,6 +67,7 @@ public class StudentsService(IStudentsRepository studentsRepository, ISessionsRe
             ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.DateOfBirth,
             IsActive = student.IsActive,
+            Fees = student.Fees,
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
                 DayOfWeek = wa.Day.ToUpper(),
@@ -147,6 +149,4 @@ public class StudentsService(IStudentsRepository studentsRepository, ISessionsRe
         }
         return result;
     }
-
-
 }
