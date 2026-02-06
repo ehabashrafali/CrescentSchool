@@ -16,7 +16,7 @@ public class JwtTokenService(IConfiguration _configuration, UserManager<Applicat
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.Name, $"{user.FirstName +" "+ user.LastName}" ),
             new(ClaimTypes.Email, user.Email!),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };

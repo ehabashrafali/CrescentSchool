@@ -9,7 +9,6 @@ namespace CrescentSchool.API.Controllers;
 
 [ApiController]
 [Route("/api/auth")]
-
 public class AuthorizationController(UserManager<ApplicationUser> _userManager, IJwtTokenService _jwtService) : ControllerBase
 {
     [HttpPost]

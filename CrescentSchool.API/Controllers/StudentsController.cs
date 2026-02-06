@@ -1,12 +1,14 @@
-﻿using CrescentSchool.BLL.Interfaces;
+﻿using CrescentSchool.BLL.Enums;
+using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.Models.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
 
 [ApiController]
 [Route("api/students")]
-//[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Student) + "," + nameof(Roles.Instructor))]
+[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Student) + "," + nameof(Roles.Instructor))]
 public class StudentsController(IStudentService studentService) : ControllerBase
 {
     [HttpPost]
@@ -15,7 +17,6 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         var result = await studentService.GetStudentsAsync(studentIds, cancellationToken);
         return Ok(result);
     }
-
     [HttpGet("GetStudentProfile")]
     public async Task<IActionResult> GetStudent([FromQuery] Guid studentId)
     {
@@ -24,7 +25,6 @@ public class StudentsController(IStudentService studentService) : ControllerBase
             return NotFound();
         return Ok(result);
     }
-
     [HttpPost("{id:guid}")]
     public async Task<IActionResult> CreateMonthlyReport([FromRoute] Guid id, [FromBody] MonthlyReportDto studentMonthlyReportDto)
     {

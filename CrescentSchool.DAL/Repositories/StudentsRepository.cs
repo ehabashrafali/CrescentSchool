@@ -18,7 +18,6 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
 
         return await query.Where(s => studentIds.Contains(s.Id)).ToListAsync(cancellation);
     }
-
     public async Task<Student?> GetStudentByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await context.Students
@@ -26,7 +25,6 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             .Include(s => s.WeeklyAppointments)
             .FirstOrDefaultAsync(s => s.Id == id && s.IsActive, cancellationToken);
     }
-
     public async Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto)
     {
         var student = await context.Students.
@@ -57,11 +55,9 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
         student.StudentMonthlyReports.Add(monthlyReport);
         await context.SaveChangesAsync();
     }
-
     public async Task<List<StudentMonthlyReport>> GetMonthlyReports(Guid id, CancellationToken cancellation)
         => await context.Students
             .Where(s => s.Id == id)
             .Select(s => s.StudentMonthlyReports)
             .FirstOrDefaultAsync(cancellation) ?? [];
-
 }
