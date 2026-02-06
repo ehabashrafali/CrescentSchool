@@ -1,14 +1,12 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.BLL.Interfaces;
+﻿using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.Models.Dtos;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
 
 [ApiController]
 [Route("api/students")]
-[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Student) + "," + nameof(Roles.Instructor))]
+//[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Student) + "," + nameof(Roles.Instructor))]
 public class StudentsController(IStudentService studentService) : ControllerBase
 {
     [HttpPost]

@@ -1,13 +1,11 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.BLL.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+﻿using CrescentSchool.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
 
 [ApiController]
 [Route("api/instructors")]
-[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Instructor))]
+//[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Instructor))]
 public class InstructorController(IInsructorService instructorService) : ControllerBase
 {
     [HttpGet("GetInstructorStudents")]

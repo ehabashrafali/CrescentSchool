@@ -50,6 +50,11 @@ namespace CrescentSchool.DAL.Repositories
                         .Where(i => i.IsActive && i.Id == instructorId)
                         .SelectMany(i => i.Students)
                         .Include(s => s.StudentMonthlyReports)
+                            .ThenInclude(r => r.IslamicStudiesBooks)
+                        .Include(s => s.StudentMonthlyReports)
+                            .ThenInclude(r => r.TajweedRules)
+                        .Include(s => s.StudentMonthlyReports)
+                            .ThenInclude(r => r.BasicQuranRecitationRules)
                         .ToListAsync();
         }
     }

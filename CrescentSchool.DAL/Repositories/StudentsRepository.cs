@@ -27,11 +27,17 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
     }
     public async Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto)
     {
-        var student = await context.Students.
-            Where(s => s.Id == studentId && s.IsActive)
+        var student = await context.Students
+            .Where(s => s.Id == studentId && s.IsActive)
             .Include(s => s.StudentMonthlyReports)
+                .ThenInclude(r => r.IslamicStudiesBooks)
+            .Include(s => s.StudentMonthlyReports)
+                .ThenInclude(r => r.TajweedRules)
+            .Include(s => s.StudentMonthlyReports)
+                .ThenInclude(r => r.BasicQuranRecitationRules)
             .Include(s => s.Sessions)
             .FirstOrDefaultAsync();
+
         if (student is null)
             return;
         var monthlyReport = new StudentMonthlyReport
@@ -41,11 +47,13 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             Memorization = studentMonthlyReportDto.Memorization,
             Reading = studentMonthlyReportDto.Reading,
             NoOfMemorizationAyah = studentMonthlyReportDto.NoOfMemorizationAyah,
+            MemorizationGrade = studentMonthlyReportDto.MemorizationGrade,
+            ReadingGrade = studentMonthlyReportDto.ReadingGrade,
             NoOfReadingAyah = studentMonthlyReportDto.NoOfReadingAyah,
-            Grade = studentMonthlyReportDto.Grade,
+            BasicQuranRecitationRulesProgress = studentMonthlyReportDto.BasicQuranRecitationRulesProgress,
             BasicQuranRecitationRules = studentMonthlyReportDto.BasicQuranRecitationRules,
             TajweedRules = studentMonthlyReportDto.TajweedRules,
-            Progress = studentMonthlyReportDto.Progress,
+            TajweedRulesProgress = studentMonthlyReportDto.TajweedRulesProgress,
             QuranComments = studentMonthlyReportDto.QuranComments,
             IslamicStudiesComments = studentMonthlyReportDto.IslamicStudiesComments,
             IslamicStudiesTopics = studentMonthlyReportDto.IslamicStudiesTopics,

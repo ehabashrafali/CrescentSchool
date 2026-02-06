@@ -15,64 +15,47 @@ public class StudentMonthlyReportConfiguration
             .ValueGeneratedOnAdd();
 
         builder.Property(r => r.Date)
-            .IsRequired()
             .HasColumnType("date");
 
         builder.Property(r => r.Memorization)
-            .IsRequired()
-            .HasConversion<int>();
+               .HasConversion<int>();
 
         builder.Property(r => r.Reading)
-            .IsRequired()
-            .HasConversion<int>();
+                .HasConversion<int>();
 
-        builder.Property(r => r.NoOfMemorizationAyah)
-            .IsRequired();
+        builder.Property(r => r.NoOfMemorizationAyah);
 
-        builder.Property(r => r.NoOfReadingAyah)
-            .IsRequired();
+        builder.Property(r => r.NoOfReadingAyah);
 
-        builder.Property(r => r.Grade)
-            .IsRequired()
-            .HasConversion<int>();
+        builder.Property(r => r.MemorizationGrade)
+               .HasConversion<int>();
 
-        builder.Property(r => r.Progress)
-            .IsRequired()
-            .HasConversion<int>();
 
-        builder.Property(r => r.BasicQuranRecitationRules)
-            .IsRequired()
-            .HasConversion<int>();
-
-        builder.Property(r => r.TajweedRules)
-            .IsRequired()
-            .HasConversion<int>();
+        builder.Property(r => r.ReadingGrade)
+               .HasConversion<int>();
 
         builder.Property(r => r.QuranComments)
-            .HasMaxLength(1000)
-            .IsRequired();
+               .HasMaxLength(1000);
 
         builder.Property(r => r.IslamicStudiesComments)
-            .HasMaxLength(1000)
-            .IsRequired();
+               .HasMaxLength(1000);
 
         builder.Property(r => r.IslamicStudiesTopics)
-            .HasMaxLength(500)
-            .IsRequired();
-
-        builder.Property(r => r.IslamicStudiesBooks)
-            .IsRequired()
-            .HasConversion<int>();
+               .HasMaxLength(500);
 
         builder.Property(r => r.IslamicStudiesProgress)
-            .IsRequired()
-            .HasConversion<int>();
+               .HasConversion<int>();
+
+        builder.Property(r => r.BasicQuranRecitationRulesProgress)
+               .HasConversion<int>();
+
+        builder.Property(r => r.TajweedRulesProgress)
+               .HasConversion<int>();
 
         builder
             .HasOne(r => r.Student)
             .WithMany(s => s.StudentMonthlyReports)
             .HasForeignKey("StudentId")
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.ToTable("StudentMonthlyReports");
