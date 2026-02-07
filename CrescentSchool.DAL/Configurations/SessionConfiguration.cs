@@ -19,6 +19,9 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
         builder.Property(s => s.InstructorStatus)
                .IsRequired();
 
+        builder.Property(s => s.Duration)
+               .IsRequired();
+
         builder.HasOne(s => s.Student)
                .WithMany()
                .HasForeignKey(s => s.StudentId)

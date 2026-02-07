@@ -14,6 +14,7 @@ public class Session
     public AttendanceStatus InstructorStatus { get; set; }
     public Guid InstructorId { get; set; }
     public Guid StudentId { get; set; }
+    public SessionDuration Duration { get; set; }
 
     public Session(DateTime date, Guid studentId, Guid instructorId, AttendanceStatus studentSessionStatus, AttendanceStatus instructorSessionStatus)
 

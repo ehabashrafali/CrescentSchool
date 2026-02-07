@@ -31,6 +31,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                    StudentSessionStatus = s.StudentStatus,
                    StudentId = s.Student.Id,
                    InstructorId = s.InstructorId,
+                   Duration = s.Duration
                })
                 .ToListAsync(cancellationToken);
 
@@ -45,6 +46,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         StudentSessionStatus = s.StudentStatus,
                         StudentId = s.Student.Id,
                         InstructorId = s.InstructorId,
+                        Duration = s.Duration
                     })
                     .ToListAsync(cancellationToken);
 
@@ -66,6 +68,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 StudentSessionStatus = s.StudentStatus,
                 StudentId = s.Student.Id,
                 InstructorId = s.InstructorId,
+                Duration = s.Duration
             })
             .ToListAsync(cancellationToken);
     }
@@ -82,6 +85,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         StudentSessionStatus = s.StudentStatus,
                         StudentId = s.Student.Id,
                         InstructorId = s.InstructorId,
+                        Duration = s.Duration
                     })
                     .ToListAsync(cancellationToken);
 }

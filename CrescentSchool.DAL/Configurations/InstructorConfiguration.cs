@@ -32,6 +32,10 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
             .HasColumnName("Country")
             .HasColumnType("nvarchar(100)");
 
+        builder.Property(i => i.Fees)
+               .HasColumnType("decimal(18,2)")
+               .HasDefaultValue(0.00m);
+
         builder.Property(i => i.IsActive)
             .HasColumnName("IsActive")
             .HasColumnType("bit")

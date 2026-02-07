@@ -22,7 +22,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             PhoneNumber = instructor.PhoneNumber,
             IsActive = instructor.IsActive,
             Country = instructor.Country,
-
+            Fees = instructor.Fees
         };
     }
 
@@ -38,6 +38,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             PhoneNumber = i.PhoneNumber,
             IsActive = i.IsActive,
             Country = i.Country,
+            Fees = i.Fees
         })];
     }
 

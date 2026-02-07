@@ -9,6 +9,8 @@ public class SessionDto
     public DateTime Date { get; set; }
     public Guid InstructorId { get; set; }
     public Guid StudentId { get; set; }
+    public SessionDuration Duration { get; set; }
     public AttendanceStatus StudentSessionStatus { get; set; }
     public AttendanceStatus InstructorSessionStatus { get; set; }
+
 }

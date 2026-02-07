@@ -15,5 +15,6 @@ namespace CrescentSchool.BLL.DTOs
         public int Age => DateTime.Now.Year - DateOfBirth.Year;
         public bool IsActive { get; set; }
         public string Role => Roles.Instructor.ToString();
+        public decimal Fees { get; set; }
     }
 }

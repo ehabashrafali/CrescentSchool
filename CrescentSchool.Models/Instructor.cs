@@ -13,4 +13,6 @@ public class Instructor
     public List<Session> Sessions { get; set; } = [];
     public string Country { get; set; } = string.Empty;
     public string FullName => FirstName + ' ' + LastName;
+    public decimal Fees { get; set; }
+
 }
