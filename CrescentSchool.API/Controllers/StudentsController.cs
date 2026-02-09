@@ -42,4 +42,10 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("monthly-report/{id:guid}")]
+    public async Task<IActionResult> GetCurrentMonthReport([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        var result = await studentService.GetCurrentMonthReport(id, cancellationToken);
+        return Ok(result);
+    }
 }

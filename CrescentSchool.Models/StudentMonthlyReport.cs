@@ -12,14 +12,14 @@ public class StudentMonthlyReport
     public Grade ReadingGrade { get; set; }
     public int NoOfMemorizationAyah { get; set; }
     public int NoOfReadingAyah { get; set; }
-    public List<BasicQuranRecitationRule> BasicQuranRecitationRules { get; set; } = [];
     public Grade? BasicQuranRecitationRulesProgress { get; set; }
-    public List<Tajweed> TajweedRules { get; set; } = [];
     public Grade? TajweedRulesProgress { get; set; }
     public string? QuranComments { get; set; } = string.Empty;
     public string? IslamicStudiesComments { get; set; } = string.Empty;
     public string? IslamicStudiesTopics { get; set; } = string.Empty;
-    public List<IslamicStudiesBook> IslamicStudiesBooks { get; set; } = [];
     public Grade? IslamicStudiesProgress { get; set; }
     public Student Student { get; set; } = null!;
+    public List<Tajweed> TajweedRules { get; set; } = [];
+    public List<BasicQuranRecitationRule> BasicQuranRecitationRules { get; set; } = [];
+    public List<IslamicStudiesBook> IslamicStudiesBooks { get; set; } = [];
 }

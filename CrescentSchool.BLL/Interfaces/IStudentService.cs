@@ -11,4 +11,5 @@ public interface IStudentService
     Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto);
     Task<List<MonthlyReportDto>> GetMonthlyReportsAsync(Guid id, CancellationToken cancellation = default);
     Task<List<UpcomingSessionDto>> GetUpcomingSessionsDtoAsync(Guid id, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken = default);
+    Task<MonthlyReportDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken);
 }

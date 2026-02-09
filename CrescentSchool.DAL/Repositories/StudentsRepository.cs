@@ -68,4 +68,30 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             .Where(s => s.Id == id)
             .Select(s => s.StudentMonthlyReports)
             .FirstOrDefaultAsync(cancellation) ?? [];
+
+    public async Task<StudentMonthlyReport?> GetCurrentMonthlyReport(
+      Guid studentId,
+      CancellationToken cancellationToken)
+    {
+        var nowUtc = DateTime.UtcNow;
+
+        var monthStart = new DateTime(
+            nowUtc.Year,
+            nowUtc.Month,
+            1,
+            0, 0, 0,
+            DateTimeKind.Utc);
+
+        var monthEnd = monthStart.AddMonths(1);
+
+        return await context.StudentMonthlyReports
+            .Where(r =>
+                r.Student.Id == studentId &&
+                r.Date >= monthStart &&
+                r.Date < monthEnd)
+            .Include(r => r.IslamicStudiesBooks)
+            .Include(r => r.TajweedRules)
+            .Include(r => r.BasicQuranRecitationRules)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

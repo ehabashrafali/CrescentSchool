@@ -66,17 +66,15 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
                 NoOfReadingAyah = r.NoOfReadingAyah,
                 ReadingGrade = r.ReadingGrade,
                 BasicQuranRecitationRulesProgress = r.BasicQuranRecitationRulesProgress,
-                BasicQuranRecitationRules = r.BasicQuranRecitationRules,
                 TajweedRules = r.TajweedRules,
                 TajweedRulesProgress = r.TajweedRulesProgress,
                 QuranComments = r.QuranComments,
                 IslamicStudiesComments = r.IslamicStudiesComments,
+                IslamicStudiesProgress = r.IslamicStudiesProgress,
                 IslamicStudiesTopics = r.IslamicStudiesTopics,
                 IslamicStudiesBooks = r.IslamicStudiesBooks,
-                IslamicStudiesProgress = r.IslamicStudiesProgress
+                BasicQuranRecitationRules = r.BasicQuranRecitationRules,
             })]
-
-
         }).ToList();
         return studentDto;
     }

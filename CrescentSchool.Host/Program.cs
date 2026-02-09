@@ -20,8 +20,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-
         var jwtSettingsSection = builder.Configuration.GetSection("Jwt");
 
         var loggingConfiguration = new ConfigurationBuilder()
@@ -58,10 +56,7 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
         builder.Host.UseSerilog();
-
-
 
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -74,7 +69,6 @@ public class Program
         builder.Services.AddScoped<IStudentService, StudentsService>();
         builder.Services.AddScoped<ISessionsRepository, SessionsRepository>();
         builder.Services.AddScoped<ISessionService, SessionService>();
-
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -106,7 +100,6 @@ public class Program
             await IdentitySeeder.SeedRolesAndAdminAsync(services);
         }
 
-
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -118,7 +111,6 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
 
         app.MapControllers();
 

@@ -6,7 +6,7 @@ using CrescentSchool.Models.Dtos;
 
 namespace CrescentSchool.BLL.Services;
 
-public class StudentsService(IStudentsRepository studentsRepository, ISessionsRepository sessionsRepository) : IStudentService
+public class StudentsService(IStudentsRepository studentsRepository) : IStudentService
 {
     public async Task<StudentDto?> GetStudentByIdAsync(Guid studentId, CancellationToken cancellationToken = default)
     {
@@ -152,5 +152,46 @@ public class StudentsService(IStudentsRepository studentsRepository, ISessionsRe
             }
         }
         return result;
+    }
+
+    public async Task<MonthlyReportDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken)
+    {
+        var studentMonthlyReport = await studentsRepository.GetCurrentMonthlyReport(id, cancellationToken);
+        if (studentMonthlyReport is null)
+            return null;
+
+        return new MonthlyReportDto
+        {
+            Id = studentMonthlyReport.Id,
+            Date = studentMonthlyReport.Date,
+            Memorization = studentMonthlyReport.Memorization,
+            Reading = studentMonthlyReport.Reading,
+            NoOfMemorizationAyah = studentMonthlyReport.NoOfMemorizationAyah,
+            MemorizationGrade = studentMonthlyReport.MemorizationGrade,
+            NoOfReadingAyah = studentMonthlyReport.NoOfReadingAyah,
+            ReadingGrade = studentMonthlyReport.ReadingGrade,
+            BasicQuranRecitationRulesProgress = studentMonthlyReport.BasicQuranRecitationRulesProgress,
+            TajweedRulesProgress = studentMonthlyReport.TajweedRulesProgress,
+            QuranComments = studentMonthlyReport.QuranComments,
+            IslamicStudiesComments = studentMonthlyReport.IslamicStudiesComments,
+            IslamicStudiesTopics = studentMonthlyReport.IslamicStudiesTopics,
+            IslamicStudiesProgress = studentMonthlyReport.IslamicStudiesProgress,
+            IslamicStudiesBooks = [.. studentMonthlyReport.IslamicStudiesBooks.Select(
+                b => new IslamicStudiesBook
+                {
+                    Book = b.Book,
+
+                })],
+            TajweedRules = [.. studentMonthlyReport.TajweedRules.Select(
+                t => new Tajweed
+                {
+                    TajweedRule = t.TajweedRule,
+                })],
+            BasicQuranRecitationRules = [.. studentMonthlyReport.BasicQuranRecitationRules.Select(
+                b => new BasicQuranRecitationRule
+                {
+                    QuranRecitationTopic = b.QuranRecitationTopic,
+                })],
+        };
     }
 }

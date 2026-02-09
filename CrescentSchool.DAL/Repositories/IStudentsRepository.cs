@@ -9,4 +9,5 @@ public interface IStudentsRepository
     public Task<Student?> GetStudentByIdAsync(Guid studentId, CancellationToken cancellationToken = default);
     public Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto);
     public Task<List<StudentMonthlyReport>> GetMonthlyReports(Guid id, CancellationToken cancellation);
+    Task<StudentMonthlyReport?> GetCurrentMonthlyReport(Guid id, CancellationToken cancellationToken);
 }
