@@ -59,6 +59,7 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             IslamicStudiesTopics = studentMonthlyReportDto.IslamicStudiesTopics,
             IslamicStudiesBooks = studentMonthlyReportDto.IslamicStudiesBooks,
             IslamicStudiesProgress = studentMonthlyReportDto.IslamicStudiesProgress,
+            OthersIslamicStudiesBooks = studentMonthlyReportDto.OthersIslamicStudiesBooks
         };
         student.StudentMonthlyReports.Add(monthlyReport);
         await context.SaveChangesAsync();
@@ -68,10 +69,7 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             .Where(s => s.Id == id)
             .Select(s => s.StudentMonthlyReports)
             .FirstOrDefaultAsync(cancellation) ?? [];
-
-    public async Task<StudentMonthlyReport?> GetCurrentMonthlyReport(
-      Guid studentId,
-      CancellationToken cancellationToken)
+    public async Task<StudentMonthlyReport?> GetCurrentMonthlyReport(Guid studentId, CancellationToken cancellationToken)
     {
         var nowUtc = DateTime.UtcNow;
 

@@ -30,7 +30,6 @@ public class StudentMonthlyReportConfiguration
         builder.Property(r => r.MemorizationGrade)
                .HasConversion<int>();
 
-
         builder.Property(r => r.ReadingGrade)
                .HasConversion<int>();
 
@@ -51,6 +50,8 @@ public class StudentMonthlyReportConfiguration
 
         builder.Property(r => r.TajweedRulesProgress)
                .HasConversion<int>();
+
+        builder.Property(r => r.OthersIslamicStudiesBooks);
 
         builder
             .HasOne(r => r.Student)

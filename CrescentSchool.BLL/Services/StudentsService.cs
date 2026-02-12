@@ -45,6 +45,7 @@ public class StudentsService(IStudentsRepository studentsRepository) : IStudentS
                 IslamicStudiesTopics = r.IslamicStudiesTopics,
                 IslamicStudiesBooks = r.IslamicStudiesBooks,
                 IslamicStudiesProgress = r.IslamicStudiesProgress,
+                OthersIslamicStudiesBooks = r.OthersIslamicStudiesBooks
             })],
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
@@ -100,7 +101,8 @@ public class StudentsService(IStudentsRepository studentsRepository) : IStudentS
             IslamicStudiesComments = r.IslamicStudiesComments,
             IslamicStudiesTopics = r.IslamicStudiesTopics,
             IslamicStudiesBooks = r.IslamicStudiesBooks,
-            IslamicStudiesProgress = r.IslamicStudiesProgress
+            IslamicStudiesProgress = r.IslamicStudiesProgress,
+            OthersIslamicStudiesBooks = r.OthersIslamicStudiesBooks
         }
         )];
 
@@ -175,6 +177,7 @@ public class StudentsService(IStudentsRepository studentsRepository) : IStudentS
             QuranComments = studentMonthlyReport.QuranComments,
             IslamicStudiesComments = studentMonthlyReport.IslamicStudiesComments,
             IslamicStudiesTopics = studentMonthlyReport.IslamicStudiesTopics,
+            OthersIslamicStudiesBooks = studentMonthlyReport.OthersIslamicStudiesBooks,
             IslamicStudiesProgress = studentMonthlyReport.IslamicStudiesProgress,
             IslamicStudiesBooks = [.. studentMonthlyReport.IslamicStudiesBooks.Select(
                 b => new IslamicStudiesBook

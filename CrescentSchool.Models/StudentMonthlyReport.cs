@@ -9,7 +9,7 @@ public class StudentMonthlyReport
     public QuranSurah? Memorization { get; set; }
     public Grade? MemorizationGrade { get; set; }
     public QuranSurah? Reading { get; set; }
-    public Grade ReadingGrade { get; set; }
+    public Grade? ReadingGrade { get; set; }
     public int NoOfMemorizationAyah { get; set; }
     public int NoOfReadingAyah { get; set; }
     public Grade? BasicQuranRecitationRulesProgress { get; set; }
@@ -22,4 +22,5 @@ public class StudentMonthlyReport
     public List<Tajweed> TajweedRules { get; set; } = [];
     public List<BasicQuranRecitationRule> BasicQuranRecitationRules { get; set; } = [];
     public List<IslamicStudiesBook> IslamicStudiesBooks { get; set; } = [];
+    public string OthersIslamicStudiesBooks { get; set; } = string.Empty;
 }

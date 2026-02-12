@@ -74,6 +74,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
                 IslamicStudiesTopics = r.IslamicStudiesTopics,
                 IslamicStudiesBooks = r.IslamicStudiesBooks,
                 BasicQuranRecitationRules = r.BasicQuranRecitationRules,
+                OthersIslamicStudiesBooks = r.OthersIslamicStudiesBooks
             })]
         }).ToList();
         return studentDto;

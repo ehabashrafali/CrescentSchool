@@ -14,4 +14,5 @@ public enum IslamicStudiesBooks
     Duaa2 = 10,
     Tafseer = 11,
     Hadith = 12,
+    Others = 13
 }
