@@ -48,4 +48,27 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         var result = await studentService.GetCurrentMonthReport(id, cancellationToken);
         return Ok(result);
     }
+
+    [HttpPut("deactivate/{id:guid}")]
+    public async Task<IActionResult> Deactivate([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await studentService.DeactivateStudentAsync(id, cancellationToken);
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateStudent([FromRoute] Guid id, [FromBody] UpdateStudentDto updateStudentDto, CancellationToken cancellationToken)
+    {
+        await studentService.UpdateStudentAsync(id, updateStudentDto, cancellationToken);
+        return Ok();
+    }
+
+    [HttpGet("GetStudent/{id:guid}")]
+    public async Task<IActionResult> GetStudentById([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var result = await studentService.GetStudentByIdAsync(id, cancellationToken);
+        if (result is null)
+            return NotFound();
+        return Ok(result);
+    }
 }

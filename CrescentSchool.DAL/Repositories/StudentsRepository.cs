@@ -10,8 +10,7 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
     public async Task<List<Student>> GetStudentsByIdsAsync(List<Guid> studentIds, CancellationToken cancellation = default)
     {
         var query = context.Students
-            .Include(s => s.Instructor)
-            .Where(s => s.IsActive);
+            .Include(s => s.Instructor);
 
         if (studentIds.Count == 0)
             return await query.ToListAsync(cancellation);
@@ -91,5 +90,20 @@ public class StudentsRepository(ApplicationDbContext context) : IStudentsReposit
             .Include(r => r.TajweedRules)
             .Include(r => r.BasicQuranRecitationRules)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+    public Task DeactivateStudent(Guid id, CancellationToken cancellationToken)
+    {
+        var student = context.Students.FirstOrDefault(s => s.Id == id);
+        if (student is not null)
+        {
+            student.IsActive = false;
+            return context.SaveChangesAsync(cancellationToken);
+        }
+        return Task.CompletedTask;
+    }
+    public async Task UpdateStudent(Student student, CancellationToken cancellationToken)
+    {
+        context.Update(student);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

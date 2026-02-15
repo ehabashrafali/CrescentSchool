@@ -197,4 +197,29 @@ public class StudentsService(IStudentsRepository studentsRepository) : IStudentS
                 })],
         };
     }
+
+    public Task DeactivateStudentAsync(Guid id, CancellationToken cancellationToken)
+        => studentsRepository.DeactivateStudent(id, cancellationToken);
+
+    public async Task<Guid> UpdateStudentAsync(Guid id, UpdateStudentDto updateStudentDto, CancellationToken cancellationToken)
+    {
+        var student = await studentsRepository.GetStudentByIdAsync(id, cancellationToken);
+        if (student is null)
+            return Guid.Empty;
+
+        student.FirstName = updateStudentDto.FirstName;
+        student.LastName = updateStudentDto.LastName;
+        student.Country = updateStudentDto.Country;
+        student.Email = updateStudentDto.Email;
+        student.IsActive = updateStudentDto.IsActive;
+        student.Fees = updateStudentDto.Fees;
+        student.WeeklyAppointments = [.. updateStudentDto.weeklyAppointment.Select(wa => new WeeklyAppointment
+        {
+            Day = wa.DayOfWeek.ToUpper(),
+            Time = wa.Time,
+        })];
+        await studentsRepository.UpdateStudent(student, cancellationToken);
+
+        return student.Id;
+    }
 }

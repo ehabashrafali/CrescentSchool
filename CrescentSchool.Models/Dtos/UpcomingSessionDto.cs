@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.Models;
+﻿namespace CrescentSchool.Models.Dtos;
 
 public class UpcomingSessionDto
 {
