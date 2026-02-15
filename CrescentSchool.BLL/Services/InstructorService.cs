@@ -22,7 +22,8 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             PhoneNumber = instructor.PhoneNumber,
             IsActive = instructor.IsActive,
             Country = instructor.Country,
-            Fees = instructor.Fees
+            Fees = instructor.Fees,
+            ZoomMeeting = instructor.ZoomMeeting
         };
     }
 
@@ -38,7 +39,8 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             PhoneNumber = i.PhoneNumber,
             IsActive = i.IsActive,
             Country = i.Country,
-            Fees = i.Fees
+            Fees = i.Fees,
+            ZoomMeeting = i.ZoomMeeting
         })];
     }
 

@@ -16,5 +16,6 @@ namespace CrescentSchool.BLL.DTOs
         public bool IsActive { get; set; }
         public string Role => Roles.Instructor.ToString();
         public decimal Fees { get; set; }
+        public string ZoomMeeting { get; set; } = string.Empty;
     }
 }

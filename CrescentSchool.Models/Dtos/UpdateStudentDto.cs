@@ -8,5 +8,5 @@ public class UpdateStudentDto
     public string Email { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public decimal Fees { get; set; }
-    public List<WeeklyAppointmentDto> weeklyAppointment { get; set; }
+    public List<WeeklyAppointmentDto> weeklyAppointment { get; set; } = [];
 }

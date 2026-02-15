@@ -14,5 +14,5 @@ public class Instructor
     public string Country { get; set; } = string.Empty;
     public string FullName => FirstName + ' ' + LastName;
     public decimal Fees { get; set; }
-
+    public string ZoomMeeting { get; set; } = string.Empty;
 }

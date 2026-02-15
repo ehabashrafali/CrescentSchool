@@ -31,7 +31,9 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                    StudentSessionStatus = s.StudentStatus,
                    StudentId = s.Student.Id,
                    InstructorId = s.InstructorId,
-                   Duration = s.Duration
+                   Duration = s.Duration,
+                   StudentName = s.Student.FullName,
+                   InstructorName = s.Instructor.FullName
                })
                 .ToListAsync(cancellationToken);
 
@@ -46,7 +48,9 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         StudentSessionStatus = s.StudentStatus,
                         StudentId = s.Student.Id,
                         InstructorId = s.InstructorId,
-                        Duration = s.Duration
+                        Duration = s.Duration,
+                        StudentName = s.Student.FullName,
+                        InstructorName = s.Instructor.FullName
                     })
                     .ToListAsync(cancellationToken);
 
@@ -68,7 +72,9 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 StudentSessionStatus = s.StudentStatus,
                 StudentId = s.Student.Id,
                 InstructorId = s.InstructorId,
-                Duration = s.Duration
+                Duration = s.Duration,
+                StudentName = s.Student.FullName,
+                InstructorName = s.Instructor.FullName
             })
             .ToListAsync(cancellationToken);
     }
@@ -85,7 +91,9 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         StudentSessionStatus = s.StudentStatus,
                         StudentId = s.Student.Id,
                         InstructorId = s.InstructorId,
-                        Duration = s.Duration
+                        Duration = s.Duration,
+                        StudentName = s.Student.FullName,
+                        InstructorName = s.Instructor.FullName
                     })
                     .ToListAsync(cancellationToken);
 }

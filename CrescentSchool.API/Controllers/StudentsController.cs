@@ -15,20 +15,14 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         var result = await studentService.GetStudentsAsync(studentIds, cancellationToken);
         return Ok(result);
     }
-    [HttpGet("GetStudentProfile")]
-    public async Task<IActionResult> GetStudent([FromQuery] Guid studentId)
-    {
-        var result = await studentService.GetStudentByIdAsync(studentId);
-        if (result is null)
-            return NotFound();
-        return Ok(result);
-    }
+
     [HttpPost("{id:guid}")]
     public async Task<IActionResult> CreateMonthlyReport([FromRoute] Guid id, [FromBody] MonthlyReportDto studentMonthlyReportDto)
     {
         await studentService.AddMonthlyReport(id, studentMonthlyReportDto);
         return Ok();
     }
+
     [HttpGet]
     public async Task<IActionResult> GetMonthlyReports([FromQuery] Guid id, CancellationToken cancellationToken)
     {
@@ -56,13 +50,12 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         return Ok();
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateStudent([FromRoute] Guid id, [FromBody] UpdateStudentDto updateStudentDto, CancellationToken cancellationToken)
     {
         await studentService.UpdateStudentAsync(id, updateStudentDto, cancellationToken);
         return Ok();
     }
-
     [HttpGet("GetStudent/{id:guid}")]
     public async Task<IActionResult> GetStudentById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
