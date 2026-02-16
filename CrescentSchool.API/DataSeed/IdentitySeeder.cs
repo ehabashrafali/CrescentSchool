@@ -19,35 +19,19 @@ public static class IdentitySeeder
                 await roleManager.CreateAsync(new IdentityRole(role));
         }
 
-        if (await userManager.FindByEmailAsync("ehabashrafali88@gmail.com") is null)
+
+        var superVisorUser = new ApplicationUser
         {
-            var adminUser = new ApplicationUser
-            {
-                UserName = "EhabAshraf",
-                Email = "ehabashrafali88@gmail.com",
-                FirstName = "Ehab",
-                LastName = "Ashraf",
-                EmailConfirmed = true
-            };
+            UserName = "Supervisor",
+            Email = "supervisor@crescentschool.com",
+            FirstName = "Supervisor",
+            EmailConfirmed = true
+        };
 
-            var superVisorUser = new ApplicationUser
-            {
-                UserName = "OsamaGamal",
-                Email = "supervisor@crescentschool.com",
-                FirstName = "Osama",
-                LastName = "Gamal",
-                EmailConfirmed = true
-            };
+        var supervisorResult = await userManager.CreateAsync(superVisorUser, "Crescent26!");
 
-            var result = await userManager.CreateAsync(adminUser, "Opaa0100@1234");
-            if (result.Succeeded)
-                await userManager.AddToRoleAsync(adminUser, nameof(Roles.Admin));
-
-            var supervisorResult = await userManager.CreateAsync(superVisorUser, "Supervisor@1234");
-            if (supervisorResult.Succeeded)
-                await userManager.AddToRoleAsync(superVisorUser, nameof(Roles.Supervisor));
-        }
+        if (supervisorResult.Succeeded)
+            await userManager.AddToRoleAsync(superVisorUser, nameof(Roles.Supervisor));
 
     }
-
 }
