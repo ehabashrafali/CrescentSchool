@@ -1,4 +1,3 @@
-using CrescentSchool.API.DataSeed;
 using CrescentSchool.API.Entities;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.BLL.Services;
@@ -94,10 +93,10 @@ public class Program
         app.UseSerilogRequestLogging();
         app.UseCors();
 
-        using (var scope = app.Services.CreateScope())
-        {
-            await IdentitySeeder.SeedRolesAndUsersAsync(scope.ServiceProvider);
-        }
+        //using (var scope = app.Services.CreateScope())
+        //{
+        //    await IdentitySeeder.SeedRolesAndUsersAsync(scope.ServiceProvider);
+        //}
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
