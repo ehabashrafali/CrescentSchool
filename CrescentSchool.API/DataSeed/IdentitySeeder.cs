@@ -18,7 +18,6 @@ public static class IdentitySeeder
 
         await SeedRolesAsync(roleManager);
         await SeedSupervisorAsync(userManager);
-        await SeedAdminAsync(userManager, environment);
     }
 
     private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
@@ -61,30 +60,5 @@ public static class IdentitySeeder
 
         if (result.Succeeded)
             await userManager.AddToRoleAsync(supervisorUser, nameof(Roles.Supervisor));
-    }
-
-    private static async Task SeedAdminAsync(
-        UserManager<ApplicationUser> userManager,
-        IHostEnvironment environment)
-    {
-        const string email = "crescentschoolacademy@gmail.com";
-
-        var existingUser = await userManager.FindByEmailAsync(email);
-        if (existingUser != null)
-            return;
-
-        var adminUser = new ApplicationUser
-        {
-            UserName = email,
-            Email = email,
-            FirstName = "Osama",
-            LastName = "Gamal",
-            EmailConfirmed = true
-        };
-
-        var result = await userManager.CreateAsync(adminUser, "Admin@Crescent26!");
-
-        if (result.Succeeded)
-            await userManager.AddToRoleAsync(adminUser, nameof(Roles.Admin));
     }
 }

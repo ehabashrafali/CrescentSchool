@@ -1,12 +1,14 @@
-﻿using CrescentSchool.BLL.DTOs;
+﻿using CrescentSchool.API.Entities;
+using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Repositories;
 using CrescentSchool.Models;
 using CrescentSchool.Models.Dtos;
+using Microsoft.AspNetCore.Identity;
 
 namespace CrescentSchool.BLL.Services;
 
-public class StudentsService(IStudentsRepository studentsRepository) : IStudentService
+public class StudentsService(IStudentsRepository studentsRepository, UserManager<ApplicationUser> _userManager) : IStudentService
 {
     public async Task<StudentDto?> GetStudentByIdAsync(Guid studentId, CancellationToken cancellationToken = default)
     {
@@ -203,6 +205,23 @@ public class StudentsService(IStudentsRepository studentsRepository) : IStudentS
 
     public async Task<Guid> UpdateStudentAsync(Guid id, UpdateStudentDto updateStudentDto, CancellationToken cancellationToken)
     {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user is null)
+            return Guid.Empty;
+
+        user.FirstName = updateStudentDto.FirstName;
+        user.LastName = updateStudentDto.LastName;
+        user.UserName = updateStudentDto.Email;
+        user.NormalizedUserName = updateStudentDto.Email.ToUpper();
+        user.Email = updateStudentDto.Email;
+        user.NormalizedEmail = updateStudentDto.Email.ToUpper();
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            throw new Exception("Failed to update identity user");
+
+
         var student = await studentsRepository.GetStudentByIdAsync(id, cancellationToken);
         if (student is null)
             return Guid.Empty;
