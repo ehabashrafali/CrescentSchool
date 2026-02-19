@@ -10,27 +10,37 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
     {
         builder.HasKey(i => i.Id);
 
+        builder.Property(i => i.Id)
+            .ValueGeneratedNever();
+
         builder.Property(i => i.Country)
-            .HasColumnName("Country")
-            .HasColumnType("nvarchar(100)");
+            .HasMaxLength(100);
 
         builder.Property(i => i.ZoomMeeting)
-            .HasColumnName("ZoomMeeting");
+            .HasMaxLength(500);
 
         builder.Property(i => i.Fees)
-               .HasColumnType("decimal(18,2)")
-               .HasDefaultValue(0.00m);
+            .HasColumnType("decimal(18,2)")
+            .HasDefaultValue(0.00m);
 
         builder
-                .HasOne(i => i.User)
-                .WithOne()
-                .HasForeignKey<Instructor>(i => i.Id)
-                .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(i => i.Sessions)
-            .WithOne(s => s.Instructor)
-            .HasForeignKey("InstructorId")
+            .HasOne(i => i.User)
+            .WithOne()
+            .HasForeignKey<Instructor>(i => i.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder
+            .HasMany(i => i.Students)
+            .WithOne(s => s.Instructor)
+            .HasForeignKey(s => s.InstructorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasMany(i => i.Sessions)
+            .WithOne(s => s.Instructor)
+            .HasForeignKey(s => s.InstructorId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.ToTable("Instructors");
     }
 }
