@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.Models;
+﻿namespace CrescentSchool.DAL.Entities;
 
 public class WeeklyAppointment
 {

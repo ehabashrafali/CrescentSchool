@@ -1,4 +1,6 @@
-﻿namespace CrescentSchool.Models;
+﻿using CrescentSchool.Models;
+
+namespace CrescentSchool.DAL.Entities;
 
 public class Course : AuditableEntity
 {

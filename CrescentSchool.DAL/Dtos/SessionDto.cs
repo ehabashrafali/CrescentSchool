@@ -1,7 +1,7 @@
 ﻿using CrescentSchool.Models.Enums;
 using System.Text.Json.Serialization;
 
-namespace CrescentSchool.Models.Dtos;
+namespace CrescentSchool.DAL.Dtos;
 
 public class SessionDto
 {

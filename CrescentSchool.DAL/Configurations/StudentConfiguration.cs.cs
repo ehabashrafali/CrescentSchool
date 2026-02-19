@@ -1,4 +1,4 @@
-﻿using CrescentSchool.Models;
+﻿using CrescentSchool.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,33 +13,8 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.Property(s => s.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(s => s.FirstName)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(s => s.LastName)
-            .IsRequired(false)
-            .HasMaxLength(100);
-
-        builder.Property(s => s.Email)
-            .IsRequired();
-
-        builder.Property(s => s.PhoneNumber)
-            .IsRequired(false)
-            .HasMaxLength(20);
-
-        builder.Property(s => s.Country)
-            .HasMaxLength(100);
-
-        builder.Property(s => s.IsActive)
-            .HasDefaultValue(true);
-
         builder.Property(s => s.ZoomMeeting)
             .HasMaxLength(500);
-
-        builder.Property(s => s.DateOfBirth)
-            .IsRequired(false)
-            .HasColumnType("date");
 
         builder.Property(s => s.Fees)
             .HasColumnType("decimal(18,2)")
@@ -54,7 +29,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder
             .HasOne(s => s.Instructor)
             .WithMany(i => i.Students)
-            .HasForeignKey("InstructorId")
+            .HasForeignKey(s => s.InstructorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
@@ -66,6 +41,12 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .HasMany(s => s.Sessions)
             .WithOne(sess => sess.Student)
             .HasForeignKey("StudentId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasOne(s => s.User)
+            .WithOne()
+            .HasForeignKey<Student>(s => s.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.ToTable("Students");

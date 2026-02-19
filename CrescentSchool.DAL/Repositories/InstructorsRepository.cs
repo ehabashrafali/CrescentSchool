@@ -1,5 +1,5 @@
 ﻿using CrescentSchool.DAL.DbContext;
-using CrescentSchool.Models;
+using CrescentSchool.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrescentSchool.DAL.Repositories
@@ -9,7 +9,7 @@ namespace CrescentSchool.DAL.Repositories
         public async Task<Instructor?> GetByIdAsync(Guid instructorId)
         {
             return await context.Instructors
-                .Where(i => i.IsActive)
+                .Where(i => i.User.IsActive)
                 .FirstOrDefaultAsync(i => i.Id == instructorId);
         }
 
@@ -18,13 +18,13 @@ namespace CrescentSchool.DAL.Repositories
             return await context.Instructors
                 .Include(i => i.Students)
                 .Include(i => i.Courses)
-                .Where(i => i.IsActive)
+                .Where(i => i.User.IsActive)
                 .FirstOrDefaultAsync(i => i.Id == instructorId);
         }
 
         public async Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds)
         {
-            var query = context.Instructors.Where(i => i.IsActive)
+            var query = context.Instructors.Where(i => i.User.IsActive)
                 .Include(i => i.Students)
                 .Include(i => i.Courses);
 
@@ -36,7 +36,7 @@ namespace CrescentSchool.DAL.Repositories
 
         public Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken = default)
         {
-            var query = context.Instructors.Where(i => i.IsActive);
+            var query = context.Instructors.Where(i => i.User.IsActive);
 
             if (instructorIds.Count == 0)
                 return query.ToListAsync(cancellationToken);
@@ -47,7 +47,7 @@ namespace CrescentSchool.DAL.Repositories
         public async Task<List<Student>> GetInstuctorStudents(Guid instructorId)
         {
             return await context.Instructors
-                        .Where(i => i.IsActive && i.Id == instructorId)
+                        .Where(i => i.User.IsActive && i.Id == instructorId)
                         .SelectMany(i => i.Students)
                         .Include(s => s.StudentMonthlyReports)
                             .ThenInclude(r => r.IslamicStudiesBooks)

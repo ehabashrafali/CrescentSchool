@@ -1,5 +1,5 @@
 ﻿using CrescentSchool.BLL.Interfaces;
-using CrescentSchool.Models.Dtos;
+using CrescentSchool.DAL.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
@@ -62,6 +62,13 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         var result = await studentService.GetStudentByIdAsync(id, cancellationToken);
         if (result is null)
             return NotFound();
+        return Ok(result);
+    }
+
+    [HttpPost("create-student")]
+    public async Task<IActionResult> CreateStudent([FromBody] CreateStudentDto createStudentDto, CancellationToken cancellationToken)
+    {
+        var result = await studentService.CreateStudentAsync(createStudentDto, cancellationToken);
         return Ok(result);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.Models.Dtos;
+using CrescentSchool.DAL.Dtos;
 
 namespace CrescentSchool.BLL.DTOs;
 

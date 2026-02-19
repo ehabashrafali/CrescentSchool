@@ -1,4 +1,4 @@
-﻿using CrescentSchool.Models;
+﻿using CrescentSchool.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

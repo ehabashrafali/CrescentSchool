@@ -1,6 +1,5 @@
 ﻿using CrescentSchool.DAL.DbContext;
-using CrescentSchool.Models;
-using CrescentSchool.Models.Dtos;
+using CrescentSchool.DAL.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrescentSchool.DAL.Repositories;
@@ -32,8 +31,8 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                    StudentId = s.Student.Id,
                    InstructorId = s.InstructorId,
                    Duration = s.Duration,
-                   StudentName = s.Student.FullName,
-                   InstructorName = s.Instructor.FullName
+                   StudentName = s.Student.User.FullName,
+                   InstructorName = s.Instructor.User.FullName
                })
                 .ToListAsync(cancellationToken);
 
@@ -49,8 +48,8 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         StudentId = s.Student.Id,
                         InstructorId = s.InstructorId,
                         Duration = s.Duration,
-                        StudentName = s.Student.FullName,
-                        InstructorName = s.Instructor.FullName
+                        StudentName = s.Student.User.FullName,
+                        InstructorName = s.Instructor.User.FullName
                     })
                     .ToListAsync(cancellationToken);
 
@@ -73,8 +72,8 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 StudentId = s.Student.Id,
                 InstructorId = s.InstructorId,
                 Duration = s.Duration,
-                StudentName = s.Student.FullName,
-                InstructorName = s.Instructor.FullName
+                StudentName = s.Student.User.FullName,
+                InstructorName = s.Instructor.User.FullName
             })
             .ToListAsync(cancellationToken);
     }
@@ -92,8 +91,8 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         StudentId = s.Student.Id,
                         InstructorId = s.InstructorId,
                         Duration = s.Duration,
-                        StudentName = s.Student.FullName,
-                        InstructorName = s.Instructor.FullName
+                        StudentName = s.Student.User.FullName,
+                        InstructorName = s.Instructor.User.FullName
                     })
                     .ToListAsync(cancellationToken);
 }

@@ -2,6 +2,7 @@
 using CrescentSchool.Models;
 namespace CrescentSchool.DAL.DbContext;
 
+using CrescentSchool.DAL.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

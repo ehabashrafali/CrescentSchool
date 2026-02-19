@@ -1,12 +1,13 @@
 ﻿using CrescentSchool.Models.Enums;
 using System.Text.Json.Serialization;
 
-namespace CrescentSchool.Models;
+namespace CrescentSchool.DAL.Entities;
 
-public class Tajweed()
+public class IslamicStudiesBook()
 {
     public int Id { get; set; }
-    public TajweedRules TajweedRule { get; set; }
+
+    public IslamicStudiesBooks Book { get; set; }
     [JsonIgnore]
     public ICollection<StudentMonthlyReport> StudentMonthlyReports { get; set; } = [];
 }

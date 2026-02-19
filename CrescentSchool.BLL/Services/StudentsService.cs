@@ -1,9 +1,10 @@
 ﻿using CrescentSchool.API.Entities;
 using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.DAL.Dtos;
+using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
 using CrescentSchool.Models;
-using CrescentSchool.Models.Dtos;
 using Microsoft.AspNetCore.Identity;
 
 namespace CrescentSchool.BLL.Services;
@@ -19,14 +20,14 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         return new StudentDto
         {
             Id = student.Id,
-            FirstName = student.FirstName,
-            LastName = student.LastName,
-            Email = student.Email,
-            Country = student.Country,
-            PhoneNumber = student.PhoneNumber,
+            FirstName = student.User.FirstName,
+            LastName = student.User.LastName,
+            Email = student.User.Email,
+            Country = student.User.Country,
+            PhoneNumber = student.User.PhoneNumber,
             ZoomMeeting = student.ZoomMeeting,
-            DateOfBirth = student.DateOfBirth,
-            IsActive = student.IsActive,
+            DateOfBirth = student.User.DateOfBirth,
+            IsActive = student.User.IsActive,
             Fees = student.Fees,
             MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportDto
             {
@@ -64,14 +65,14 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         return [.. students.Select(student => new StudentDto
         {
             Id = student.Id,
-            FirstName = student.FirstName,
-            LastName = student.LastName,
-            Email = student.Email,
-            Country = student.Country,
-            PhoneNumber = student.PhoneNumber,
+            FirstName = student.User.FirstName,
+            LastName = student.User.LastName,
+            Email = student.User.Email,
+            Country = student.User.Country,
+            PhoneNumber = student.User.PhoneNumber,
             ZoomMeeting = student.ZoomMeeting,
-            DateOfBirth = student.DateOfBirth,
-            IsActive = student.IsActive,
+            DateOfBirth = student.User.DateOfBirth,
+            IsActive = student.User.IsActive,
             Fees = student.Fees,
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
@@ -148,7 +149,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
                     {
                         SessionDateTime = sessionDateTime,
                         ZoomMeeting = student.ZoomMeeting,
-                        InstructorName = student.Instructor.FullName,
+                        InstructorName = student.Instructor.User.FullName,
                         CourseName = [.. student.Courses.Select(c => c.Name)]
 
                     });
@@ -226,13 +227,9 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         if (student is null)
             return Guid.Empty;
 
-        student.FirstName = updateStudentDto.FirstName;
-        student.LastName = updateStudentDto.LastName;
-        student.Country = updateStudentDto.Country;
-        student.Email = updateStudentDto.Email;
-        student.IsActive = updateStudentDto.IsActive;
+
         student.Fees = updateStudentDto.Fees;
-        student.WeeklyAppointments = [.. updateStudentDto.weeklyAppointment.Select(wa => new WeeklyAppointment
+        student.WeeklyAppointments = [.. updateStudentDto.WeeklyAppointment.Select(wa => new WeeklyAppointment
         {
             Day = wa.DayOfWeek.ToUpper(),
             Time = wa.Time,
@@ -240,5 +237,10 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         await studentsRepository.UpdateStudent(student, cancellationToken);
 
         return student.Id;
+    }
+
+    public async Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken)
+    {
+        return await studentsRepository.CreateStudentAsync(createStudentDto, cancellationToken);
     }
 }

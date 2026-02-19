@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.API.Entities;
+﻿namespace CrescentSchool.DAL.Entities;
 
 public class LoginDto
 {

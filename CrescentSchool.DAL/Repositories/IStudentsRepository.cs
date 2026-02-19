@@ -1,5 +1,5 @@
-﻿using CrescentSchool.Models;
-using CrescentSchool.Models.Dtos;
+﻿using CrescentSchool.DAL.Dtos;
+using CrescentSchool.DAL.Entities;
 
 namespace CrescentSchool.DAL.Repositories;
 
@@ -12,4 +12,5 @@ public interface IStudentsRepository
     Task<StudentMonthlyReport?> GetCurrentMonthlyReport(Guid id, CancellationToken cancellationToken);
     Task DeactivateStudent(Guid id, CancellationToken cancellationToken);
     Task UpdateStudent(Student student, CancellationToken cancellationToken);
+    Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken);
 }

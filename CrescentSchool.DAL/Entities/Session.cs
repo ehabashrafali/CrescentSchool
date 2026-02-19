@@ -1,6 +1,6 @@
-﻿using CrescentSchool.Models.Enums;
+﻿using CrescentSchool.DAL.Entities;
+using CrescentSchool.Models.Enums;
 
-namespace CrescentSchool.Models;
 
 public class Session
 {

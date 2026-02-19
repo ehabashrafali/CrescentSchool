@@ -1,4 +1,4 @@
-﻿using CrescentSchool.Models;
+﻿using CrescentSchool.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,24 +9,6 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
     public void Configure(EntityTypeBuilder<Instructor> builder)
     {
         builder.HasKey(i => i.Id);
-
-        builder.Property(i => i.FirstName)
-              .IsRequired()
-              .HasColumnName("FirstName")
-              .HasColumnType("nvarchar(200)");
-
-        builder.Property(i => i.LastName)
-                .IsRequired()
-                .HasColumnName("LastName")
-                .HasColumnType("nvarchar(200)");
-
-        builder.Property(i => i.Email)
-            .HasColumnName("email")
-            .HasColumnType("nvarchar(200)");
-
-        builder.Property(i => i.PhoneNumber)
-            .HasColumnName("PhoneNumber")
-            .HasColumnType("nvarchar(20)");
 
         builder.Property(i => i.Country)
             .HasColumnName("Country")
@@ -39,10 +21,11 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
                .HasColumnType("decimal(18,2)")
                .HasDefaultValue(0.00m);
 
-        builder.Property(i => i.IsActive)
-            .HasColumnName("IsActive")
-            .HasColumnType("bit")
-            .HasDefaultValue(true);
+        builder
+                .HasOne(i => i.User)
+                .WithOne()
+                .HasForeignKey<Instructor>(i => i.Id)
+                .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(i => i.Sessions)
             .WithOne(s => s.Instructor)

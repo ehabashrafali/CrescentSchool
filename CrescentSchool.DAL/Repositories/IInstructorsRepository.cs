@@ -1,11 +1,9 @@
-﻿using CrescentSchool.Models;
+﻿using CrescentSchool.DAL.Entities;
+namespace CrescentSchool.DAL.Repositories;
 
-namespace CrescentSchool.DAL.Repositories
+public interface IInstructorsRepository
 {
-    public interface IInstructorsRepository
-    {
-        Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken = default);
-        Task<Instructor?> GetByIdAsync(Guid instructorId);
-        Task<List<Student>> GetInstuctorStudents(Guid instructorId);
-    }
+    Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken = default);
+    Task<Instructor?> GetByIdAsync(Guid instructorId);
+    Task<List<Student>> GetInstuctorStudents(Guid instructorId);
 }

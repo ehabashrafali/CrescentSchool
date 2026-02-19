@@ -1,5 +1,5 @@
 ﻿using CrescentSchool.BLL.DTOs;
-using CrescentSchool.Models.Dtos;
+using CrescentSchool.DAL.Dtos;
 
 namespace CrescentSchool.BLL.Interfaces;
 
@@ -13,4 +13,5 @@ public interface IStudentService
     Task<MonthlyReportDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken);
     Task DeactivateStudentAsync(Guid id, CancellationToken cancellationToken);
     Task<Guid> UpdateStudentAsync(Guid id, UpdateStudentDto updateStudentDto, CancellationToken cancellationToken);
+    Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken);
 }

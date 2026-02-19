@@ -1,7 +1,7 @@
 ﻿using CrescentSchool.BLL.Enums;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Repositories;
-using CrescentSchool.Models.Dtos;
 
 namespace CrescentSchool.BLL.Services;
 

@@ -1,5 +1,6 @@
 ﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Repositories;
 
 namespace CrescentSchool.BLL.Services;
@@ -16,11 +17,11 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
         return new InstructorDto
         {
             Id = instructor.Id,
-            FirstName = instructor.FirstName,
-            LastName = instructor.LastName,
-            Email = instructor.Email,
-            PhoneNumber = instructor.PhoneNumber,
-            IsActive = instructor.IsActive,
+            FirstName = instructor.User.FirstName,
+            LastName = instructor.User.LastName,
+            Email = instructor.User.Email,
+            PhoneNumber = instructor.User.PhoneNumber,
+            IsActive = instructor.User.IsActive,
             Country = instructor.Country,
             Fees = instructor.Fees,
             ZoomMeeting = instructor.ZoomMeeting
@@ -33,11 +34,11 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
         return [.. instructors.Select(i => new InstructorDto
         {
             Id = i.Id,
-            FirstName = i.FirstName,
-            LastName = i.LastName,
-            Email = i.Email,
-            PhoneNumber = i.PhoneNumber,
-            IsActive = i.IsActive,
+            FirstName = i.User.FirstName,
+            LastName = i.User.LastName,
+            Email = i.User.Email,
+            PhoneNumber = i.User.PhoneNumber,
+            IsActive = i.User.IsActive,
             Country = i.Country,
             Fees = i.Fees,
             ZoomMeeting = i.ZoomMeeting
@@ -50,14 +51,14 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
         var studentDto = students.Select(s => new StudentDto
         {
             Id = s.Id,
-            FirstName = s.FirstName,
-            LastName = s.LastName,
-            Email = s.Email,
-            Country = s.Country,
-            PhoneNumber = s.PhoneNumber,
-            DateOfBirth = s.DateOfBirth,
+            FirstName = s.User.FirstName,
+            LastName = s.User.LastName,
+            Email = s.User.Email,
+            Country = s.User.Country,
+            PhoneNumber = s.User.PhoneNumber,
+            DateOfBirth = s.User.DateOfBirth,
             ZoomMeeting = s.ZoomMeeting,
-            MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new Models.Dtos.MonthlyReportDto
+            MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportDto
             {
                 Id = r.Id,
                 Date = r.Date,

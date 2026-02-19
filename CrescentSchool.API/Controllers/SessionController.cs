@@ -1,6 +1,6 @@
 ﻿using CrescentSchool.BLL.Enums;
 using CrescentSchool.BLL.Interfaces;
-using CrescentSchool.Models.Dtos;
+using CrescentSchool.DAL.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
