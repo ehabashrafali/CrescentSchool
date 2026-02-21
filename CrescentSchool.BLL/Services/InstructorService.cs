@@ -26,7 +26,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             Email = instructor.User.Email,
             PhoneNumber = instructor.User.PhoneNumber,
             IsActive = instructor.User.IsActive,
-            Country = instructor.Country,
+            Country = instructor.User.Country,
             Fees = instructor.Fees,
             ZoomMeeting = instructor.ZoomMeeting
         };
@@ -42,7 +42,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             Email = i.User.Email,
             PhoneNumber = i.User.PhoneNumber,
             IsActive = i.User.IsActive,
-            Country = i.Country,
+            Country = i.User.Country,
             Fees = i.Fees,
             ZoomMeeting = i.ZoomMeeting
         })];

@@ -13,9 +13,6 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
         builder.Property(i => i.Id)
             .ValueGeneratedNever();
 
-        builder.Property(i => i.Country)
-            .HasMaxLength(100);
-
         builder.Property(i => i.ZoomMeeting)
             .HasMaxLength(500);
 

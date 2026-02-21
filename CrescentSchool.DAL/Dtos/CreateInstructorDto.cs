@@ -14,4 +14,5 @@ public class CreateInstructorDto
     public string? LastName { get; set; }
     public string Country { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
+    public string ZoomLink { get; set; } = string.Empty;
 }

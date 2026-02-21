@@ -19,10 +19,13 @@ namespace CrescentSchool.DAL.Repositories
                 UserName = createInstructorDto.Email,
                 Email = createInstructorDto.Email,
                 FirstName = createInstructorDto.FirstName,
-                LastName = createInstructorDto.LastName ?? GenerateRandomString(),
+                LastName = string.IsNullOrWhiteSpace(createInstructorDto.LastName)
+                            ? GenerateRandomString()
+                            : createInstructorDto.LastName,
                 Country = createInstructorDto.Country,
                 PhoneNumber = createInstructorDto.PhoneNumber,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                IsActive = true
             };
 
             var result = await _userManager.CreateAsync(user, createInstructorDto.Password);
@@ -35,6 +38,8 @@ namespace CrescentSchool.DAL.Repositories
             {
                 Id = new Guid(user.Id),
                 Fees = createInstructorDto.Fees,
+                User = user,
+                ZoomMeeting = createInstructorDto.ZoomLink
             };
             context.Instructors.Add(instructor);
 
@@ -47,6 +52,7 @@ namespace CrescentSchool.DAL.Repositories
         {
             return await context.Instructors
                 .Where(i => i.User.IsActive)
+                .Include(i => i.User)
                 .FirstOrDefaultAsync(i => i.Id == instructorId);
         }
         public async Task<Instructor?> GetInstructorByIdAsync(Guid instructorId)
@@ -70,7 +76,7 @@ namespace CrescentSchool.DAL.Repositories
         }
         public Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken = default)
         {
-            var query = context.Instructors;
+            var query = context.Instructors.Include(i => i.User);
 
             if (instructorIds.Count == 0)
                 return query.ToListAsync(cancellationToken);
@@ -98,7 +104,7 @@ namespace CrescentSchool.DAL.Repositories
         }
         public Task DeactivateInstructor(Guid id, CancellationToken cancellationToken)
         {
-            var instructor = context.Instructors.FirstOrDefault(s => s.Id == id);
+            var instructor = context.Instructors.Include(i => i.User).FirstOrDefault(s => s.Id == id);
             if (instructor is not null)
             {
                 instructor.User.IsActive = false;

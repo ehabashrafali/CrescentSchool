@@ -20,4 +20,6 @@ public class CreateStudentDto
     [Required]
     public string Password { get; set; }
     public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];
+
+    public string ZoomLink = string.Empty;
 }

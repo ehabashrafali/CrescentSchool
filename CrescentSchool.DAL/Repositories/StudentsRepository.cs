@@ -13,7 +13,8 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
     public async Task<List<Student>> GetStudentsByIdsAsync(List<Guid> studentIds, CancellationToken cancellation = default)
     {
         var query = context.Students
-            .Include(s => s.Instructor);
+            .Include(s => s.Instructor)
+            .Include(s => s.User);
 
         if (studentIds.Count == 0)
             return await query.ToListAsync(cancellation);
@@ -25,6 +26,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
         return await context.Students
             .Include(s => s.Instructor)
             .Include(s => s.WeeklyAppointments)
+            .Include(s => s.User)
             .FirstOrDefaultAsync(s => s.Id == id && s.User.IsActive, cancellationToken);
     }
     public async Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto)
@@ -124,7 +126,8 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                 LastName = dto.LastName ?? GenerateRandomString(),
                 Country = dto.Country,
                 PhoneNumber = dto.PhoneNumber,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                IsActive = true
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -139,7 +142,9 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                 Id = new Guid(user.Id),
                 InstructorId = dto.InstructorId,
                 Fees = dto.Fees,
-                WeeklyAppointments = dto.WeeklyAppointments ?? []
+                WeeklyAppointments = dto.WeeklyAppointments ?? [],
+                ZoomMeeting = dto.ZoomLink,
+                User = user
             };
 
             context.Students.Add(student);
