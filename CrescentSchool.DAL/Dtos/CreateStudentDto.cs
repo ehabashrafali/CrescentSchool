@@ -1,5 +1,4 @@
-﻿using CrescentSchool.DAL.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CrescentSchool.DAL.Dtos;
 
@@ -19,7 +18,7 @@ public class CreateStudentDto
     public string Email { get; set; } = string.Empty;
     [Required]
     public string Password { get; set; }
-    public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];
+    public List<WeeklyAppointmentDto> WeeklyAppointments { get; set; } = [];
 
     public string ZoomLink = string.Empty;
 }

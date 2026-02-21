@@ -52,7 +52,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             })],
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
-                DayOfWeek = wa.Day.ToUpper(),
+                Day = wa.Day,
                 Time = wa.Time,
             })]
         };
@@ -76,7 +76,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             Fees = student.Fees,
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
-                DayOfWeek = wa.Day.ToUpper(),
+                Day = wa.Day,
                 Time = wa.Time,
             })]
 
@@ -227,11 +227,11 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         if (student is null)
             return Guid.Empty;
 
-
+        student.ZoomMeeting = updateStudentDto.ZoomLink;
         student.Fees = updateStudentDto.Fees;
-        student.WeeklyAppointments = [.. updateStudentDto.WeeklyAppointment.Select(wa => new WeeklyAppointment
+        student.WeeklyAppointments = [.. updateStudentDto.WeeklyAppointments.Select(wa => new WeeklyAppointment
         {
-            Day = wa.DayOfWeek.ToUpper(),
+            Day = wa.Day,
             Time = wa.Time,
         })];
         await studentsRepository.UpdateStudent(student, cancellationToken);

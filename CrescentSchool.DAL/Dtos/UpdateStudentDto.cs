@@ -15,5 +15,5 @@ public class UpdateStudentDto
     public bool IsActive { get; set; } = true;
 
     public string ZoomLink { get; set; } = string.Empty;
-    public List<WeeklyAppointmentDto> WeeklyAppointment { get; set; } = [];
+    public List<WeeklyAppointmentDto> WeeklyAppointments { get; set; } = [];
 }

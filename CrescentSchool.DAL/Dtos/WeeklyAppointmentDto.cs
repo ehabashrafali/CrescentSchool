@@ -1,8 +1,7 @@
-﻿namespace CrescentSchool.DAL.Dtos
+﻿namespace CrescentSchool.DAL.Dtos;
+
+public class WeeklyAppointmentDto
 {
-    public class WeeklyAppointmentDto
-    {
-        public string DayOfWeek { get; set; } = string.Empty;
-        public string Time { get; set; } = string.Empty;
-    }
+    public string Day { get; set; } = string.Empty;
+    public string Time { get; set; } = string.Empty;
 }

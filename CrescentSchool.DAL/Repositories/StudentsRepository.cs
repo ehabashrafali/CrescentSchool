@@ -142,7 +142,12 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                 Id = new Guid(user.Id),
                 InstructorId = dto.InstructorId,
                 Fees = dto.Fees,
-                WeeklyAppointments = dto.WeeklyAppointments ?? [],
+                WeeklyAppointments = [.. dto.WeeklyAppointments.Select(w =>
+                    new WeeklyAppointment
+                    {
+                        Day = w.Day,
+                        Time = w.Time
+                    })],
                 ZoomMeeting = dto.ZoomLink,
                 User = user
             };
