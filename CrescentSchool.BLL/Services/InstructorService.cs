@@ -7,6 +7,10 @@ namespace CrescentSchool.BLL.Services;
 
 public class InstructorService(IInstructorsRepository instructorsRepository) : IInsructorService
 {
+    public async Task<Guid> CreateInstructorAsync(CreateInstructorDto createInstructorDto, CancellationToken cancellationToken)
+        => await instructorsRepository.CreateInstructorAsync(createInstructorDto, cancellationToken);
+    public Task DeactivateInstructorAsync(Guid id, CancellationToken cancellationToken)
+     => instructorsRepository.DeactivateInstructor(id, cancellationToken);
     public async Task<InstructorDto> GetInstructorByIdAsync(Guid instructorId)
     {
         var instructor = await instructorsRepository.GetByIdAsync(instructorId);
@@ -27,7 +31,6 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             ZoomMeeting = instructor.ZoomMeeting
         };
     }
-
     public async Task<List<InstructorDto>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken)
     {
         var instructors = await instructorsRepository.GetInstructorsAsync(instructorIds, cancellationToken);
@@ -44,7 +47,6 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             ZoomMeeting = i.ZoomMeeting
         })];
     }
-
     public async Task<List<StudentDto>> GetInstructorStudents(Guid id)
     {
         var students = await instructorsRepository.GetInstuctorStudents(id);

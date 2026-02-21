@@ -15,7 +15,8 @@ public class CreateStudentDto
     public string Country { get; set; } = string.Empty;
     public DateOnly? DateOfBirth { get; set; }
     public string? PhoneNumber { get; set; }
-    public string? Email { get; set; }
+    [Required]
+    public string Email { get; set; } = string.Empty;
     [Required]
     public string Password { get; set; }
     public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];

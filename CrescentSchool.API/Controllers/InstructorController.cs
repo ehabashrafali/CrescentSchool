@@ -1,4 +1,5 @@
 ﻿using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.DAL.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
@@ -14,7 +15,6 @@ public class InstructorController(IInsructorService instructorService) : Control
         var result = await instructorService.GetInstructorStudents(instructorId);
         return Ok(result);
     }
-
     [HttpGet("GetInstructorProfile")]
     public async Task<IActionResult> GetInstructorInfo([FromQuery] Guid instructorId)
     {
@@ -26,6 +26,18 @@ public class InstructorController(IInsructorService instructorService) : Control
     {
         var result = await instructorService.GetInstructorsAsync(instructorIds, cancellationToken);
         return Ok(result);
+    }
+    [HttpPost("create-instructor")]
+    public async Task<IActionResult> CreateInstructor([FromBody] CreateInstructorDto createInstructorDto, CancellationToken cancellationToken)
+    {
+        var result = await instructorService.CreateInstructorAsync(createInstructorDto, cancellationToken);
+        return Ok(result);
+    }
+    [HttpPut("deactivate/{id:guid}")]
+    public async Task<IActionResult> Deactivate([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await instructorService.DeactivateInstructorAsync(id, cancellationToken);
+        return Ok();
     }
 
 }

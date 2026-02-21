@@ -109,7 +109,6 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
         context.Update(student);
         await context.SaveChangesAsync(cancellationToken);
     }
-
     public async Task<Guid> CreateStudentAsync(CreateStudentDto dto, CancellationToken cancellationToken)
     {
         using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
@@ -140,7 +139,6 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                 Id = new Guid(user.Id),
                 InstructorId = dto.InstructorId,
                 Fees = dto.Fees,
-                ZoomMeeting = string.Empty,
                 WeeklyAppointments = dto.WeeklyAppointments ?? []
             };
 
@@ -157,7 +155,6 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             throw;
         }
     }
-
     public static string GenerateRandomString(int length = 5)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
