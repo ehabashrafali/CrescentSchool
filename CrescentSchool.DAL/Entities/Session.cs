@@ -10,13 +10,13 @@ public class Session
     public DateTime Date { get; init; }
     public Instructor Instructor { get; init; }
     public Student Student { get; set; }
-    public AttendanceStatus StudentStatus { get; set; }
-    public AttendanceStatus InstructorStatus { get; set; }
+    public StudentAttendanceStatus StudentStatus { get; set; }
+    public InstructorAttendanceStatus InstructorStatus { get; set; }
     public Guid InstructorId { get; set; }
     public Guid StudentId { get; set; }
     public SessionDuration Duration { get; set; }
 
-    public Session(DateTime date, Guid studentId, Guid instructorId, AttendanceStatus studentSessionStatus, AttendanceStatus instructorSessionStatus)
+    public Session(DateTime date, Guid studentId, Guid instructorId, StudentAttendanceStatus studentSessionStatus, InstructorAttendanceStatus instructorSessionStatus, SessionDuration sessionDuration)
 
     {
         Date = date;
@@ -24,6 +24,7 @@ public class Session
         InstructorId = instructorId;
         StudentStatus = studentSessionStatus;
         InstructorStatus = instructorSessionStatus;
+        Duration = sessionDuration;
     }
 
 }

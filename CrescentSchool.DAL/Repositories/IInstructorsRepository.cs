@@ -9,4 +9,5 @@ public interface IInstructorsRepository
     Task<List<Student>> GetInstuctorStudents(Guid instructorId);
     Task<Guid> CreateInstructorAsync(CreateInstructorDto createInstructorDto, CancellationToken cancellationToken);
     Task DeactivateInstructor(Guid id, CancellationToken cancellationToken);
+    Task UpdateInstructor(Instructor instructor, CancellationToken cancellationToken);
 }

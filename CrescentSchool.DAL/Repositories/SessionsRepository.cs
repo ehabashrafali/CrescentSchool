@@ -14,7 +14,8 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                                   sessionDto.StudentId,
                                   sessionDto.InstructorId,
                                   sessionDto.StudentSessionStatus,
-                                  sessionDto.InstructorSessionStatus);
+                                  sessionDto.InstructorSessionStatus,
+                                  sessionDto.Duration);
         await context.Sessions.AddAsync(session, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return session.Id;

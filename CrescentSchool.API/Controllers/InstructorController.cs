@@ -40,4 +40,10 @@ public class InstructorController(IInsructorService instructorService) : Control
         return Ok();
     }
 
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateInstructor([FromRoute] Guid id, [FromBody] UpdateInstructorDto updateInstructorDto, CancellationToken cancellationToken)
+    {
+        var result = await instructorService.UpdateInstructorAsync(id, updateInstructorDto, cancellationToken);
+        return Ok(result);
+    }
 }

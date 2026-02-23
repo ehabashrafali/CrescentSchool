@@ -1,11 +1,13 @@
-﻿using CrescentSchool.BLL.DTOs;
+﻿using CrescentSchool.API.Entities;
+using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace CrescentSchool.BLL.Services;
 
-public class InstructorService(IInstructorsRepository instructorsRepository) : IInsructorService
+public class InstructorService(IInstructorsRepository instructorsRepository, UserManager<ApplicationUser> userManager) : IInsructorService
 {
     public async Task<Guid> CreateInstructorAsync(CreateInstructorDto createInstructorDto, CancellationToken cancellationToken)
         => await instructorsRepository.CreateInstructorAsync(createInstructorDto, cancellationToken);
@@ -83,5 +85,36 @@ public class InstructorService(IInstructorsRepository instructorsRepository) : I
             })]
         }).ToList();
         return studentDto;
+    }
+
+    public async Task<Guid> UpdateInstructorAsync(Guid id, UpdateInstructorDto updateInstructorDto, CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByIdAsync(id.ToString());
+
+        if (user is null)
+            return Guid.Empty;
+
+        user.FirstName = updateInstructorDto.FirstName;
+        user.LastName = updateInstructorDto.LastName;
+        user.UserName = updateInstructorDto.Email;
+        user.NormalizedUserName = updateInstructorDto.Email.ToUpper();
+        user.Email = updateInstructorDto.Email;
+        user.NormalizedEmail = updateInstructorDto.Email.ToUpper();
+
+        var result = await userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+            throw new Exception("Failed to update identity user");
+
+        var instructor = await instructorsRepository.GetByIdAsync(id);
+        if (instructor is null)
+            return Guid.Empty;
+
+        instructor.ZoomMeeting = updateInstructorDto.ZoomLink;
+        instructor.Fees = updateInstructorDto.Fees;
+
+        await instructorsRepository.UpdateInstructor(instructor, cancellationToken);
+
+        return instructor.Id;
     }
 }
