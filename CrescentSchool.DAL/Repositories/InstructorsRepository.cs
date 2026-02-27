@@ -94,6 +94,7 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
                         .ThenInclude(r => r.TajweedRules)
                     .Include(s => s.StudentMonthlyReports)
                         .ThenInclude(r => r.BasicQuranRecitationRules)
+                    .Include(s => s.User)
                     .ToListAsync();
     }
     public static string GenerateRandomString(int length = 5)
