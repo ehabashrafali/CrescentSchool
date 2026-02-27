@@ -55,6 +55,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             {
                 Day = wa.Day,
                 Time = wa.Time,
+                TimeZone = wa.TimeZone
             })]
         };
     }
@@ -80,6 +81,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             {
                 Day = wa.Day,
                 Time = wa.Time,
+                TimeZone = wa.TimeZone,
             })]
 
         })];
@@ -219,6 +221,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         user.NormalizedUserName = updateStudentDto.Email.ToUpper();
         user.Email = updateStudentDto.Email;
         user.NormalizedEmail = updateStudentDto.Email.ToUpper();
+        user.Country = updateStudentDto.Country;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -236,6 +239,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         {
             Day = wa.Day,
             Time = wa.Time,
+            TimeZone = wa.TimeZone,
         })];
         await studentsRepository.UpdateStudent(student, cancellationToken);
 

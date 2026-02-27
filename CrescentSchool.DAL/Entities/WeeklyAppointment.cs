@@ -7,4 +7,5 @@ public class WeeklyAppointment
     public Student Student { get; set; } = null!;
     public string Day { get; set; } = string.Empty;
     public string Time { get; set; } = string.Empty;
+    public string TimeZone { get; set; } = string.Empty;
 }

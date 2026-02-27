@@ -1,5 +1,4 @@
 ﻿using CrescentSchool.DAL.Entities;
-using CrescentSchool.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,6 +17,11 @@ public class WeeklyAppointmentConfiguration : IEntityTypeConfiguration<WeeklyApp
         builder.Property(x => x.Time)
                .IsRequired()
                .HasMaxLength(50);
+
+        builder.Property(x => x.TimeZone)
+            .HasDefaultValue("")
+            .IsRequired();
+
 
         builder.HasOne(x => x.Student)
                .WithMany(s => s.WeeklyAppointments)

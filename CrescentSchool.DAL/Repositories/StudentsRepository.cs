@@ -146,7 +146,8 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                     new WeeklyAppointment
                     {
                         Day = w.Day,
-                        Time = w.Time
+                        Time = w.Time,
+                        TimeZone = w.TimeZone,
                     })],
                 ZoomMeeting = dto.ZoomLink,
                 User = user
