@@ -10,6 +10,8 @@ public class UpdateStudentDto
     public string Email { get; set; } = string.Empty;
     [Required]
     public decimal Fees { get; set; }
+    [Required]
+    public Guid InstructorId { get; set; }
     public string LastName { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;

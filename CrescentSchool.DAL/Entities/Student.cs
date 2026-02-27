@@ -12,5 +12,5 @@ public class Student
     public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];
     public decimal Fees { get; set; }
     public ApplicationUser User { get; set; }
-    public Guid InstructorId { get; internal set; }
+    public Guid InstructorId { get; set; }
 }

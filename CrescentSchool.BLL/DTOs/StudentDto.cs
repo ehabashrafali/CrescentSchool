@@ -22,6 +22,7 @@ public class StudentDto
     public bool IsActive { get; set; }
     public List<MonthlyReportDto> MonthlyReportDtos { get; set; }
     public List<WeeklyAppointmentDto> WeeklyAppointments { get; set; }
+    public Guid InstructorId { get; set; }
     public decimal Fees { get; set; }
     public string Role => Roles.Student.ToString();
 }

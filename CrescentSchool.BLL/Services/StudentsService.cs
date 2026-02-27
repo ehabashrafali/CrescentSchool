@@ -28,6 +28,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.User.DateOfBirth,
             IsActive = student.User.IsActive,
+            InstructorId = student.InstructorId,
             Fees = student.Fees,
             MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportDto
             {
@@ -73,6 +74,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.User.DateOfBirth,
             IsActive = student.User.IsActive,
+            InstructorId = student.InstructorId,
             Fees = student.Fees,
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
             {
@@ -229,6 +231,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
 
         student.ZoomMeeting = updateStudentDto.ZoomLink;
         student.Fees = updateStudentDto.Fees;
+        student.InstructorId = updateStudentDto.InstructorId;
         student.WeeklyAppointments = [.. updateStudentDto.WeeklyAppointments.Select(wa => new WeeklyAppointment
         {
             Day = wa.Day,
