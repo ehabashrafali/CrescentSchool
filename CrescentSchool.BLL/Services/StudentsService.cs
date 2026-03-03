@@ -1,5 +1,4 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.BLL.DTOs;
+﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
@@ -64,7 +63,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
     public async Task<List<StudentDto>> GetStudentsAsync(List<Guid> studentIds, CancellationToken cancellationToken)
     {
         var students = await studentsRepository.GetStudentsByIdsAsync(studentIds, cancellationToken);
-        return [.. students.Select(student => new StudentDto
+        return [.. students.Where(s => s.User is not null).Select(student => new StudentDto
         {
             Id = student.Id,
             FirstName = student.User.FirstName,
@@ -249,5 +248,17 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
     public async Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken)
     {
         return await studentsRepository.CreateStudentAsync(createStudentDto, cancellationToken);
+    }
+
+    public async Task DeleteStudentAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user is not null)
+            user.IsDeleted = true;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            throw new Exception("Failed to delete user");
     }
 }

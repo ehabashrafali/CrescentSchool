@@ -11,4 +11,5 @@ public interface IInsructorService
     Task<Guid> CreateInstructorAsync(CreateInstructorDto createInstructorDto, CancellationToken cancellationToken);
     Task DeactivateInstructorAsync(Guid id, CancellationToken cancellationToken);
     Task<Guid> UpdateInstructorAsync(Guid id, UpdateInstructorDto updateInstructorDto, CancellationToken cancellationToken);
+    Task DeleteInstructorAsync(Guid id, CancellationToken cancellationToken);
 }

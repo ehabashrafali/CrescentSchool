@@ -46,4 +46,10 @@ public class InstructorController(IInsructorService instructorService) : Control
         var result = await instructorService.UpdateInstructorAsync(id, updateInstructorDto, cancellationToken);
         return Ok(result);
     }
+    [HttpDelete("delete-instructor/{id:guid}")]
+    public async Task<IActionResult> DeleteInstructor(Guid id, CancellationToken cancellationToken)
+    {
+        await instructorService.DeleteInstructorAsync(id, cancellationToken);
+        return Ok();
+    }
 }

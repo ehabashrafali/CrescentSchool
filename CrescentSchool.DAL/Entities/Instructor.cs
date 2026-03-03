@@ -1,6 +1,4 @@
-﻿using CrescentSchool.API.Entities;
-
-namespace CrescentSchool.DAL.Entities;
+﻿namespace CrescentSchool.DAL.Entities;
 
 public class Instructor
 {

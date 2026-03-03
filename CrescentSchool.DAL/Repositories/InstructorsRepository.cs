@@ -1,5 +1,4 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.BLL.Enums;
+﻿using CrescentSchool.BLL.Enums;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CrescentSchool.API.Entities;
+namespace CrescentSchool.DAL.Entities;
 
 public class ApplicationUser : IdentityUser
 {
@@ -10,4 +10,5 @@ public class ApplicationUser : IdentityUser
     public string FullName => FirstName + ' ' + LastName;
     public bool IsActive { get; set; }
     public DateOnly? DateOfBirth { get; set; }
+    public bool IsDeleted { get; set; }
 }

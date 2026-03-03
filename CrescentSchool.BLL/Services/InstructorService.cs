@@ -1,18 +1,31 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.BLL.DTOs;
+﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Dtos;
+using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 namespace CrescentSchool.BLL.Services;
 
-public class InstructorService(IInstructorsRepository instructorsRepository, UserManager<ApplicationUser> userManager) : IInsructorService
+public class InstructorService(IInstructorsRepository instructorsRepository, UserManager<ApplicationUser> _userManager) : IInsructorService
 {
     public async Task<Guid> CreateInstructorAsync(CreateInstructorDto createInstructorDto, CancellationToken cancellationToken)
         => await instructorsRepository.CreateInstructorAsync(createInstructorDto, cancellationToken);
     public Task DeactivateInstructorAsync(Guid id, CancellationToken cancellationToken)
      => instructorsRepository.DeactivateInstructor(id, cancellationToken);
+
+    public async Task DeleteInstructorAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user is not null)
+            user.IsDeleted = true;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            throw new Exception("Failed to delete user");
+    }
+
     public async Task<InstructorDto> GetInstructorByIdAsync(Guid instructorId)
     {
         var instructor = await instructorsRepository.GetByIdAsync(instructorId);
@@ -89,7 +102,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
 
     public async Task<Guid> UpdateInstructorAsync(Guid id, UpdateInstructorDto updateInstructorDto, CancellationToken cancellationToken)
     {
-        var user = await userManager.FindByIdAsync(id.ToString());
+        var user = await _userManager.FindByIdAsync(id.ToString());
 
         if (user is null)
             return Guid.Empty;
@@ -101,7 +114,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
         user.Email = updateInstructorDto.Email;
         user.NormalizedEmail = updateInstructorDto.Email.ToUpper();
 
-        var result = await userManager.UpdateAsync(user);
+        var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
             throw new Exception("Failed to update identity user");

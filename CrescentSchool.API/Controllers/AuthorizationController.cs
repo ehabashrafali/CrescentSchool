@@ -1,5 +1,4 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.API.Models;
+﻿using CrescentSchool.API.Models;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Entities;
 using Microsoft.AspNetCore.Identity;

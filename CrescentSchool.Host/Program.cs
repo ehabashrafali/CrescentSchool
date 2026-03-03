@@ -1,7 +1,7 @@
-using CrescentSchool.API.Entities;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.BLL.Services;
 using CrescentSchool.DAL.DbContext;
+using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -57,9 +57,12 @@ public class Program
 
         builder.Host.UseSerilog();
 
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+
+        }).AddEntityFrameworkStores<ApplicationDbContext>()
+          .AddDefaultTokenProviders();
 
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
         builder.Services.AddScoped<IInsructorService, InstructorService>();

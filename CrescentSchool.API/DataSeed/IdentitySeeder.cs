@@ -1,5 +1,5 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.BLL.Enums;
+﻿using CrescentSchool.BLL.Enums;
+using CrescentSchool.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

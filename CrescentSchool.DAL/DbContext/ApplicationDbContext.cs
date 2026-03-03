@@ -1,6 +1,4 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.Models;
-namespace CrescentSchool.DAL.DbContext;
+﻿namespace CrescentSchool.DAL.DbContext;
 
 using CrescentSchool.DAL.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -17,4 +15,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Course> Courses { get; set; }
     public DbSet<Session> Sessions { get; set; }
     public DbSet<StudentMonthlyReport> StudentMonthlyReports { get; set; }
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.Entity<ApplicationUser>().HasQueryFilter(u => !u.IsDeleted);
+    }
 }

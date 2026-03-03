@@ -1,5 +1,5 @@
-﻿using CrescentSchool.API.Entities;
-using CrescentSchool.BLL.Interfaces;
+﻿using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

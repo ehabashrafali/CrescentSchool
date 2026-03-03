@@ -1,4 +1,4 @@
-﻿using CrescentSchool.API.Entities;
+﻿using CrescentSchool.DAL.Entities;
 using System.Security.Claims;
 
 namespace CrescentSchool.BLL.Interfaces;
