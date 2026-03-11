@@ -114,6 +114,9 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
         user.Email = updateInstructorDto.Email;
         user.NormalizedEmail = updateInstructorDto.Email.ToUpper();
 
+        if (updateInstructorDto.Password != string.Empty)
+            await ChangePasswordAsync(user, updateInstructorDto.Password);
+
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
@@ -129,5 +132,10 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
         await instructorsRepository.UpdateInstructor(instructor, cancellationToken);
 
         return instructor.Id;
+    }
+    private async Task ChangePasswordAsync(ApplicationUser user, string newPassword)
+    {
+        var token =  await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
     }
 }

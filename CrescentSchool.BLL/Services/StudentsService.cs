@@ -221,6 +221,9 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         user.Email = updateStudentDto.Email;
         user.NormalizedEmail = updateStudentDto.Email.ToUpper();
         user.Country = updateStudentDto.Country;
+        
+        if (updateStudentDto.Password != string.Empty)
+           await ChangePasswordAsync(user, updateStudentDto.Password);
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -243,6 +246,12 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         await studentsRepository.UpdateStudent(student, cancellationToken);
 
         return student.Id;
+    }
+
+    private async Task ChangePasswordAsync(ApplicationUser user, string newPassword)
+    {
+        var token =  await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
     }
 
     public async Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken)

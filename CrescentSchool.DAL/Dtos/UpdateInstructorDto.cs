@@ -14,4 +14,5 @@ public class UpdateInstructorDto
     public string Country { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public string ZoomLink { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }
