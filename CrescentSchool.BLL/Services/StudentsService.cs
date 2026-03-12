@@ -229,7 +229,6 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         if (!result.Succeeded)
             throw new Exception("Failed to update identity user");
 
-
         var student = await studentsRepository.GetStudentByIdAsync(id, cancellationToken);
         if (student is null)
             return Guid.Empty;
