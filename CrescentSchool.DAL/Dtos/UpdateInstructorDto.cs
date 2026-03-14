@@ -15,4 +15,5 @@ public class UpdateInstructorDto
     public bool IsActive { get; set; } = true;
     public string ZoomLink { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
 }

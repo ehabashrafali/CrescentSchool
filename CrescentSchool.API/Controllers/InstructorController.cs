@@ -7,7 +7,7 @@ namespace CrescentSchool.API.Controllers;
 [ApiController]
 [Route("api/instructors")]
 //[Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.Instructor))]
-public class InstructorController(IInsructorService instructorService) : ControllerBase
+public class InstructorController(IInstructorService instructorService) : ControllerBase
 {
     [HttpGet("GetInstructorStudents")]
     public async Task<IActionResult> GetInstructorStudents([FromQuery] Guid instructorId)

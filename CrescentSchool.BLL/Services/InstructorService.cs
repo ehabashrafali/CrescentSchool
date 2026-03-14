@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CrescentSchool.BLL.Services;
 
-public class InstructorService(IInstructorsRepository instructorsRepository, UserManager<ApplicationUser> _userManager) : IInsructorService
+public class InstructorService(IInstructorsRepository instructorsRepository, UserManager<ApplicationUser> _userManager) : IInstructorService
 {
     public async Task<Guid> CreateInstructorAsync(CreateInstructorDto createInstructorDto, CancellationToken cancellationToken)
         => await instructorsRepository.CreateInstructorAsync(createInstructorDto, cancellationToken);
@@ -113,6 +113,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
         user.NormalizedUserName = updateInstructorDto.Email.ToUpper();
         user.Email = updateInstructorDto.Email;
         user.NormalizedEmail = updateInstructorDto.Email.ToUpper();
+        user.PhoneNumber = updateInstructorDto.PhoneNumber;
 
         if (updateInstructorDto.Password != string.Empty)
             await ChangePasswordAsync(user, updateInstructorDto.Password);

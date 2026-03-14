@@ -3,7 +3,7 @@ using CrescentSchool.DAL.Dtos;
 
 namespace CrescentSchool.BLL.Interfaces;
 
-public interface IInsructorService
+public interface IInstructorService
 {
     Task<List<StudentDto>> GetInstructorStudents(Guid insrtructorId);
     Task<InstructorDto> GetInstructorByIdAsync(Guid instructorId);

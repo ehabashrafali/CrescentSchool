@@ -65,7 +65,7 @@ public class Program
           .AddDefaultTokenProviders();
 
         builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-        builder.Services.AddScoped<IInsructorService, InstructorService>();
+        builder.Services.AddScoped<IInstructorService, InstructorService>();
         builder.Services.AddScoped<IInstructorsRepository, InstructorsRepository>();
         builder.Services.AddScoped<IStudentsRepository, StudentsRepository>();
         builder.Services.AddScoped<IStudentService, StudentsService>();
