@@ -10,22 +10,8 @@ namespace CrescentSchool.API.Controllers;
 
 public class SessionController(ISessionService sessionService) : ControllerBase
 {
-    [HttpGet("student/{id:guid}")]
-    public async Task<IActionResult> GetSessionsByStudentId([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        var result = await sessionService.GetSessionsByStudentIdAsync(id, cancellationToken);
-        return Ok(result);
-    }
-
-    [HttpGet("instructor/{id:guid}")]
-    public async Task<IActionResult> GetSessionsByInstructorId([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        var result = await sessionService.GetSessionsByStudentIdAsync(id, cancellationToken);
-        return Ok(result);
-    }
-
     [HttpPost("create-session")]
-    public async Task<IActionResult> CreateSession(SessionDto sessionDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
     {
         var result = await sessionService.CreateSession(sessionDto, cancellationToken);
 
@@ -35,11 +21,24 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("current-month/{id:guid}")]
-    public async Task<IActionResult> GetOfCurrentMonthAndYear([FromRoute] Guid id, [FromQuery] Roles role, [FromQuery] DateTimeOffset date, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetSessionsByIdAndDate([FromRoute] Guid id, [FromQuery] Roles role, [FromQuery] DateTimeOffset date, CancellationToken cancellationToken)
     {
-        var result = await sessionService.GetSessionsOfCurrentMonthAndYear(id, role, date, cancellationToken);
+        var result = await sessionService.GetSessionsByIdAndDate(id, role, date, cancellationToken);
         return Ok(result);
+    }
+    [HttpGet("search")]
+    public async Task<IActionResult> GetSessions(CancellationToken cancellationToken)
+    {
+        var result = await sessionService.GetSessionsAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete("delete-session/{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await sessionService.DeleteSessionAsync(id, cancellationToken);
+        return Ok();
     }
 
 }

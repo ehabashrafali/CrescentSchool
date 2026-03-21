@@ -19,5 +19,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
         builder.Entity<ApplicationUser>().HasQueryFilter(u => !u.IsDeleted);
+        builder.Entity<Session>().HasQueryFilter(s => !s.IsDeleted);
     }
 }

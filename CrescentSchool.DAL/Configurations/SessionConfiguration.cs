@@ -1,5 +1,4 @@
-﻿using CrescentSchool.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrescentSchool.DAL.Configurations;
@@ -21,6 +20,9 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
 
         builder.Property(s => s.Duration)
                .IsRequired();
+
+        builder.Property(s => s.IsDeleted)
+               .HasDefaultValue(false);
 
         builder.HasOne(s => s.Student)
                .WithMany()

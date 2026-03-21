@@ -15,6 +15,7 @@ public class Session
     public Guid InstructorId { get; set; }
     public Guid StudentId { get; set; }
     public SessionDuration Duration { get; set; }
+    public bool IsDeleted { get; set; } = false;
 
     public Session(DateTime date, Guid studentId, Guid instructorId, StudentAttendanceStatus studentSessionStatus, InstructorAttendanceStatus instructorSessionStatus, SessionDuration sessionDuration)
 

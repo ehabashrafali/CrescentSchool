@@ -7,22 +7,34 @@ namespace CrescentSchool.BLL.Services;
 
 public class SessionService(ISessionsRepository sessionsRepository) : ISessionService
 {
-    public Task<List<SessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
+    public Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
         => sessionsRepository.GetSessionsByStudentIdAsync(studentId, cancellationToken);
-    public async Task<Guid?> CreateSession(SessionDto sessionDto, CancellationToken cancellationToken)
+    public async Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
         => await sessionsRepository.CreateSession(sessionDto, cancellationToken);
-
-    public async Task<List<SessionDto>> GetSessionsOfCurrentMonthAndYear(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
+    public async Task<List<GetSessionDto>> GetSessionsByIdAndDate(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
     {
         if (role == Roles.Student)
-            return await sessionsRepository.GetSessionsByStudentIdAndDateRangeAsync(id, date, cancellationToken);
+            return await sessionsRepository.GetSessionsByStudentIdAndDateAsync(id, date, cancellationToken);
         else if (role == Roles.Instructor)
-            return await sessionsRepository.GetSessionsByInstructorIdAndDateRangeAsync(id, date, cancellationToken);
+            return await sessionsRepository.GetSessionsByInstructorIdAndDateAsync(id, date, cancellationToken);
         else
             return [];
     }
-
-    public Task<List<SessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
+    public Task<List<GetSessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
            => sessionsRepository.GetSessionsByInstructorIdAsync(instructorId, cancellationToken);
 
+    public Task<List<GetSessionDto>> GetSessionsAsync(CancellationToken cancellationToken = default)
+        => sessionsRepository.GetSessionsAsync(cancellationToken);
+
+    public async Task DeleteSessionAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var session = await sessionsRepository.GetSessionByIdAsync(id, cancellationToken);
+        if (session is not null)
+        {
+            session.IsDeleted = true;
+            await sessionsRepository.UpdateSession(session, cancellationToken);
+        }
+        else
+            throw new Exception("Session not found");
+    }
 }
