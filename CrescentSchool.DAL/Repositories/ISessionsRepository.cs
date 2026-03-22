@@ -12,4 +12,5 @@ public interface ISessionsRepository
     Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default);
     Task UpdateSession(Session session, CancellationToken cancellationToken);
     Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task DeleteSessionAsync(Session session, CancellationToken cancellation);
 }

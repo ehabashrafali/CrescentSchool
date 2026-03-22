@@ -14,10 +14,6 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     public async Task<IActionResult> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
     {
         var result = await sessionService.CreateSession(sessionDto, cancellationToken);
-
-        if (result is null)
-            return NotFound("Not Active Student");
-
         return Ok(result);
     }
 

@@ -10,7 +10,17 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
     public Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
         => sessionsRepository.GetSessionsByStudentIdAsync(studentId, cancellationToken);
     public async Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
-        => await sessionsRepository.CreateSession(sessionDto, cancellationToken);
+    {
+        try
+        {
+            return await sessionsRepository.CreateSession(sessionDto, cancellationToken);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
     public async Task<List<GetSessionDto>> GetSessionsByIdAndDate(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
     {
         if (role == Roles.Student)
@@ -31,8 +41,7 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
         var session = await sessionsRepository.GetSessionByIdAsync(id, cancellationToken);
         if (session is not null)
         {
-            session.IsDeleted = true;
-            await sessionsRepository.UpdateSession(session, cancellationToken);
+            await sessionsRepository.DeleteSessionAsync(session, cancellationToken);
         }
         else
             throw new Exception("Session not found");

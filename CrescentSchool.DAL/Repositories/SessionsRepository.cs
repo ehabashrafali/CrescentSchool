@@ -21,6 +21,12 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         return session.Id;
     }
 
+    public async Task DeleteSessionAsync(Session session, CancellationToken cancellation)
+    {
+        context.Sessions.Remove(session);
+        await context.SaveChangesAsync(cancellation);
+    }
+
     public Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken)
         => context.Sessions.FirstOrDefaultAsync(session => session.Id == id, cancellationToken: cancellationToken);
 
