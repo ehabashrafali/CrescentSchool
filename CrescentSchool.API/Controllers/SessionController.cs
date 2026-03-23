@@ -37,4 +37,15 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok();
     }
 
+    [HttpGet("get-sessions-by-id/{studentId:guid}")]
+    public async Task<IActionResult> GetSessionsById([FromRoute] Guid studentId, [FromQuery] Roles role, CancellationToken cancellationToken)
+    {
+        var result = new List<GetSessionDto>();
+        if (role is Roles.Student)
+            result = await sessionService.GetSessionsByStudentIdAsync(studentId, cancellationToken);
+        else if (role is Roles.Instructor)
+            result = await sessionService.GetSessionsByInstructorIdAsync(studentId, cancellationToken);
+        return Ok(result);
+    }
+
 }
