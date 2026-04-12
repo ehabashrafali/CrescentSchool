@@ -38,14 +38,24 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
             .FirstOrDefaultAsync(session => session.Id == id, cancellationToken);
     }
 
-    public Task<List<Session>> GetSessionsAsync(CancellationToken cancellationToken)
+    public async Task<(List<Session>, int)> GetSessionsAsync(int? pageNumber, int? pageSize, CancellationToken cancellationToken)
     {
-        return context.Sessions
+        IQueryable<Session> query = context.Sessions
+            .AsNoTracking()
             .Include(s => s.Instructor)
                 .ThenInclude(i => i.User)
             .Include(s => s.Student)
-                .ThenInclude(s => s.User)
-            .ToListAsync(cancellationToken);
+                .ThenInclude(st => st.User)
+                .OrderByDescending(s => s.Date);
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
+        {
+            var skip = (pageNumber.Value - 1) * pageSize.Value;
+            query = query.Skip(skip).Take(pageSize.Value);
+        }
+
+        return (await query.ToListAsync(cancellationToken), totalCount);
     }
 
     public async Task<List<Session>> GetSessionsByInstructorIdAndDateAsync(Guid id, DateTimeOffset date, CancellationToken cancellationToken)

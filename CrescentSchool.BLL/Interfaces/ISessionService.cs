@@ -5,7 +5,7 @@ namespace CrescentSchool.BLL.Interfaces;
 
 public interface ISessionService
 {
-    Task<List<GetSessionDto>> GetSessionsAsync(CancellationToken cancellationToken = default);
+    Task<GetSessionsResult> GetSessionsAsync(int? pageNumber, int? pageNumber1, CancellationToken cancellationToken = default);
     Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default);
     Task<List<GetSessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken = default);
     Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken);

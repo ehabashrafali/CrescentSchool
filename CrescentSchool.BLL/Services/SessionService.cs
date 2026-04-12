@@ -48,10 +48,15 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
         return [.. sessions.Select(ToGetSessionDto)];
     }
 
-    public async Task<List<GetSessionDto>> GetSessionsAsync(CancellationToken cancellationToken = default)
+    public async Task<GetSessionsResult> GetSessionsAsync(int? pageNumber, int? pageSize, CancellationToken cancellationToken = default)
     {
-        var sessions = await sessionsRepository.GetSessionsAsync(cancellationToken);
-        return [.. sessions.Select(ToGetSessionDto)];
+        var sessions = await sessionsRepository.GetSessionsAsync(pageNumber, pageSize, cancellationToken);
+
+        return new GetSessionsResult
+        {
+            Sessions = sessions.sessions.Select(ToGetSessionDto).ToList(),
+            TotalCount = sessions.totalCount
+        };
     }
 
     public async Task DeleteSessionAsync(Guid id, CancellationToken cancellationToken)

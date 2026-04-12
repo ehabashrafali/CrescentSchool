@@ -4,7 +4,7 @@ namespace CrescentSchool.DAL.Repositories;
 
 public interface ISessionsRepository
 {
-    Task<List<Session>> GetSessionsAsync(CancellationToken cancellationToken);
+    Task<(List<Session> sessions, int totalCount)> GetSessionsAsync(int? pageNumber, int? pageSize, CancellationToken cancellationToken);
     Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken);
     Task<List<Session>> GetSessionsByInstructorIdAndDateAsync(Guid id, DateTimeOffset date, CancellationToken cancellationToken);
     Task<List<Session>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken);

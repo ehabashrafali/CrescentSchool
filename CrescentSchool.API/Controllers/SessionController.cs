@@ -23,10 +23,13 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         var result = await sessionService.GetSessionsByUserIdAndDate(id, role, date, cancellationToken);
         return Ok(result);
     }
+
     [HttpGet("search")]
-    public async Task<IActionResult> GetSessions(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSessions([FromQuery] int? pageNumber,
+                                                 [FromQuery] int? pageSize,
+                                                 CancellationToken cancellationToken = default)
     {
-        var result = await sessionService.GetSessionsAsync(cancellationToken);
+        var result = await sessionService.GetSessionsAsync(pageNumber, pageSize, cancellationToken);
         return Ok(result);
     }
 
