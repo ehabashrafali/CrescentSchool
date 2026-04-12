@@ -34,7 +34,7 @@ public class AuthorizationController(UserManager<ApplicationUser> _userManager, 
             return Unauthorized();
 
         var user = await _userManager.FindByIdAsync(userIdClaim);
-        if (user == null)
+        if (user is null)
             return Unauthorized();
 
         var newToken = _jwtService.CreateToken(user);

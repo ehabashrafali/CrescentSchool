@@ -7,8 +7,13 @@ namespace CrescentSchool.BLL.Services;
 
 public class SessionService(ISessionsRepository sessionsRepository) : ISessionService
 {
-    public Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
-        => sessionsRepository.GetSessionsByStudentIdAsync(studentId, cancellationToken);
+
+    public async Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
+    {
+        var sessions = await sessionsRepository.GetSessionsByStudentIdAsync(studentId, cancellationToken);
+        return [.. sessions.Select(ToGetSessionDto)];
+    }
+
     public async Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
     {
         try
@@ -21,29 +26,71 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
         }
     }
 
-    public async Task<List<GetSessionDto>> GetSessionsByIdAndDate(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
+    public async Task<List<GetSessionDto>> GetSessionsByUserIdAndDate(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
     {
         if (role == Roles.Student)
-            return await sessionsRepository.GetSessionsByStudentIdAndDateAsync(id, date, cancellationToken);
+        {
+            var sessions = await sessionsRepository.GetSessionsByStudentIdAndDateAsync(id, date, cancellationToken);
+            return [.. sessions.Select(ToGetSessionDto)];
+        }
         else if (role == Roles.Instructor)
-            return await sessionsRepository.GetSessionsByInstructorIdAndDateAsync(id, date, cancellationToken);
-        else
-            return [];
-    }
-    public Task<List<GetSessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
-           => sessionsRepository.GetSessionsByInstructorIdAsync(instructorId, cancellationToken);
+        {
+            var sessions = await sessionsRepository.GetSessionsByInstructorIdAndDateAsync(id, date, cancellationToken);
+            return [.. sessions.Select(ToGetSessionDto)];
+        }
 
-    public Task<List<GetSessionDto>> GetSessionsAsync(CancellationToken cancellationToken = default)
-        => sessionsRepository.GetSessionsAsync(cancellationToken);
+        return [];
+    }
+
+    public async Task<List<GetSessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
+    {
+        var sessions = await sessionsRepository.GetSessionsByInstructorIdAsync(instructorId, cancellationToken);
+        return [.. sessions.Select(ToGetSessionDto)];
+    }
+
+    public async Task<List<GetSessionDto>> GetSessionsAsync(CancellationToken cancellationToken = default)
+    {
+        var sessions = await sessionsRepository.GetSessionsAsync(cancellationToken);
+        return [.. sessions.Select(ToGetSessionDto)];
+    }
 
     public async Task DeleteSessionAsync(Guid id, CancellationToken cancellationToken)
+        => await sessionsRepository.DeleteSessionAsync(id, cancellationToken);
+
+    public async Task<GetSessionDto?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var session = await sessionsRepository.GetSessionByIdAsync(id, cancellationToken);
-        if (session is not null)
-        {
-            await sessionsRepository.DeleteSessionAsync(session, cancellationToken);
-        }
-        else
-            throw new Exception("Session not found");
+        return session is null ? null : ToGetSessionDto(session);
     }
+
+    public async Task<Guid> UpdateSessionAsync(Guid id, UpdateSessionDto sessionDto, CancellationToken cancellationToken)
+    {
+        var session = await sessionsRepository.GetSessionByIdAsync(id, cancellationToken);
+
+        session.UpdateSession(
+            sessionDto.StudentId,
+            sessionDto.InstructorId,
+            sessionDto.StudentSessionStatus,
+            sessionDto.InstructorSessionStatus,
+            sessionDto.Duration);
+
+        await sessionsRepository.UpdateSession(session, cancellationToken);
+        return session.Id;
+    }
+    private static GetSessionDto ToGetSessionDto(Session session)
+    {
+        return new GetSessionDto
+        {
+            Id = session.Id,
+            Date = session.Date,
+            StudentId = session.StudentId,
+            InstructorId = session.InstructorId,
+            StudentSessionStatus = session.StudentStatus,
+            InstructorSessionStatus = session.InstructorStatus,
+            Duration = session.Duration,
+            StudentName = session.Student.User.FullName,
+            InstructorName = session.Instructor.User.FullName
+        };
+    }
+
 }

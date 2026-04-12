@@ -21,109 +21,81 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         return session.Id;
     }
 
-    public async Task DeleteSessionAsync(Session session, CancellationToken cancellation)
+    public async Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation)
     {
+        var session = await context.Sessions.FindAsync([sessionId], cancellation) ?? throw new KeyNotFoundException($"Session with id '{sessionId}' was not found.");
         context.Sessions.Remove(session);
         await context.SaveChangesAsync(cancellation);
     }
 
     public Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken)
-        => context.Sessions.FirstOrDefaultAsync(session => session.Id == id, cancellationToken: cancellationToken);
-
-    public Task<List<GetSessionDto>> GetSessionsAsync(CancellationToken cancellationToken)
     {
         return context.Sessions
-                     .Include(s => s.Student)
-                     .Include(s => s.Instructor)
-                     .Select(s => new GetSessionDto
-                     {
-                         Id = s.Id,
-                         Date = s.Date,
-                         InstructorSessionStatus = s.InstructorStatus,
-                         StudentSessionStatus = s.StudentStatus,
-                         StudentId = s.Student.Id,
-                         InstructorId = s.InstructorId,
-                         Duration = s.Duration,
-                         StudentName = s.Student.User.FullName,
-                         InstructorName = s.Instructor.User.FullName
-                     })
-                     .ToListAsync(cancellationToken);
+              .Include(s => s.Instructor)
+                .ThenInclude(i => i.User)
+            .Include(s => s.Student)
+                .ThenInclude(s => s.User)
+            .FirstOrDefaultAsync(session => session.Id == id, cancellationToken);
     }
 
-    public Task<List<GetSessionDto>> GetSessionsByInstructorIdAndDateAsync(Guid id, DateTimeOffset date, CancellationToken cancellationToken)
-       => context.Sessions.Where(s => s.InstructorId == id)
-               .Select(s => new GetSessionDto
-               {
-                   Id = s.Id,
-                   Date = s.Date,
-                   InstructorSessionStatus = s.InstructorStatus,
-                   StudentSessionStatus = s.StudentStatus,
-                   StudentId = s.Student.Id,
-                   InstructorId = s.InstructorId,
-                   Duration = s.Duration,
-                   StudentName = s.Student.User.FullName,
-                   InstructorName = s.Instructor.User.FullName
-               })
-                .ToListAsync(cancellationToken);
+    public Task<List<Session>> GetSessionsAsync(CancellationToken cancellationToken)
+    {
+        return context.Sessions
+            .Include(s => s.Instructor)
+                .ThenInclude(i => i.User)
+            .Include(s => s.Student)
+                .ThenInclude(s => s.User)
+            .ToListAsync(cancellationToken);
+    }
 
-    public Task<List<GetSessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken)
-  => context.Sessions
-                    .Where(s => s.InstructorId == instructorId)
-                    .Select(s => new GetSessionDto
-                    {
-                        Id = s.Id,
-                        Date = s.Date,
-                        InstructorSessionStatus = s.InstructorStatus,
-                        StudentSessionStatus = s.StudentStatus,
-                        StudentId = s.Student.Id,
-                        InstructorId = s.InstructorId,
-                        Duration = s.Duration,
-                        StudentName = s.Student.User.FullName,
-                        InstructorName = s.Instructor.User.FullName
-                    })
-                    .ToListAsync(cancellationToken);
-
-    public async Task<List<GetSessionDto>> GetSessionsByStudentIdAndDateAsync(Guid studentId, DateTimeOffset date, CancellationToken cancellationToken)
+    public async Task<List<Session>> GetSessionsByInstructorIdAndDateAsync(Guid id, DateTimeOffset date, CancellationToken cancellationToken)
     {
         var month = date.Month;
         var year = date.Year;
         return await context.Sessions
             .Include(s => s.Instructor)
+                .ThenInclude(i => i.User)
+            .Include(s => s.Student)
+                .ThenInclude(s => s.User)
             .Where(
-            s => s.Student.Id == studentId &&
-            s.Date.Month == month &&
-            s.Date.Year == year)
-            .Select(s => new GetSessionDto
-            {
-                Id = s.Id,
-                Date = s.Date,
-                InstructorSessionStatus = s.InstructorStatus,
-                StudentSessionStatus = s.StudentStatus,
-                StudentId = s.Student.Id,
-                InstructorId = s.InstructorId,
-                Duration = s.Duration,
-                StudentName = s.Student.User.FullName,
-                InstructorName = s.Instructor.User.FullName
-            })
+                    s => s.Instructor.Id == id &&
+                    s.Date.Month == month &&
+                    s.Date.Year == year)
             .ToListAsync(cancellationToken);
     }
 
-    public Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
+    public Task<List<Session>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken)
+         => context.Sessions
+                    .Where(s => s.InstructorId == instructorId)
+                    .Include(s => s.Instructor)
+                        .ThenInclude(i => i.User)
+                    .Include(s => s.Student)
+                        .ThenInclude(s => s.User)
+                    .ToListAsync(cancellationToken);
+
+    public async Task<List<Session>> GetSessionsByStudentIdAndDateAsync(Guid studentId, DateTimeOffset date, CancellationToken cancellationToken)
+    {
+        var month = date.Month;
+        var year = date.Year;
+        return await context.Sessions
+            .Include(s => s.Instructor)
+                .ThenInclude(i => i.User)
+            .Include(s => s.Student)
+                .ThenInclude(s => s.User)
+            .Where(
+                    s => s.Student.Id == studentId &&
+                    s.Date.Month == month &&
+                    s.Date.Year == year)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<Session>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
             => context.Sessions
                     .Where(s => s.Student.Id == studentId)
                     .Include(s => s.Instructor)
-                    .Select(s => new GetSessionDto
-                    {
-                        Id = s.Id,
-                        Date = s.Date,
-                        InstructorSessionStatus = s.InstructorStatus,
-                        StudentSessionStatus = s.StudentStatus,
-                        StudentId = s.Student.Id,
-                        InstructorId = s.InstructorId,
-                        Duration = s.Duration,
-                        StudentName = s.Student.User.FullName,
-                        InstructorName = s.Instructor.User.FullName
-                    })
+                        .ThenInclude(i => i.User)
+                    .Include(s => s.Student)
+                        .ThenInclude(s => s.User)
                     .ToListAsync(cancellationToken);
 
     public async Task UpdateSession(Session session, CancellationToken cancellationToken)

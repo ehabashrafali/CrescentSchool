@@ -18,9 +18,9 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetSessionsByIdAndDate([FromRoute] Guid id, [FromQuery] Roles role, [FromQuery] DateTimeOffset date, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSessionsByUserIdAndDate([FromRoute] Guid id, [FromQuery] Roles role, [FromQuery] DateTimeOffset date, CancellationToken cancellationToken)
     {
-        var result = await sessionService.GetSessionsByIdAndDate(id, role, date, cancellationToken);
+        var result = await sessionService.GetSessionsByUserIdAndDate(id, role, date, cancellationToken);
         return Ok(result);
     }
     [HttpGet("search")]
@@ -37,15 +37,26 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok();
     }
 
-    [HttpGet("get-sessions-by-id/{studentId:guid}")]
-    public async Task<IActionResult> GetSessionsById([FromRoute] Guid studentId, [FromQuery] Roles role, CancellationToken cancellationToken)
+    [HttpGet("get-sessions-by-user-id/{id:guid}")]
+    public async Task<IActionResult> GetSessionsByUserId([FromRoute] Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
     {
         var result = new List<GetSessionDto>();
         if (role is Roles.Student)
-            result = await sessionService.GetSessionsByStudentIdAsync(studentId, cancellationToken);
+            result = await sessionService.GetSessionsByStudentIdAsync(id, cancellationToken);
         else if (role is Roles.Instructor)
-            result = await sessionService.GetSessionsByInstructorIdAsync(studentId, cancellationToken);
+            result = await sessionService.GetSessionsByInstructorIdAsync(id, cancellationToken);
         return Ok(result);
     }
-
+    [HttpGet("get-session-by-id/{id:guid}")]
+    public async Task<IActionResult> GetSessionById([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var result = await sessionService.GetSessionByIdAsync(id, cancellationToken);
+        return Ok(result);
+    }
+    [HttpPut("update-session/{id:guid}")]
+    public async Task<IActionResult> UpdateSession([FromRoute] Guid id, [FromBody] UpdateSessionDto sessionDto, CancellationToken cancellationToken)
+    {
+        var session = await sessionService.UpdateSessionAsync(id, sessionDto, cancellationToken);
+        return Ok(session);
+    }
 }
