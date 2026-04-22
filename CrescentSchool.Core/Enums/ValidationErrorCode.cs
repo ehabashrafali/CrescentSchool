@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.API.Enums;
+﻿namespace CrescentSchool.Core.Enums;
 
 public enum ValidationErrorCode
 {

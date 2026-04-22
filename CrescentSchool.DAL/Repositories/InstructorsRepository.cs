@@ -1,4 +1,6 @@
 ﻿using CrescentSchool.BLL.Enums;
+using CrescentSchool.Core.Exceptions;
+using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
@@ -82,7 +84,7 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
 
         return query.Where(i => instructorIds.Contains(i.Id)).ToListAsync(cancellationToken);
     }
-    public async Task<List<Student>> GetInstuctorStudents(Guid instructorId)
+    public async Task<List<Student>> GetInstructorStudents(Guid instructorId)
     {
         return await context.Instructors
                     .Where(i => i.User.IsActive && i.Id == instructorId)
@@ -105,12 +107,11 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
     public Task DeactivateInstructor(Guid id, CancellationToken cancellationToken)
     {
         var instructor = context.Instructors.Include(i => i.User).FirstOrDefault(s => s.Id == id);
-        if (instructor is not null)
-        {
-            instructor.User.IsActive = false;
-            return context.SaveChangesAsync(cancellationToken);
-        }
-        return Task.CompletedTask;
+        if (instructor is null)
+            throw new NotFoundException("Instructor", id);
+
+        instructor.User.IsActive = false;
+        return context.SaveChangesAsync(cancellationToken);
     }
     public async Task UpdateInstructor(Instructor instructor, CancellationToken cancellationToken)
     {

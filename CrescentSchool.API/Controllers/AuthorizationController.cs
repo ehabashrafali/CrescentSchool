@@ -1,5 +1,6 @@
 ﻿using CrescentSchool.API.Models;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.Core.Exceptions;
 using CrescentSchool.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ public class AuthorizationController(UserManager<ApplicationUser> _userManager, 
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-            return Unauthorized("Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials");
 
         var token = await _jwtService.CreateToken(user);
         return Ok(new { token });
@@ -27,15 +28,15 @@ public class AuthorizationController(UserManager<ApplicationUser> _userManager, 
     {
         var principal = _jwtService.ValidateToken(request.AccessToken);
         if (principal == null)
-            return Unauthorized();
+            throw new UnauthorizedException("Invalid token");
 
         var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrWhiteSpace(userIdClaim))
-            return Unauthorized();
+            throw new UnauthorizedException("Invalid token: missing user identifier");
 
         var user = await _userManager.FindByIdAsync(userIdClaim);
         if (user is null)
-            return Unauthorized();
+            throw new UnauthorizedException("User not found");
 
         var newToken = _jwtService.CreateToken(user);
 

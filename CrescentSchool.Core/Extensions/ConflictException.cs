@@ -1,6 +1,6 @@
-﻿using CrescentSchool.API.ExceptionHandling;
+﻿using CrescentSchool.Core.ExceptionHandling;
 
-namespace CrescentSchool.API.Extensions;
+namespace CrescentSchool.Core.Extensions;
 
 public class ConflictException : NonRetryableException
 {

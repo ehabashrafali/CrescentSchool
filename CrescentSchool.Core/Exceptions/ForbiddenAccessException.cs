@@ -1,6 +1,7 @@
-﻿using CrescentSchool.API.ExceptionHandling;
+﻿using CrescentSchool.Core.ExceptionHandling;
+using System.Runtime.Serialization;
 
-namespace CrescentSchool.API.Exceptions;
+namespace CrescentSchool.Core.Exceptions;
 
 public class ForbiddenAccessException : NonRetryableException
 {
@@ -14,6 +15,10 @@ public class ForbiddenAccessException : NonRetryableException
     }
     public ForbiddenAccessException(string message, Exception innerException)
         : base(message, innerException)
+    {
+    }
+
+    protected ForbiddenAccessException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

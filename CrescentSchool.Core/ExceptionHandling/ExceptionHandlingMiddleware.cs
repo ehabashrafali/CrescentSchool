@@ -1,9 +1,9 @@
-﻿using CrescentSchool.API.Extensions;
+﻿using CrescentSchool.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace CrescentSchool.API.ExceptionHandling;
+namespace CrescentSchool.Core.ExceptionHandling;
 
 public sealed class ExceptionHandlingMiddleware : IMiddleware
 {

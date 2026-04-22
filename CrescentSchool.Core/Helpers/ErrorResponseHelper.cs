@@ -1,8 +1,8 @@
-﻿using CrescentSchool.API.Enums;
-using CrescentSchool.API.Extensions;
-using CrescentSchool.API.Models;
+﻿using CrescentSchool.Core.Enums;
+using CrescentSchool.Core.Extensions;
+using CrescentSchool.Core.Models;
 
-namespace CrescentSchool.API.Helpers;
+namespace CrescentSchool.Core.Helpers;
 
 public static class ErrorResponseHelper
 {

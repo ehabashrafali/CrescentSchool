@@ -5,6 +5,7 @@
   </Folder>
   <Project Path="../CrescentSchool.API/CrescentSchool.API.csproj" Id="464a0b05-e0f2-478a-ae42-ce5a745ac219" />
   <Project Path="../CrescentSchool.BLL/CrescentSchool.BLL.csproj" />
+  <Project Path="../CrescentSchool.Core/CrescentSchool.Core.csproj" Id="b8ba92b2-13ba-4996-97ab-25bd4f05f183" />
   <Project Path="../CrescentSchool.DAL/CrescentSchool.DAL.csproj" />
   <Project Path="../CrescentSchool.Models/CrescentSchool.Models.csproj" />
   <Project Path="CrescentSchool.Host.csproj" />

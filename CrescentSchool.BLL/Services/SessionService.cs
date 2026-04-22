@@ -16,14 +16,7 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
 
     public async Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            return await sessionsRepository.CreateSession(sessionDto, cancellationToken);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        return await sessionsRepository.CreateSession(sessionDto, cancellationToken);
     }
 
     public async Task<List<GetSessionDto>> GetSessionsByUserIdAndDate(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)

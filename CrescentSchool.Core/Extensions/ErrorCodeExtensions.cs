@@ -1,7 +1,7 @@
-﻿using CrescentSchool.API.Enums;
+﻿using CrescentSchool.Core.Enums;
 using Microsoft.AspNetCore.Http;
 
-namespace CrescentSchool.API.Extensions;
+namespace CrescentSchool.Core.Extensions;
 
 public static class ErrorCodeExtensions
 {

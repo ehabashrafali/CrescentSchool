@@ -60,8 +60,6 @@ public class StudentsController(IStudentService studentService) : ControllerBase
     public async Task<IActionResult> GetStudentById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var result = await studentService.GetStudentByIdAsync(id, cancellationToken);
-        if (result is null)
-            return NotFound();
         return Ok(result);
     }
 

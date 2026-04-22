@@ -1,6 +1,6 @@
-﻿using CrescentSchool.API.Enums;
+﻿using CrescentSchool.Core.Enums;
 
-namespace CrescentSchool.API.Models;
+namespace CrescentSchool.Core.Models;
 
 public class ErrorResponse
 {

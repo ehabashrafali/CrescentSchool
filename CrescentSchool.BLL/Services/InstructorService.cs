@@ -1,5 +1,7 @@
 ﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.Core.Exceptions;
+using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
@@ -64,7 +66,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
     }
     public async Task<List<StudentDto>> GetInstructorStudents(Guid id)
     {
-        var students = await instructorsRepository.GetInstuctorStudents(id);
+        var students = await instructorsRepository.GetInstructorStudents(id);
         var studentDto = students.Select(s => new StudentDto
         {
             Id = s.Id,
@@ -136,7 +138,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
     }
     private async Task ChangePasswordAsync(ApplicationUser user, string newPassword)
     {
-        var token =  await _userManager.GeneratePasswordResetTokenAsync(user);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
     }
 }

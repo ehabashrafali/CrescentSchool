@@ -1,7 +1,7 @@
-﻿using CrescentSchool.API.ExceptionHandling;
-using CrescentSchool.API.Models;
+﻿using CrescentSchool.Core.ExceptionHandling;
+using CrescentSchool.Core.Models;
 
-namespace CrescentSchool.API.Exceptions;
+namespace CrescentSchool.Core.Exceptions;
 
 public class ValidationException : NonRetryableException
 {

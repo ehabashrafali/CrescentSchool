@@ -1,4 +1,5 @@
-﻿using CrescentSchool.DAL.DbContext;
+﻿using CrescentSchool.Core.Extensions;
+using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,10 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
 
     public async Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation)
     {
-        var session = await context.Sessions.FindAsync([sessionId], cancellation) ?? throw new KeyNotFoundException($"Session with id '{sessionId}' was not found.");
+        var session = await context.Sessions.FindAsync([sessionId], cancellation);
+        if (session is null)
+            throw new NotFoundException("Session", sessionId);
+
         context.Sessions.Remove(session);
         await context.SaveChangesAsync(cancellation);
     }

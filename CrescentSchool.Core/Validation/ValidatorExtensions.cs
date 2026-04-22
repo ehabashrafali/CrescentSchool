@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.API.Validation;
+﻿namespace CrescentSchool.Core.Validation;
 
 public static class ValidatorExtensions
 {

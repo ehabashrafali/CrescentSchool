@@ -1,8 +1,8 @@
-﻿using CrescentSchool.API.Exceptions;
-using CrescentSchool.API.Helpers;
-using CrescentSchool.API.Models;
+﻿using CrescentSchool.Core.Exceptions;
+using CrescentSchool.Core.Helpers;
+using CrescentSchool.Core.Models;
 
-namespace CrescentSchool.API.Extensions;
+namespace CrescentSchool.Core.Extensions;
 
 public static class ErrorResponseExtensions
 {

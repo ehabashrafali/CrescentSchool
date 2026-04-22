@@ -1,6 +1,6 @@
-﻿using CrescentSchool.API.ExceptionHandling;
-
-namespace CrescentSchool.API.Exceptions;
+﻿
+using CrescentSchool.Core.ExceptionHandling;
+using System.Runtime.Serialization;
 
 public class UnauthorizedException : NonRetryableException
 {
@@ -21,6 +21,10 @@ public class UnauthorizedException : NonRetryableException
 
     public UnauthorizedException(string name, object key)
         : base($"Entity \"{name}\" ({key}) was not found.")
+    {
+    }
+
+    protected UnauthorizedException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

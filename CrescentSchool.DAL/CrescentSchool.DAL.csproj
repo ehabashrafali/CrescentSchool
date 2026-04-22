@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CrescentSchool.Core\CrescentSchool.Core.csproj" />
     <ProjectReference Include="..\CrescentSchool.Models\CrescentSchool.Models.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace CrescentSchool.API.Extensions;
+namespace CrescentSchool.Core.Extensions;
 
 public static class LoggingExtensions
 {

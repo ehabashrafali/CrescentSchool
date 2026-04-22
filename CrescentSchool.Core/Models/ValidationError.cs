@@ -1,9 +1,9 @@
-﻿using CrescentSchool.API.Enums;
-using CrescentSchool.API.Extensions;
-using CrescentSchool.API.Validation;
+﻿using CrescentSchool.Core.Enums;
+using CrescentSchool.Core.Extensions;
+using CrescentSchool.Core.Validation;
 using Newtonsoft.Json;
 
-namespace CrescentSchool.API.Models;
+namespace CrescentSchool.Core.Models;
 
 public class ValidationError
 {
