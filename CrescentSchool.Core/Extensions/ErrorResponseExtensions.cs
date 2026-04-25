@@ -17,7 +17,7 @@ public static class ErrorResponseExtensions
                 GetErrors(GetValidationException(exception))),
             ConflictException =>
                 ErrorResponseHelper.GetConflictResponse(GetConflictException(exception)?.LatestVersion),
-            _ => ErrorResponseHelper.GetInternalServerErrorResponse()
+            _ => ErrorResponseHelper.GetInternalServerErrorResponse(exception.Message)
         };
 
     private static ValidationException? GetValidationException(Exception exception)

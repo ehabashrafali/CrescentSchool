@@ -1,5 +1,4 @@
 ﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.Core.Exceptions;
 using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;

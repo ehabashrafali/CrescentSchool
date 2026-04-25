@@ -1,5 +1,4 @@
 ﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.Core.Exceptions;
 using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
@@ -45,6 +44,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
 
         if (student is null)
             throw new NotFoundException("Student", studentId);
+
         var monthlyReport = new StudentMonthlyReport
         {
             Date = DateTime.SpecifyKind(studentMonthlyReportDto.Date,
@@ -133,7 +133,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
-                throw new ValidationException(string.Join("; ", result.Errors.Select(e => e.Description)));
+                throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
 
             await _userManager.AddToRoleAsync(user, nameof(Roles.Student));
 

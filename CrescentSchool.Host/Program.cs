@@ -1,5 +1,6 @@
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.BLL.Services;
+using CrescentSchool.Core.ExceptionHandling;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
@@ -72,6 +73,9 @@ public class Program
         builder.Services.AddScoped<ISessionsRepository, SessionsRepository>();
         builder.Services.AddScoped<ISessionService, SessionService>();
 
+        // Register Exception Handling Middleware
+        builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -92,6 +96,8 @@ public class Program
 
 
         var app = builder.Build();
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.UseSerilogRequestLogging();
         app.UseCors();

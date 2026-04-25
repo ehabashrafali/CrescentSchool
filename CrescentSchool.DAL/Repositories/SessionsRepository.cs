@@ -9,17 +9,24 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
 {
     public async Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken)
     {
-        var session = new Session(sessionDto.Date.Kind == DateTimeKind.Unspecified
-                                    ? DateTime.SpecifyKind(sessionDto.Date, DateTimeKind.Utc)
-                                    : sessionDto.Date.ToUniversalTime(),
-                                  sessionDto.StudentId,
-                                  sessionDto.InstructorId,
-                                  sessionDto.StudentSessionStatus,
-                                  sessionDto.InstructorSessionStatus,
-                                  sessionDto.Duration);
-        await context.Sessions.AddAsync(session, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-        return session.Id;
+        try
+        {
+            var session = new Session(sessionDto.Date.Kind == DateTimeKind.Unspecified
+                                        ? DateTime.SpecifyKind(sessionDto.Date, DateTimeKind.Utc)
+                                        : sessionDto.Date.ToUniversalTime(),
+                                      sessionDto.StudentId,
+                                      sessionDto.InstructorId,
+                                      sessionDto.StudentSessionStatus,
+                                      sessionDto.InstructorSessionStatus,
+                                      sessionDto.Duration);
+            await context.Sessions.AddAsync(session, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            return session.Id;
+        }
+        catch (Exception)
+        {
+            throw new Exception("An error occurred while saving the entity changes");
+        }
     }
 
     public async Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation)

@@ -25,6 +25,10 @@ public static class ErrorResponseHelper
     public static ErrorResponse GetInternalServerErrorResponse() =>
         new("Internal Server Error", ErrorCode.InternalServerError, "Internal Server Error");
 
+    public static ErrorResponse GetInternalServerErrorResponse(string message) =>
+       new("Internal Server Error", ErrorCode.InternalServerError, message);
+
+
     public static ErrorResponse GetConflictResponse(Guid? latestVersion) =>
         new("Conflict", ErrorCode.Conflict, "Conflict",
             latestVersion: latestVersion);
