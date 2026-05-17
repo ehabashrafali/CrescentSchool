@@ -106,7 +106,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
         student.User.IsActive = false;
         return context.SaveChangesAsync(cancellationToken);
     }
-    public async Task UpdateStudent(Student student, CancellationToken cancellationToken)
+    public async Task UpdateStudentAsync(Student student, CancellationToken cancellationToken)
     {
         context.Update(student);
         await context.SaveChangesAsync(cancellationToken);
@@ -166,7 +166,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             throw;
         }
     }
-    public static string GenerateRandomString(int length = 5)
+    private static string GenerateRandomString(int length = 5)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         var random = new Random();

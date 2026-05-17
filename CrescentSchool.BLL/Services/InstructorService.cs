@@ -80,6 +80,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportDto
             {
                 Id = r.Id,
+                StudentId = id,
                 Date = r.Date,
                 Memorization = r.Memorization,
                 Reading = r.Reading,

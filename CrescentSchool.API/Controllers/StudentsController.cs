@@ -23,6 +23,15 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         return Ok();
     }
 
+    [HttpPut("edit-report/{id:guid}")]
+    public async Task<IActionResult> UpdateMonthlyReport([FromRoute] Guid id,
+        [FromBody] MonthlyReportDto updateReportDto, CancellationToken cancellationToken)
+    {
+        updateReportDto.Id = id;
+        var result = await studentService.UpdateReportAsync(updateReportDto,  cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetMonthlyReports([FromQuery] Guid id, CancellationToken cancellationToken)
     {

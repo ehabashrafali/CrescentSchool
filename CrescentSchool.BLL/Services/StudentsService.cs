@@ -35,6 +35,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             {
                 Id = r.Id,
                 Date = r.Date,
+                StudentId =  student.Id,
                 Memorization = r.Memorization,
                 Reading = r.Reading,
                 NoOfMemorizationAyah = r.NoOfMemorizationAyah,
@@ -94,6 +95,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         return [.. montlyReports.Select(r => new MonthlyReportDto
         {
             Id = r.Id,
+            StudentId = id, 
             Date = r.Date,
             Memorization = r.Memorization,
             Reading = r.Reading,
@@ -174,6 +176,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         {
             Id = studentMonthlyReport.Id,
             Date = studentMonthlyReport.Date,
+            StudentId = id,
             Memorization = studentMonthlyReport.Memorization,
             Reading = studentMonthlyReport.Reading,
             NoOfMemorizationAyah = studentMonthlyReport.NoOfMemorizationAyah,
@@ -244,7 +247,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             Time = wa.Time,
             TimeZone = wa.TimeZone,
         })];
-        await studentsRepository.UpdateStudent(student, cancellationToken);
+        await studentsRepository.UpdateStudentAsync(student, cancellationToken);
 
         return student.Id;
     }
@@ -270,5 +273,44 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
             throw new Exception("Failed to delete user");
+    }
+
+    public async Task<Guid> UpdateReportAsync(MonthlyReportDto monthlyReportDto, CancellationToken cancellationToken)
+    {
+        var student = await studentsRepository.GetStudentByIdAsync(monthlyReportDto.StudentId, cancellationToken);
+        if (student is null)
+            throw new NotFoundException("Student not found");
+
+        var report = student.StudentMonthlyReports.FirstOrDefault(r => r.Id == monthlyReportDto.Id);
+        if (report is null)
+            throw new NotFoundException("Report not found");
+        UpdateReport(monthlyReportDto, report);
+        await studentsRepository.UpdateStudentAsync(student, cancellationToken);
+        return report.Id;
+    }
+    private static void UpdateReport(MonthlyReportDto dto, StudentMonthlyReport report)
+    {
+        report.Date = dto.Date;
+
+        report.Memorization = dto.Memorization;
+        report.MemorizationGrade = dto.MemorizationGrade;
+        report.Reading = dto.Reading;
+        report.ReadingGrade = dto.ReadingGrade;
+
+        report.NoOfMemorizationAyah = dto.NoOfMemorizationAyah;
+        report.NoOfReadingAyah = dto.NoOfReadingAyah;
+
+        report.BasicQuranRecitationRulesProgress = dto.BasicQuranRecitationRulesProgress;
+        report.TajweedRulesProgress = dto.TajweedRulesProgress;
+        report.IslamicStudiesProgress = dto.IslamicStudiesProgress;
+
+        report.QuranComments = dto.QuranComments ?? string.Empty;
+        report.IslamicStudiesComments = dto.IslamicStudiesComments ?? string.Empty;
+        report.IslamicStudiesTopics = dto.IslamicStudiesTopics ?? string.Empty;
+        report.OthersIslamicStudiesBooks = dto.OthersIslamicStudiesBooks ?? string.Empty;
+
+        report.TajweedRules = dto.TajweedRules ?? [];
+        report.BasicQuranRecitationRules = dto.BasicQuranRecitationRules ?? [];
+        report.IslamicStudiesBooks = dto.IslamicStudiesBooks ?? [];
     }
 }
