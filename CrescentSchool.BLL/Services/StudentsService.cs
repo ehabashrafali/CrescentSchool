@@ -1,6 +1,5 @@
 ﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
-using CrescentSchool.Core.Exceptions;
 using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
@@ -95,7 +94,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         return [.. montlyReports.Select(r => new MonthlyReportViewDto
         {
             Id = r.Id,
-            StudentId = id, 
+            StudentId = id,
             Date = r.Date,
             Memorization = r.Memorization,
             Reading = r.Reading,
@@ -226,9 +225,9 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         user.Email = updateStudentDto.Email;
         user.NormalizedEmail = updateStudentDto.Email.ToUpper();
         user.Country = updateStudentDto.Country;
-        
+
         if (updateStudentDto.Password != string.Empty)
-           await ChangePasswordAsync(user, updateStudentDto.Password);
+            await ChangePasswordAsync(user, updateStudentDto.Password);
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -254,7 +253,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
 
     private async Task ChangePasswordAsync(ApplicationUser user, string newPassword)
     {
-        var token =  await _userManager.GeneratePasswordResetTokenAsync(user);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
     }
 

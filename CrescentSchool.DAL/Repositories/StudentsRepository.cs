@@ -27,6 +27,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             .Include(s => s.Instructor)
             .Include(s => s.WeeklyAppointments)
             .Include(s => s.User)
+            .Include(s => s.StudentMonthlyReports)
             .FirstOrDefaultAsync(s => s.Id == id && s.User.IsActive, cancellationToken);
     }
     public async Task AddMonthlyReport(Guid studentId, CreateMonthlyReportDto studentMonthlyReportDto)

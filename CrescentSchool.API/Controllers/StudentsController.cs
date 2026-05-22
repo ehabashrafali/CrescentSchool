@@ -27,8 +27,8 @@ public class StudentsController(IStudentService studentService) : ControllerBase
     public async Task<IActionResult> UpdateMonthlyReport([FromRoute] Guid id,
         [FromBody] MonthlyReportViewDto updateReportDto, CancellationToken cancellationToken)
     {
-        updateReportDto.Id = id;
-        var result = await studentService.UpdateReportAsync(updateReportDto,  cancellationToken);
+        updateReportDto.StudentId = id;
+        var result = await studentService.UpdateReportAsync(updateReportDto, cancellationToken);
         return Ok(result);
     }
 
