@@ -1,13 +1,15 @@
 ﻿using CrescentSchool.DAL.Entities;
 using CrescentSchool.Models;
 using CrescentSchool.Models.Enums;
-using System.Text.Json.Serialization;
 
 namespace CrescentSchool.DAL.Dtos;
 
-public class MonthlyReportDto
+/// <summary>
+/// Base DTO containing all shared monthly report properties.
+/// Used as the inheritance root for create / view DTOs.
+/// </summary>
+public abstract class MonthlyReportDto
 {
-    [JsonIgnore] public Guid Id { get; set; }
     public Guid StudentId { get; set; }
     public DateTime Date { get; set; }
     public QuranSurah? Memorization { get; set; }

@@ -7,7 +7,7 @@ public interface IStudentsRepository
 {
     public Task<List<Student>> GetStudentsByIdsAsync(List<Guid> studentIds, CancellationToken cancellation = default);
     public Task<Student?> GetStudentByIdAsync(Guid studentId, CancellationToken cancellationToken = default);
-    public Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto);
+    public Task AddMonthlyReport(Guid studentId, CreateMonthlyReportDto studentMonthlyReportDto);
     Task<List<StudentMonthlyReport>> GetMonthlyReports(Guid id, CancellationToken cancellation);
     Task<StudentMonthlyReport?> GetCurrentMonthlyReport(Guid id, CancellationToken cancellationToken);
     Task DeactivateStudent(Guid id, CancellationToken cancellationToken);

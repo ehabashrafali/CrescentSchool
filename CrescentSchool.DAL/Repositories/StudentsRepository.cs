@@ -29,7 +29,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             .Include(s => s.User)
             .FirstOrDefaultAsync(s => s.Id == id && s.User.IsActive, cancellationToken);
     }
-    public async Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto)
+    public async Task AddMonthlyReport(Guid studentId, CreateMonthlyReportDto studentMonthlyReportDto)
     {
         var student = await context.Students
             .Where(s => s.Id == studentId && s.User.IsActive)

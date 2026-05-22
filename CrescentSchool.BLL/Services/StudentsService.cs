@@ -31,7 +31,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             IsActive = student.User.IsActive,
             InstructorId = student.InstructorId,
             Fees = student.Fees,
-            MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportDto
+            MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
             {
                 Id = r.Id,
                 Date = r.Date,
@@ -61,7 +61,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             })]
         };
     }
-    public async Task AddMonthlyReport(Guid studentId, MonthlyReportDto studentMonthlyReportDto)
+    public async Task AddMonthlyReport(Guid studentId, CreateMonthlyReportDto studentMonthlyReportDto)
         => await studentsRepository.AddMonthlyReport(studentId, studentMonthlyReportDto);
     public async Task<List<StudentDto>> GetStudentsAsync(List<Guid> studentIds, CancellationToken cancellationToken)
     {
@@ -88,11 +88,11 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
 
         })];
     }
-    public async Task<List<MonthlyReportDto>> GetMonthlyReportsAsync(Guid id, CancellationToken cancellation = default)
+    public async Task<List<MonthlyReportViewDto>> GetMonthlyReportsAsync(Guid id, CancellationToken cancellation = default)
     {
         var montlyReports = await studentsRepository.GetMonthlyReports(id, cancellation);
 
-        return [.. montlyReports.Select(r => new MonthlyReportDto
+        return [.. montlyReports.Select(r => new MonthlyReportViewDto
         {
             Id = r.Id,
             StudentId = id, 
@@ -166,13 +166,13 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         return result;
     }
 
-    public async Task<MonthlyReportDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken)
+    public async Task<MonthlyReportViewDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken)
     {
         var studentMonthlyReport = await studentsRepository.GetCurrentMonthlyReport(id, cancellationToken);
         if (studentMonthlyReport is null)
             return null;
 
-        return new MonthlyReportDto
+        return new MonthlyReportViewDto
         {
             Id = studentMonthlyReport.Id,
             Date = studentMonthlyReport.Date,
@@ -275,7 +275,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             throw new Exception("Failed to delete user");
     }
 
-    public async Task<Guid> UpdateReportAsync(MonthlyReportDto monthlyReportDto, CancellationToken cancellationToken)
+    public async Task<Guid> UpdateReportAsync(MonthlyReportViewDto monthlyReportDto, CancellationToken cancellationToken)
     {
         var student = await studentsRepository.GetStudentByIdAsync(monthlyReportDto.StudentId, cancellationToken);
         if (student is null)
@@ -288,7 +288,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         await studentsRepository.UpdateStudentAsync(student, cancellationToken);
         return report.Id;
     }
-    private static void UpdateReport(MonthlyReportDto dto, StudentMonthlyReport report)
+    private static void UpdateReport(MonthlyReportViewDto dto, StudentMonthlyReport report)
     {
         report.Date = dto.Date;
 

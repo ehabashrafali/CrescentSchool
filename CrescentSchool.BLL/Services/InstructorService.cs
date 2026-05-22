@@ -77,7 +77,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             PhoneNumber = s.User.PhoneNumber,
             DateOfBirth = s.User.DateOfBirth,
             ZoomMeeting = s.ZoomMeeting,
-            MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportDto
+            MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
             {
                 Id = r.Id,
                 StudentId = id,

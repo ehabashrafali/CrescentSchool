@@ -17,7 +17,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
     }
 
     [HttpPost("{id:guid}")]
-    public async Task<IActionResult> CreateMonthlyReport([FromRoute] Guid id, [FromBody] MonthlyReportDto studentMonthlyReportDto)
+    public async Task<IActionResult> CreateMonthlyReport([FromRoute] Guid id, [FromBody] CreateMonthlyReportDto studentMonthlyReportDto)
     {
         await studentService.AddMonthlyReport(id, studentMonthlyReportDto);
         return Ok();
@@ -25,7 +25,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
 
     [HttpPut("edit-report/{id:guid}")]
     public async Task<IActionResult> UpdateMonthlyReport([FromRoute] Guid id,
-        [FromBody] MonthlyReportDto updateReportDto, CancellationToken cancellationToken)
+        [FromBody] MonthlyReportViewDto updateReportDto, CancellationToken cancellationToken)
     {
         updateReportDto.Id = id;
         var result = await studentService.UpdateReportAsync(updateReportDto,  cancellationToken);
