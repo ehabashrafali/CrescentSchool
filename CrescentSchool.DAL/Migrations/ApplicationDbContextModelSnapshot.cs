@@ -240,6 +240,7 @@ namespace CrescentSchool.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ZoomMeeting")
@@ -643,7 +644,9 @@ namespace CrescentSchool.DAL.Migrations
 
                     b.HasOne("CrescentSchool.DAL.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Instructor");
 

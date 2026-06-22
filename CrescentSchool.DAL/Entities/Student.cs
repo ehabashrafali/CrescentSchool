@@ -10,6 +10,7 @@ public class Student
     public List<Session> Sessions { get; set; } = [];
     public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];
     public decimal Fees { get; set; }
+    public string UserId { get; set; } = null!; 
     public ApplicationUser User { get; set; }
     public Guid InstructorId { get; set; }
 }

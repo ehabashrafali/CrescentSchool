@@ -267,10 +267,8 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         var user = await _userManager.FindByIdAsync(id.ToString());
 
         if (user is not null)
-            user.IsDeleted = true;
-
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
+             await _userManager.DeleteAsync(user);
+        else
             throw new Exception("Failed to delete user");
     }
 
