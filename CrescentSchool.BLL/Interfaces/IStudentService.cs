@@ -12,6 +12,7 @@ public interface IStudentService
     Task<List<UpcomingSessionDto>> GetUpcomingSessionsDtoAsync(Guid id, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken = default);
     Task<MonthlyReportViewDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken);
     Task DeactivateStudentAsync(Guid id, CancellationToken cancellationToken);
+    Task ActivateStudentAsync(Guid id, CancellationToken cancellationToken);
     Task<Guid> UpdateStudentAsync(Guid id, UpdateStudentDto updateStudentDto, CancellationToken cancellationToken);
     Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken);
     Task DeleteStudentAsync(Guid id, CancellationToken cancellationToken);

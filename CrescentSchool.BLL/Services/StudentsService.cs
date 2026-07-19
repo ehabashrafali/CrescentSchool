@@ -27,7 +27,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             PhoneNumber = student.User.PhoneNumber,
             ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.User.DateOfBirth,
-            IsActive = student.User.IsActive,
+            IsActive = student.Status == Models.Enums.StudentStatus.Active,
             InstructorId = student.InstructorId,
             Fees = student.Fees,
             MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
@@ -75,7 +75,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             PhoneNumber = student.User.PhoneNumber,
             ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.User.DateOfBirth,
-            IsActive = student.User.IsActive,
+            IsActive = student.Status == Models.Enums.StudentStatus.Active,
             InstructorId = student.InstructorId,
             Fees = student.Fees,
             WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
@@ -167,7 +167,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
 
     public async Task<MonthlyReportViewDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken)
     {
-        var studentMonthlyReport = await studentsRepository.GetCurrentMonthlyReport(id, cancellationToken);
+        var studentMonthlyReport = await studentsRepository.GetCurrentMonthReport(id, cancellationToken);
         if (studentMonthlyReport is null)
             return null;
 
@@ -210,6 +210,9 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
 
     public Task DeactivateStudentAsync(Guid id, CancellationToken cancellationToken)
         => studentsRepository.DeactivateStudent(id, cancellationToken);
+
+    public Task ActivateStudentAsync(Guid id, CancellationToken cancellationToken)
+        => studentsRepository.ActivateStudent(id, cancellationToken);
 
     public async Task<Guid> UpdateStudentAsync(Guid id, UpdateStudentDto updateStudentDto, CancellationToken cancellationToken)
     {
@@ -267,7 +270,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         var user = await _userManager.FindByIdAsync(id.ToString());
 
         if (user is not null)
-             await _userManager.DeleteAsync(user);
+            await _userManager.DeleteAsync(user);
         else
             throw new Exception("Failed to delete user");
     }
@@ -310,4 +313,6 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         report.BasicQuranRecitationRules = dto.BasicQuranRecitationRules ?? [];
         report.IslamicStudiesBooks = dto.IslamicStudiesBooks ?? [];
     }
+
+
 }

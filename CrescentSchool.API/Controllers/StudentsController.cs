@@ -59,6 +59,13 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         return Ok();
     }
 
+    [HttpPut("activate/{id:guid}")]
+    public async Task<IActionResult> Activate([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await studentService.ActivateStudentAsync(id, cancellationToken);
+        return Ok();
+    }
+
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateStudent([FromRoute] Guid id, [FromBody] UpdateStudentDto updateStudentDto, CancellationToken cancellationToken)
     {

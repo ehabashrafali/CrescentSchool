@@ -3,6 +3,7 @@ using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
+using CrescentSchool.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,7 +76,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             .Where(s => s.Id == id)
             .Select(s => s.StudentMonthlyReports)
             .FirstOrDefaultAsync(cancellation) ?? [];
-    public async Task<StudentMonthlyReport?> GetCurrentMonthlyReport(Guid studentId, CancellationToken cancellationToken)
+    public async Task<StudentMonthlyReport?> GetCurrentMonthReport(Guid studentId, CancellationToken cancellationToken)
     {
         var nowUtc = DateTime.UtcNow;
 
@@ -91,6 +92,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
         return await context.StudentMonthlyReports
             .Where(r =>
                 r.Student.Id == studentId &&
+                r.Student.Status == StudentStatus.Active &&
                 r.Date >= monthStart &&
                 r.Date < monthEnd)
             .Include(r => r.IslamicStudiesBooks)
@@ -100,11 +102,16 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
     }
     public Task DeactivateStudent(Guid id, CancellationToken cancellationToken)
     {
-        var student = context.Students.Include(s => s.User).FirstOrDefault(s => s.Id == id);
-        if (student is null)
-            throw new NotFoundException("Student", id);
-
-        student.User.IsActive = false;
+        var student = context.Students.Include(s => s.User).FirstOrDefault(s => s.Id == id)
+            ?? throw new NotFoundException("Student", id);
+        student.Status = StudentStatus.InActive;
+        return context.SaveChangesAsync(cancellationToken);
+    }
+    public Task ActivateStudent(Guid id, CancellationToken cancellationToken)
+    {
+        var student = context.Students.Include(s => s.User).FirstOrDefault(s => s.Id == id)
+            ?? throw new NotFoundException("Student", id);
+        student.Status = StudentStatus.Active;
         return context.SaveChangesAsync(cancellationToken);
     }
     public async Task UpdateStudentAsync(Student student, CancellationToken cancellationToken)
@@ -138,21 +145,16 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
 
             await _userManager.AddToRoleAsync(user, nameof(Roles.Student));
 
-            var student = new Student
-            {
-                Id = new Guid(user.Id),
-                InstructorId = dto.InstructorId,
-                Fees = dto.Fees,
-                WeeklyAppointments = [.. dto.WeeklyAppointments.Select(w =>
+            var student = new Student(new Guid(user.Id), dto.InstructorId, dto.Fees,
+                [.. dto.WeeklyAppointments.Select(w =>
                     new WeeklyAppointment
                     {
                         Day = w.Day,
                         Time = w.Time,
                         TimeZone = w.TimeZone,
                     })],
-                ZoomMeeting = dto.ZoomLink,
-                User = user
-            };
+                dto.ZoomLink,
+                user);
 
             context.Students.Add(student);
 

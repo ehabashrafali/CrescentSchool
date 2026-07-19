@@ -1,4 +1,5 @@
 ﻿using CrescentSchool.DAL.Entities;
+using CrescentSchool.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -48,6 +49,10 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
             .HasMany(s => s.Courses)
             .WithMany(c => c.Students)
             .UsingEntity(j => j.ToTable("StudentCourses"));
+
+        builder.Property(s => s.Status)
+            .HasConversion<int>()
+            .HasDefaultValue((int)StudentStatus.Active);
 
         builder.ToTable("Students");
     }
