@@ -1,10 +1,9 @@
 ﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
-using CrescentSchool.Core.Exceptions;
-using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
+using CrescentSchool.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace CrescentSchool.BLL.Services;
@@ -76,6 +75,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             Country = s.User.Country,
             PhoneNumber = s.User.PhoneNumber,
             DateOfBirth = s.User.DateOfBirth,
+            IsActive = s.Status == StudentStatus.Active,
             ZoomMeeting = s.ZoomMeeting,
             MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
             {
