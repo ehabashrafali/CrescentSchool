@@ -5,5 +5,6 @@
         Attend = 1,
         Absent = 2,
         Late = 3,
+        Cancelled = 4,
     }
 }

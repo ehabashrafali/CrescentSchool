@@ -2,6 +2,7 @@
 
 public enum SessionDuration
 {
+    ZeroMinutes = 0,
     ThirtyMinutes = 30,
     FortyFiveMinutes = 45,
     SixtyMinutes = 60,

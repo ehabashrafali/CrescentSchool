@@ -4,5 +4,6 @@ public enum StudentAttendanceStatus
 {
     Attend = 1,
     Absent = 2,
-    Cancelled = 3
+    Cancelled = 3,
+    CancelledByInstructor = 4,
 }
