@@ -203,10 +203,6 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ZoomMeeting")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
@@ -243,10 +239,6 @@ namespace CrescentSchool.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ZoomMeeting")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

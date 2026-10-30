@@ -1,4 +1,5 @@
 ﻿using CrescentSchool.DAL.Dtos;
+using CrescentSchool.DAL.Entities;
 
 namespace CrescentSchool.DAL.Repositories;
 

@@ -13,9 +13,6 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
         builder.Property(i => i.Id)
             .ValueGeneratedNever();
 
-        builder.Property(i => i.ZoomMeeting)
-            .HasMaxLength(500);
-
         builder.Property(i => i.Fees)
             .HasColumnType("decimal(18,2)")
             .HasDefaultValue(0.00m);

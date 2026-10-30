@@ -25,7 +25,6 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             Email = student.User.Email,
             Country = student.User.Country,
             PhoneNumber = student.User.PhoneNumber,
-            ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.User.DateOfBirth,
             IsActive = student.Status == Models.Enums.StudentStatus.Active,
             InstructorId = student.InstructorId,
@@ -73,7 +72,6 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
             Email = student.User.Email,
             Country = student.User.Country,
             PhoneNumber = student.User.PhoneNumber,
-            ZoomMeeting = student.ZoomMeeting,
             DateOfBirth = student.User.DateOfBirth,
             IsActive = student.Status == Models.Enums.StudentStatus.Active,
             InstructorId = student.InstructorId,
@@ -116,54 +114,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         )];
 
     }
-    public async Task<List<UpcomingSessionDto>> GetUpcomingSessionsDtoAsync(
-        Guid id,
-        DateTime? startDate = null,
-        DateTime? endDate = null,
-        CancellationToken cancellationToken = default)
-    {
-        var student = await studentsRepository.GetStudentByIdAsync(id, cancellationToken);
-        if (student is null)
-            return default!;
 
-        var now = DateTime.Now;
-        var currentMonth = now.Month;
-        var result = new List<UpcomingSessionDto>();
-        var year = now.Year;
-
-        var firstDayOfMonth = new DateTime(year, currentMonth, 1);
-        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-        foreach (var appointment in student.WeeklyAppointments)
-        {
-
-            if (!Enum.TryParse<DayOfWeek>(appointment.Day, true, out var dayOfWeek))
-                continue;
-
-            if (!TimeSpan.TryParse(appointment.Time, out var time))
-                continue;
-            for (var date = firstDayOfMonth; date <= lastDayOfMonth; date = date.AddDays(1))
-            {
-                if (date.DayOfWeek == dayOfWeek)
-                {
-                    var sessionDateTime = date.Date + time;
-
-                    if (sessionDateTime < now)
-                        continue;
-
-                    result.Add(new UpcomingSessionDto
-                    {
-                        SessionDateTime = sessionDateTime,
-                        ZoomMeeting = student.ZoomMeeting,
-                        InstructorName = student.Instructor.User.FullName,
-                        CourseName = [.. student.Courses.Select(c => c.Name)]
-
-                    });
-                }
-            }
-        }
-        return result;
-    }
 
     public async Task<MonthlyReportViewDto?> GetCurrentMonthReport(Guid id, CancellationToken cancellationToken)
     {
@@ -240,7 +191,6 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         if (student is null)
             return Guid.Empty;
 
-        student.ZoomMeeting = updateStudentDto.ZoomLink;
         student.Fees = updateStudentDto.Fees;
         student.InstructorId = updateStudentDto.InstructorId;
         student.WeeklyAppointments = [.. updateStudentDto.WeeklyAppointments.Select(wa => new WeeklyAppointment

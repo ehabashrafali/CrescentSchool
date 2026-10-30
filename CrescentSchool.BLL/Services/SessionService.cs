@@ -1,11 +1,13 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.BLL.Interfaces;
+﻿using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Dtos;
+using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
+using CrescentSchool.Models.Enums;
+using System.Globalization;
 
 namespace CrescentSchool.BLL.Services;
 
-public class SessionService(ISessionsRepository sessionsRepository) : ISessionService
+public class SessionService(ISessionsRepository sessionsRepository, IStudentsRepository studentsRepository, IInstructorsRepository instructorsRepository) : ISessionService
 {
 
     public async Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
@@ -19,14 +21,14 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
         return await sessionsRepository.CreateSession(sessionDto, cancellationToken);
     }
 
-    public async Task<List<GetSessionDto>> GetSessionsByUserIdAndDate(Guid id, Roles role, DateTimeOffset date, CancellationToken cancellationToken = default)
+    public async Task<List<GetSessionDto>> GetSessionsByUserIdAndDate(Guid id, Role role, DateTimeOffset date, CancellationToken cancellationToken = default)
     {
-        if (role == Roles.Student)
+        if (role == Role.Student)
         {
             var sessions = await sessionsRepository.GetSessionsByStudentIdAndDateAsync(id, date, cancellationToken);
             return [.. sessions.Select(ToGetSessionDto)];
         }
-        else if (role == Roles.Instructor)
+        else if (role == Role.Instructor)
         {
             var sessions = await sessionsRepository.GetSessionsByInstructorIdAndDateAsync(id, date, cancellationToken);
             return [.. sessions.Select(ToGetSessionDto)];
@@ -91,4 +93,79 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
         };
     }
 
+    public async Task<List<TimeTableSessionDto>> GetTimeTableSessionsDtoAsync(Guid id, Role role, CancellationToken cancellationToken = default)
+    {
+        return role switch
+        {
+            Role.Student =>
+                await GetStudentTimeTableAsync(id, cancellationToken),
+
+            Role.Instructor =>
+                await GetInstructorTimeTableAsync(id, cancellationToken),
+
+            _ => throw new ArgumentOutOfRangeException(nameof(role), role, "Unsupported role.")
+        };
+    }
+
+    private async Task<List<TimeTableSessionDto>> GetStudentTimeTableAsync(Guid studentId, CancellationToken cancellationToken = default)
+    {
+        var student = await studentsRepository.GetStudentByIdAsync(studentId, cancellationToken) ?? throw new KeyNotFoundException($"Student with ID {studentId} was not found.");
+
+        var appointments = student.WeeklyAppointments.Select(appointment => (appointment.Day, appointment.Time));
+
+        return GenerateTimeTable(appointments, sessionDateTime => new TimeTableSessionDto
+        {
+            SessionDateTime = sessionDateTime,
+            ParticipantName = student.Instructor?.User.FullName
+        });
+    }
+
+    private async Task<List<TimeTableSessionDto>> GetInstructorTimeTableAsync(Guid instructorId, CancellationToken cancellationToken = default)
+    {
+        var instructor = await instructorsRepository.GetByIdAsync(instructorId, cancellationToken) ?? throw new KeyNotFoundException($"Instructor with ID {instructorId} was not found.");
+
+        var appointments = instructor.Students.SelectMany(student => student.WeeklyAppointments)
+                                               .Select(appointment => (appointment.Day, appointment.Time));
+
+        return GenerateTimeTable(appointments, sessionDateTime => new TimeTableSessionDto
+        {
+            SessionDateTime = sessionDateTime,
+            StudentName = instructor.Students.Where(s => s.WeeklyAppointments.Any(w =>
+                            w.Day == sessionDateTime.DayOfWeek.ToString()))
+                        .Select(s => s.User.FullName)
+                        .First()
+        });
+    }
+
+    private static List<TimeTableSessionDto> GenerateTimeTable(IEnumerable<(string Day, string Time)> appointments, Func<DateTime, TimeTableSessionDto> createSession)
+    {
+        var now = DateTime.Now;
+        var lastDayOfMonth = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month));
+
+        var result = new List<TimeTableSessionDto>();
+
+        foreach (var appointment in appointments)
+        {
+            if (!Enum.TryParse<DayOfWeek>(appointment.Day, ignoreCase: true, out var dayOfWeek))
+                continue;
+
+            if (!TimeSpan.TryParseExact(appointment.Time?.Trim(), [@"hh\.mm", @"h\.mm", @"hh\:mm", @"h\:mm", @"%h", @"hh"], CultureInfo.InvariantCulture, out var time))
+                continue;
+
+            var daysUntilAppointment = ((int)dayOfWeek - (int)now.DayOfWeek + 7) % 7;
+
+            var sessionDateTime = now.Date.AddDays(daysUntilAppointment);
+
+            if (sessionDateTime < now)
+                sessionDateTime = sessionDateTime.AddDays(7);
+
+            while (sessionDateTime.Date <= lastDayOfMonth)
+            {
+                result.Add(createSession(sessionDateTime));
+                sessionDateTime = sessionDateTime.AddDays(7);
+            }
+        }
+
+        return [.. result.OrderBy(session => session.SessionDateTime)];
+    }
 }

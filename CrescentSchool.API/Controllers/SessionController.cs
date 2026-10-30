@@ -1,6 +1,6 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.BLL.Interfaces;
+﻿using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.DAL.Dtos;
+using CrescentSchool.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrescentSchool.API.Controllers;
@@ -18,7 +18,7 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetSessionsByUserIdAndDate([FromRoute] Guid id, [FromQuery] Roles role, [FromQuery] DateTimeOffset date, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSessionsByUserIdAndDate([FromRoute] Guid id, [FromQuery] Role role, [FromQuery] DateTimeOffset date, CancellationToken cancellationToken)
     {
         var result = await sessionService.GetSessionsByUserIdAndDate(id, role, date, cancellationToken);
         return Ok(result);
@@ -41,12 +41,12 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     }
 
     [HttpGet("get-sessions-by-user-id/{id:guid}")]
-    public async Task<IActionResult> GetSessionsByUserId([FromRoute] Guid id, [FromQuery] Roles role, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSessionsByUserId([FromRoute] Guid id, [FromQuery] Role role, CancellationToken cancellationToken)
     {
         var result = new List<GetSessionDto>();
-        if (role is Roles.Student)
+        if (role is Role.Student)
             result = await sessionService.GetSessionsByStudentIdAsync(id, cancellationToken);
-        else if (role is Roles.Instructor)
+        else if (role is Role.Instructor)
             result = await sessionService.GetSessionsByInstructorIdAsync(id, cancellationToken);
         return Ok(result);
     }
@@ -61,5 +61,12 @@ public class SessionController(ISessionService sessionService) : ControllerBase
     {
         var session = await sessionService.UpdateSessionAsync(id, sessionDto, cancellationToken);
         return Ok(session);
+    }
+
+    [HttpGet("time-table/{id:guid}")]
+    public async Task<IActionResult> GetTimeTable([FromRoute] Guid id, [FromQuery] Role role, CancellationToken cancellationToken = default)
+    {
+        var result = await sessionService.GetTimeTableSessionsDtoAsync(id, role, cancellationToken);
+        return Ok(result);
     }
 }

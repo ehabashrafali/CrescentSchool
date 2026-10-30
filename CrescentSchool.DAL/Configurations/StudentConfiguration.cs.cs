@@ -14,9 +14,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.Property(s => s.Id)
             .ValueGeneratedNever();
 
-        builder.Property(s => s.ZoomMeeting)
-            .HasMaxLength(500);
-
         builder.Property(s => s.Fees)
             .HasColumnType("decimal(18,2)")
             .HasDefaultValue(0.00m);

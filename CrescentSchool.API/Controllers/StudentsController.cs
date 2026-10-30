@@ -38,12 +38,7 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         var result = await studentService.GetMonthlyReportsAsync(id, cancellationToken);
         return Ok(result);
     }
-    [HttpGet("time-table/{id:guid}")]
-    public async Task<IActionResult> GetTimeTable([FromRoute] Guid id, DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
-    {
-        var result = await studentService.GetUpcomingSessionsDtoAsync(id, startDate, endDate, cancellationToken);
-        return Ok(result);
-    }
+
 
     [HttpGet("monthly-report/{id:guid}")]
     public async Task<IActionResult> GetCurrentMonthReport([FromRoute] Guid id, CancellationToken cancellationToken = default)

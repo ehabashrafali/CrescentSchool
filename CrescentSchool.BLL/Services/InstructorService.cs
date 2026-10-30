@@ -27,9 +27,9 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             throw new Exception("Failed to delete user");
     }
 
-    public async Task<InstructorDto> GetInstructorByIdAsync(Guid instructorId)
+    public async Task<InstructorDto> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken)
     {
-        var instructor = await instructorsRepository.GetByIdAsync(instructorId);
+        var instructor = await instructorsRepository.GetByIdAsync(instructorId, cancellationToken);
 
         if (instructor is null)
             return new InstructorDto();
@@ -43,10 +43,10 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             PhoneNumber = instructor.User.PhoneNumber,
             IsActive = instructor.User.IsActive,
             Country = instructor.User.Country,
-            Fees = instructor.Fees,
-            ZoomMeeting = instructor.ZoomMeeting
+            Fees = instructor.Fees
         };
     }
+
     public async Task<List<InstructorDto>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken)
     {
         var instructors = await instructorsRepository.GetInstructorsAsync(instructorIds, cancellationToken);
@@ -59,13 +59,12 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             PhoneNumber = i.User.PhoneNumber,
             IsActive = i.User.IsActive,
             Country = i.User.Country,
-            Fees = i.Fees,
-            ZoomMeeting = i.ZoomMeeting
+            Fees = i.Fees
         })];
     }
-    public async Task<List<StudentDto>> GetInstructorStudents(Guid id)
+    public async Task<List<StudentDto>> GetInstructorStudents(Guid id, CancellationToken cancellationToken)
     {
-        var students = await instructorsRepository.GetInstructorStudents(id);
+        var students = await instructorsRepository.GetInstructorStudents(id, cancellationToken);
         var studentDto = students.Select(s => new StudentDto
         {
             Id = s.Id,
@@ -76,7 +75,6 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
             PhoneNumber = s.User.PhoneNumber,
             DateOfBirth = s.User.DateOfBirth,
             IsActive = s.Status == StudentStatus.Active,
-            ZoomMeeting = s.ZoomMeeting,
             MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
             {
                 Id = r.Id,
@@ -130,7 +128,6 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
         if (instructor is null)
             return Guid.Empty;
 
-        instructor.ZoomMeeting = updateInstructorDto.ZoomLink;
         instructor.Fees = updateInstructorDto.Fees;
 
         await instructorsRepository.UpdateInstructor(instructor, cancellationToken);

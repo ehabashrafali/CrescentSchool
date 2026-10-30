@@ -1,5 +1,4 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.Core.Extensions;
+﻿using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
@@ -26,6 +25,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
     {
         return await context.Students
             .Include(s => s.Instructor)
+                .ThenInclude(i => i.User)
             .Include(s => s.WeeklyAppointments)
             .Include(s => s.User)
             .Include(s => s.StudentMonthlyReports)
@@ -143,7 +143,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             if (!result.Succeeded)
                 throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, nameof(Roles.Student));
+            await _userManager.AddToRoleAsync(user, nameof(Role.Student));
 
             var student = new Student(new Guid(user.Id), dto.InstructorId, dto.Fees,
                 [.. dto.WeeklyAppointments.Select(w =>

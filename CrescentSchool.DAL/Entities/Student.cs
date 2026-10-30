@@ -7,7 +7,6 @@ public class Student
     public Guid Id { get; set; }
     public Instructor? Instructor { get; set; }
     public List<Course> Courses { get; set; } = [];
-    public string ZoomMeeting { get; set; }
     public List<StudentMonthlyReport> StudentMonthlyReports { get; set; } = [];
     public List<Session> Sessions { get; set; } = [];
     public List<WeeklyAppointment> WeeklyAppointments { get; set; } = [];
@@ -20,7 +19,6 @@ public class Student
     public Student(Guid id, Guid instructorId, decimal fees, List<WeeklyAppointment> weeklyAppointments, string zoomMeeting, ApplicationUser user)
     {
         Id = id;
-        ZoomMeeting = zoomMeeting;
         WeeklyAppointments = weeklyAppointments;
         Fees = fees;
         User = user;

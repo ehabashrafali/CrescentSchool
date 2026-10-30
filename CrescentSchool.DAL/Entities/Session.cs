@@ -1,6 +1,6 @@
-﻿using CrescentSchool.DAL.Entities;
-using CrescentSchool.Models.Enums;
+﻿using CrescentSchool.Models.Enums;
 
+namespace CrescentSchool.DAL.Entities;
 
 public class Session
 {
@@ -16,7 +16,13 @@ public class Session
     public Guid StudentId { get; set; }
     public SessionDuration Duration { get; set; }
     public bool IsDeleted { get; set; } = false;
-
+    public DateTime? FirstJoinedAt { get; set; }
+    public DateTime? LastLeftAt { get; set; }
+    public int TotalDurationInSeconds { get; set; }
+    public string ZoomMeetingId { get; set; }
+    public string ZoomMeetingUuid { get; set; }
+    public string ZoomJoinUrl { get; set; }
+    public bool IsCurrentlyJoined { get; set; }
     public Session(DateTime date, Guid studentId, Guid instructorId, StudentAttendanceStatus studentSessionStatus, InstructorAttendanceStatus instructorSessionStatus, SessionDuration sessionDuration)
     {
         Date = date;

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CrescentSchool.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrescentSchool.DAL.Configurations;
@@ -24,6 +25,19 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
         builder.Property(s => s.IsDeleted)
                .HasDefaultValue(false);
 
+        builder.Property(s => s.TotalDurationInSeconds)
+               .HasDefaultValue(0);
+
+        builder.Property(s => s.ZoomJoinUrl)
+               .HasMaxLength(255)
+               .IsRequired(false);
+
+        builder.Property(s => s.FirstJoinedAt)
+               .IsRequired(false);
+
+        builder.Property(s => s.LastLeftAt)
+               .IsRequired(false);
+
         builder.HasOne(s => s.Student)
                .WithMany()
                .HasForeignKey(s => s.StudentId)
@@ -33,6 +47,8 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
                .WithMany()
                .HasForeignKey(s => s.InstructorId)
                .OnDelete(DeleteBehavior.Restrict);
+
+
 
         builder.ToTable("Sessions");
     }

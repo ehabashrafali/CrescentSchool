@@ -1,8 +1,8 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.Core.Extensions;
+﻿using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
+using CrescentSchool.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,13 +33,12 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
         if (!result.Succeeded)
             throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-        await _userManager.AddToRoleAsync(user, nameof(Roles.Instructor));
+        await _userManager.AddToRoleAsync(user, nameof(Role.Instructor));
         var instructor = new Instructor
         {
             Id = new Guid(user.Id),
             Fees = createInstructorDto.Fees,
-            User = user,
-            ZoomMeeting = createInstructorDto.ZoomLink
+            User = user
         };
         context.Instructors.Add(instructor);
 
@@ -48,20 +47,24 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
 
         return instructor.Id;
     }
-    public async Task<Instructor?> GetByIdAsync(Guid instructorId)
+    public async Task<Instructor?> GetByIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
     {
         return await context.Instructors
             .Where(i => i.User.IsActive)
             .Include(i => i.User)
-            .FirstOrDefaultAsync(i => i.Id == instructorId);
+            .Include(i => i.Students)
+                .ThenInclude(s => s.WeeklyAppointments)
+            .Include(i => i.Students)
+                .ThenInclude(s => s.User)
+            .FirstOrDefaultAsync(i => i.Id == instructorId, cancellationToken);
     }
-    public async Task<Instructor?> GetInstructorByIdAsync(Guid instructorId)
+    public async Task<Instructor?> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
     {
         return await context.Instructors
             .Include(i => i.Students)
             .Include(i => i.Courses)
             .Where(i => i.User.IsActive)
-            .FirstOrDefaultAsync(i => i.Id == instructorId);
+            .FirstOrDefaultAsync(i => i.Id == instructorId, cancellationToken);
     }
     public async Task<List<Instructor>> GetInstructorsAsync(List<Guid> instructorIds)
     {
@@ -83,7 +86,7 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
 
         return query.Where(i => instructorIds.Contains(i.Id)).ToListAsync(cancellationToken);
     }
-    public async Task<List<Student>> GetInstructorStudents(Guid instructorId)
+    public async Task<List<Student>> GetInstructorStudents(Guid instructorId, CancellationToken cancellationToken)
     {
         return await context.Instructors
                     .Where(i => i.User.IsActive && i.Id == instructorId)
@@ -95,7 +98,7 @@ public class InstructorsRepository(ApplicationDbContext context, UserManager<App
                     .Include(s => s.StudentMonthlyReports)
                         .ThenInclude(r => r.BasicQuranRecitationRules)
                     .Include(s => s.User)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
     }
     public static string GenerateRandomString(int length = 5)
     {

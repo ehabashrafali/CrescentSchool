@@ -1,6 +1,6 @@
-﻿namespace CrescentSchool.BLL.Enums;
+﻿namespace CrescentSchool.Models.Enums;
 
-public enum Roles
+public enum Role
 {
     Admin,
     Instructor,

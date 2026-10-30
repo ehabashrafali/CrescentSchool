@@ -1,5 +1,5 @@
-﻿using CrescentSchool.BLL.Enums;
-using CrescentSchool.DAL.Entities;
+﻿using CrescentSchool.DAL.Entities;
+using CrescentSchool.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,11 +25,11 @@ public static class IdentitySeeder
     {
         var roles = new[]
         {
-            nameof(Roles.Admin),
-            nameof(Roles.Instructor),
-            nameof(Roles.Supervisor),
-            nameof(Roles.Parent),
-            nameof(Roles.Student)
+            nameof(Role.Admin),
+            nameof(Role.Instructor),
+            nameof(Role.Supervisor),
+            nameof(Role.Parent),
+            nameof(Role.Student)
         };
 
         foreach (var role in roles)
@@ -60,7 +60,7 @@ public static class IdentitySeeder
         var result = await userManager.CreateAsync(supervisorUser, "Supervisor@Crescent26!");
 
         if (result.Succeeded)
-            await userManager.AddToRoleAsync(supervisorUser, nameof(Roles.Supervisor));
+            await userManager.AddToRoleAsync(supervisorUser, nameof(Role.Supervisor));
     }
 
     private static async Task SeedAdminAsync(
@@ -85,6 +85,6 @@ public static class IdentitySeeder
         var result = await userManager.CreateAsync(adminUser, "Admin@Crescent26!");
 
         if (result.Succeeded)
-            await userManager.AddToRoleAsync(adminUser, nameof(Roles.Admin));
+            await userManager.AddToRoleAsync(adminUser, nameof(Role.Admin));
     }
 }

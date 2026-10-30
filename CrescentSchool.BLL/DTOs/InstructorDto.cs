@@ -1,6 +1,4 @@
-﻿using CrescentSchool.BLL.Enums;
-
-namespace CrescentSchool.BLL.DTOs
+﻿namespace CrescentSchool.BLL.DTOs
 {
     public class InstructorDto
     {
@@ -14,8 +12,7 @@ namespace CrescentSchool.BLL.DTOs
         public DateOnly DateOfBirth { get; set; }
         public int Age => DateTime.Now.Year - DateOfBirth.Year;
         public bool IsActive { get; set; }
-        public string Role => Roles.Instructor.ToString();
+        public string Role => Models.Enums.Role.Instructor.ToString();
         public decimal Fees { get; set; }
-        public string ZoomMeeting { get; set; } = string.Empty;
     }
 }

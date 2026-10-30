@@ -1,6 +1,7 @@
 ﻿using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
+using CrescentSchool.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrescentSchool.DAL.Repositories;
