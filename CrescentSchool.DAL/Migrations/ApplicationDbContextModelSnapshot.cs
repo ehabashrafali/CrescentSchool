@@ -200,10 +200,6 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ZoomMeeting")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
@@ -227,6 +223,47 @@ namespace CrescentSchool.DAL.Migrations
                     b.ToTable("IslamicStudiesBook");
                 });
 
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.Session", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CourseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("InstructorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("InstructorStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("StudentStatus")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Sessions");
+                });
+
             modelBuilder.Entity("CrescentSchool.DAL.Entities.Student", b =>
                 {
                     b.Property<Guid>("Id")
@@ -243,10 +280,6 @@ namespace CrescentSchool.DAL.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ZoomMeeting")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -332,6 +365,62 @@ namespace CrescentSchool.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tajweed");
+                });
+
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.UpCommingSessions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("FirstJoinedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("InstructorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("InstructorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsCurrentlyJoined")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastLeftAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("SessionDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("StudentName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalDurationInSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ZoomJoinUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ZoomMeeting")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ZoomMeetingId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ZoomMeetingUuid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UpCommingSessions");
                 });
 
             modelBuilder.Entity("CrescentSchool.DAL.Entities.WeeklyAppointment", b =>
@@ -525,47 +614,6 @@ namespace CrescentSchool.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Session", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CourseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("InstructorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("InstructorStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("StudentStatus")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("InstructorId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("Sessions");
-                });
-
             modelBuilder.Entity("StudentMonthlyReportTajweed", b =>
                 {
                     b.Property<Guid>("StudentMonthlyReportsId")
@@ -635,6 +683,29 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.Session", b =>
+                {
+                    b.HasOne("CrescentSchool.DAL.Entities.Course", null)
+                        .WithMany("Sessions")
+                        .HasForeignKey("CourseId");
+
+                    b.HasOne("CrescentSchool.DAL.Entities.Instructor", "Instructor")
+                        .WithMany("Sessions")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CrescentSchool.DAL.Entities.Student", "Student")
+                        .WithMany("Sessions")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Instructor");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("CrescentSchool.DAL.Entities.Student", b =>
@@ -742,29 +813,6 @@ namespace CrescentSchool.DAL.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Session", b =>
-                {
-                    b.HasOne("CrescentSchool.DAL.Entities.Course", null)
-                        .WithMany("Sessions")
-                        .HasForeignKey("CourseId");
-
-                    b.HasOne("CrescentSchool.DAL.Entities.Instructor", "Instructor")
-                        .WithMany("Sessions")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CrescentSchool.DAL.Entities.Student", "Student")
-                        .WithMany("Sessions")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Instructor");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("StudentMonthlyReportTajweed", b =>
