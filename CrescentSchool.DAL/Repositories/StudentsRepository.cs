@@ -14,7 +14,8 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
     {
         var query = context.Students
             .Include(s => s.Instructor)
-            .Include(s => s.User);
+            .Include(s => s.User)
+            .Include(s => s.WeeklyAppointments);
 
         if (studentIds.Count == 0)
             return await query.ToListAsync(cancellation);

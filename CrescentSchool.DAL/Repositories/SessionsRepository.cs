@@ -30,6 +30,26 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         }
     }
 
+    public async Task CreateUpCommingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var upCommingSessions = upcomingSessions.Select(s => new UpCommingSessions
+            {
+
+                InstructorName = s.InstructorName,
+                StudentName = s.StudentName,
+                ZoomMeeting = s.ZoomMeeting,
+                SessionDateTime = s.SessionDateTime
+            });
+            await context.UpCommingSessions.AddRangeAsync(upCommingSessions, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An Error occurred while saving upcoming sessions", ex.InnerException);
+        }
+    }
+
     public async Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation)
     {
         var session = await context.Sessions.FindAsync([sessionId], cancellation);
@@ -38,6 +58,13 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
 
         context.Sessions.Remove(session);
         await context.SaveChangesAsync(cancellation);
+    }
+
+    public Task<List<UpCommingSessions>> GetInstructorUpCommingSessions(Guid instructorId, CancellationToken cancellationToken)
+    {
+        return context.UpCommingSessions
+            .Where(s => s.InstructorId == instructorId)
+            .ToListAsync(cancellationToken);
     }
 
     public Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -119,6 +146,11 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                     .Include(s => s.Student)
                         .ThenInclude(s => s.User)
                     .ToListAsync(cancellationToken);
+
+    public async Task<List<UpCommingSessions>> GetStudentUpCommingSessions(Guid studentId, CancellationToken cancellationToken)
+        => await context.UpCommingSessions
+            .Where(s => s.StudentId == studentId)
+            .ToListAsync(cancellationToken);
 
     public async Task UpdateSession(Session session, CancellationToken cancellationToken)
     {

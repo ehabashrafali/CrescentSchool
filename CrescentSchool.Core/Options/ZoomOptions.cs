@@ -7,5 +7,4 @@
         public string ClientSecret { get; set; } = "";
         public string WebhookSecretToken { get; set; } = "";
     }
-
 }

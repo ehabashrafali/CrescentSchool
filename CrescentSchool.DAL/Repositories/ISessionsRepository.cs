@@ -14,4 +14,7 @@ public interface ISessionsRepository
     Task UpdateSession(Session session, CancellationToken cancellationToken);
     Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation);
+    Task CreateUpCommingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken);
+    Task<List<UpCommingSessions>> GetStudentUpCommingSessions(Guid studentId, CancellationToken cancellationToken);
+    Task<List<UpCommingSessions>> GetInstructorUpCommingSessions(Guid instructorId, CancellationToken cancellationToken);
 }

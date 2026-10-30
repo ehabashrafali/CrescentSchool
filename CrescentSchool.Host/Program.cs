@@ -1,9 +1,14 @@
+using CrescentSchool.BLL.Extensions;
 using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.BLL.Services;
+using CrescentSchool.Core.Enums.Jobs;
 using CrescentSchool.Core.ExceptionHandling;
+using CrescentSchool.Core.Extensions;
+using CrescentSchool.Core.Options;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +24,9 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.AddHangfire();
+
 
         var jwtSettingsSection = builder.Configuration.GetSection("Jwt");
 
@@ -55,6 +63,8 @@ public class Program
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.BindOptions<MonthlyUpcommingSessionsOptions>("MonthlyUpcommingSessionsOptions");
 
         builder.Host.UseSerilog();
 
@@ -102,6 +112,12 @@ public class Program
         app.UseSerilogRequestLogging();
         app.UseCors();
 
+        await app.AddHangfireJobsAsync(builder.Configuration);
+
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = [new HangfireDashboardAuthorizationFilter()]
+        });
         //using (var scope = app.Services.CreateScope())
         //{
         //    await IdentitySeeder.SeedRolesAndUsersAsync(scope.ServiceProvider);

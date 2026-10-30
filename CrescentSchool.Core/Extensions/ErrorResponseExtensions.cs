@@ -1,6 +1,7 @@
 ﻿using CrescentSchool.Core.Exceptions;
 using CrescentSchool.Core.Helpers;
 using CrescentSchool.Core.Models;
+using CrescentSchool.Host.Extensions;
 
 namespace CrescentSchool.Core.Extensions;
 
