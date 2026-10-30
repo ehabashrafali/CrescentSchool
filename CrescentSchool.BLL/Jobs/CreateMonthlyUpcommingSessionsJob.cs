@@ -1,12 +1,13 @@
-﻿using CrescentSchool.DAL.Dtos;
+﻿using CrescentSchool.BLL.Services;
+using CrescentSchool.Core.Options;
+using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Repositories;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace CrescentSchool.BLL.Jobs;
 
-public class CreateMonthlyUpcommingSessionsJob(
-    IStudentsRepository studentsRepository,
-    ISessionsRepository sessionsRepository)
+public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepository, ISessionsRepository sessionsRepository, IZoomService zoomService, IOptions<ZoomOptions> zoomOptions)
 {
     public const string Name = "CreateMonthlyUpcommingSessionsJob";
 
@@ -64,8 +65,22 @@ public class CreateMonthlyUpcommingSessionsJob(
                 }
             }
         }
+        foreach (var session in upcomingSessions)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            session.ZoomMeeting = await zoomService.CreateMeetingAsync(
+                topic: $"Lesson - {session.StudentName} - {session.InstructorName} - {session.SessionDateTime.ToString()}",
+                startTime: session.SessionDateTime,
+                cancellationToken: cancellationToken);
+        }
 
         if (upcomingSessions.Count > 0)
             await sessionsRepository.CreateUpCommingSessions(upcomingSessions, cancellationToken);
+    }
+
+    private async Task<string> CreateZoomMeetingLink()
+    {
+        throw new NotImplementedException();
     }
 }

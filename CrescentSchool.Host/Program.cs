@@ -66,6 +66,8 @@ public class Program
 
         builder.Services.BindOptions<MonthlyUpcommingSessionsOptions>("MonthlyUpcommingSessionsOptions");
 
+        builder.Services.BindOptions<ZoomOptions>("ZoomOptions");
+
         builder.Host.UseSerilog();
 
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -82,6 +84,7 @@ public class Program
         builder.Services.AddScoped<IStudentService, StudentsService>();
         builder.Services.AddScoped<ISessionsRepository, SessionsRepository>();
         builder.Services.AddScoped<ISessionService, SessionService>();
+        builder.Services.AddHttpClient<IZoomService, ZoomService>();
 
         // Register Exception Handling Middleware
         builder.Services.AddTransient<ExceptionHandlingMiddleware>();

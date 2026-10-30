@@ -14,6 +14,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
     {
         var query = context.Students
             .Include(s => s.Instructor)
+            .ThenInclude(i => i.User)
             .Include(s => s.User)
             .Include(s => s.WeeklyAppointments);
 

@@ -43,6 +43,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 SessionDateTime = s.SessionDateTime
             });
             await context.UpCommingSessions.AddRangeAsync(upCommingSessions, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {
