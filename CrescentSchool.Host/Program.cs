@@ -121,6 +121,7 @@ public class Program
         {
             Authorization = [new HangfireDashboardAuthorizationFilter()]
         });
+
         //using (var scope = app.Services.CreateScope())
         //{
         //    await IdentitySeeder.SeedRolesAndUsersAsync(scope.ServiceProvider);

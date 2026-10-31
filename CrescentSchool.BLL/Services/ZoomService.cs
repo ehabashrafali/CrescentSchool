@@ -4,11 +4,10 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace CrescentSchool.BLL.Services;
 
-public sealed class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> options) : IZoomService
+public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> options) : IZoomService
 {
     private readonly ZoomOptions _options = options.Value;
     private readonly SemaphoreSlim _tokenLock = new(1, 1);
@@ -16,7 +15,7 @@ public sealed class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> opt
     private string? _accessToken;
     private DateTimeOffset _tokenExpiresAt;
 
-    public async Task<string> CreateMeetingAsync(string topic, DateTime startTime, CancellationToken cancellationToken = default)
+    public async Task<ZoomMeetingResponse> CreateMeetingAsync(string topic, DateTime startTime, CancellationToken cancellationToken = default)
     {
         var accessToken = await GetAccessTokenAsync(cancellationToken);
 
@@ -34,7 +33,8 @@ public sealed class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> opt
             }
         };
 
-        var hostUserId = Uri.EscapeDataString(_options.AccountId);
+
+        var hostUserId = Uri.EscapeDataString(_options.HostUserId);
 
         using var request = new HttpRequestMessage(HttpMethod.Post, $"https://api.zoom.us/v2/users/{hostUserId}/meetings")
         {
@@ -53,7 +53,7 @@ public sealed class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> opt
             throw new InvalidOperationException(
                 "Zoom did not return a meeting join URL.");
 
-        return meeting.JoinUrl;
+        return meeting;
     }
 
     private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
@@ -92,20 +92,5 @@ public sealed class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> opt
         {
             _tokenLock.Release();
         }
-    }
-
-    private sealed class ZoomTokenResponse
-    {
-        [JsonPropertyName("access_token")]
-        public string AccessToken { get; set; } = string.Empty;
-
-        [JsonPropertyName("expires_in")]
-        public int ExpiresIn { get; set; }
-    }
-
-    private sealed class ZoomMeetingResponse
-    {
-        [JsonPropertyName("join_url")]
-        public string JoinUrl { get; set; } = string.Empty;
     }
 }

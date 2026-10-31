@@ -36,18 +36,24 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         {
             var upCommingSessions = upcomingSessions.Select(s => new UpCommingSessions
             {
-
+                ZoomMeetingId = s.ZoomMeetingId,
+                ZoomMeetingUuid = s.Uuid,
+                ZoomJoinUrl = s.ZoomMeeting,
+                StudentId = s.StudentId,
+                InstructorId = s.InstructorId,
                 InstructorName = s.InstructorName,
                 StudentName = s.StudentName,
                 ZoomMeeting = s.ZoomMeeting,
-                SessionDateTime = s.SessionDateTime
+                SessionDateTime = s.SessionDateTime.Kind == DateTimeKind.Utc
+                    ? s.SessionDateTime
+                    : s.SessionDateTime.ToUniversalTime()
             });
             await context.UpCommingSessions.AddRangeAsync(upCommingSessions, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {
-            throw new Exception("An Error occurred while saving upcoming sessions", ex.InnerException);
+            throw new Exception("An Error occurred while saving upcoming sessions", ex);
         }
     }
 

@@ -60,7 +60,9 @@ public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepos
                         SessionDateTime = sessionDateTime,
                         ZoomMeeting = string.Empty,
                         StudentName = studentName,
-                        InstructorName = instructorName
+                        InstructorName = instructorName,
+                        StudentId = student.Id,
+                        InstructorId = student.Instructor?.Id ?? Guid.Empty
                     });
                 }
             }
@@ -69,18 +71,19 @@ public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepos
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            session.ZoomMeeting = await zoomService.CreateMeetingAsync(
+            var zoomMeetingResponse = await zoomService.CreateMeetingAsync(
                 topic: $"Lesson - {session.StudentName} - {session.InstructorName} - {session.SessionDateTime.ToString()}",
                 startTime: session.SessionDateTime,
                 cancellationToken: cancellationToken);
+
+            session.ZoomMeeting = zoomMeetingResponse.JoinUrl;
+            session.ZoomMeetingId = zoomMeetingResponse.Id;
+            session.Uuid = zoomMeetingResponse.Uuid;
+
         }
 
         if (upcomingSessions.Count > 0)
             await sessionsRepository.CreateUpCommingSessions(upcomingSessions, cancellationToken);
     }
 
-    private async Task<string> CreateZoomMeetingLink()
-    {
-        throw new NotImplementedException();
-    }
 }

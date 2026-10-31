@@ -2,6 +2,6 @@
 {
     public interface IZoomService
     {
-        Task<string> CreateMeetingAsync(string topic, DateTime startTime, CancellationToken cancellationToken = default);
+        Task<ZoomMeetingResponse> CreateMeetingAsync(string topic, DateTime startTime, CancellationToken cancellationToken = default);
     }
 }

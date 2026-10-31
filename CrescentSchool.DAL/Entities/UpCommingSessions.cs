@@ -12,7 +12,7 @@ public class UpCommingSessions
     public DateTime? FirstJoinedAt { get; set; }
     public DateTime? LastLeftAt { get; set; }
     public int TotalDurationInSeconds { get; set; }
-    public string ZoomMeetingId { get; set; }
+    public long ZoomMeetingId { get; set; }
     public string ZoomMeetingUuid { get; set; }
     public string ZoomJoinUrl { get; set; }
     public bool IsCurrentlyJoined { get; set; }

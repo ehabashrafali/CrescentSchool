@@ -410,9 +410,8 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ZoomMeetingId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("ZoomMeetingId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ZoomMeetingUuid")
                         .IsRequired()

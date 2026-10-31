@@ -39,8 +39,7 @@ public class UpCommingSessionsConfigurations : IEntityTypeConfiguration<UpCommin
                .IsRequired(false);
 
         builder.Property(s => s.ZoomMeetingId)
-               .HasMaxLength(50)
-               .IsRequired(false);
+               .IsRequired();
 
         builder.Property(s => s.ZoomMeetingUuid)
                .HasMaxLength(255)
