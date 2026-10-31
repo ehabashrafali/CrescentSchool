@@ -159,6 +159,45 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
             .Where(s => s.StudentId == studentId)
             .ToListAsync(cancellationToken);
 
+    public async Task MarkJoinedAsync(long zoomMeetingId, string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken)
+    {
+        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingId == zoomMeetingId, cancellationToken);
+        if (session is null)
+            return;
+
+        joinedAtUtc = DateTime.SpecifyKind(joinedAtUtc, DateTimeKind.Utc);
+
+        if (session.FirstJoinedAt is null || joinedAtUtc < session.FirstJoinedAt)
+            session.FirstJoinedAt = joinedAtUtc;
+
+        session.IsCurrentlyJoined = true;
+
+        if (!string.IsNullOrEmpty(zoomMeetingUuid))
+            session.ZoomMeetingUuid = zoomMeetingUuid;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task MarkLeftAsync(long zoomMeetingId, string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken)
+    {
+        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingId == zoomMeetingId, cancellationToken);
+
+        if (session is null)
+            return;
+
+        leftAtUtc = DateTime.SpecifyKind(leftAtUtc, DateTimeKind.Utc);
+
+        if (session.LastLeftAt is null || leftAtUtc > session.LastLeftAt)
+            session.LastLeftAt = leftAtUtc;
+
+        session.IsCurrentlyJoined = false;
+
+        if (session.FirstJoinedAt is not null && session.LastLeftAt > session.FirstJoinedAt)
+            session.TotalDurationInSeconds = (int)(session.LastLeftAt.Value - session.FirstJoinedAt.Value).TotalSeconds;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task UpdateSession(Session session, CancellationToken cancellationToken)
     {
         context.Update(session);

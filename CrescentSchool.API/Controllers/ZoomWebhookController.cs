@@ -1,53 +1,144 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using CrescentSchool.Core.Options;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
-namespace CrescentSchool.API.Controllers
+namespace CrescentSchool.API.Controllers;
+
+[ApiController]
+[Route("api/webhooks/zoom")]
+public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWebhookController> logger) : ControllerBase
 {
-    [ApiController]
-    [Route("api/webhooks/zoom")]
-    public class ZoomWebhookController(IOptions<ZoomOptions> zoomOptions) : ControllerBase
+    [AllowAnonymous]
+    [HttpPost]
+    [RequestSizeLimit(1_048_576)]
+    public async Task<IActionResult> Receive(
+        CancellationToken cancellationToken)
     {
-        private readonly ZoomOptions _options = zoomOptions.Value;
+        var secret = configuration["ZoomOptions:WebhookSecretToken"];
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> Receive()
+        if (string.IsNullOrWhiteSpace(secret) || secret.Contains("##{", StringComparison.Ordinal))
         {
-            using var reader = new StreamReader(Request.Body, Encoding.UTF8);
-            var body = await reader.ReadToEndAsync();
+            logger.LogError("Zoom webhook secret is not configured.");
+            return StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
 
-            using var doc = JsonDocument.Parse(body);
-            var root = doc.RootElement;
-            var eventName = root.TryGetProperty("event", out var ev) ? ev.GetString() : null;
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
 
+        var rawBody = await reader.ReadToEndAsync(cancellationToken);
+
+        JsonDocument document;
+
+        try
+        {
+            document = JsonDocument.Parse(rawBody);
+        }
+        catch (JsonException)
+        {
+            return BadRequest();
+        }
+
+        using (document)
+        {
+            var root = document.RootElement;
+
+            if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("event", out var eventElement) || eventElement.ValueKind != JsonValueKind.String)
+                return BadRequest();
+
+            var eventName = eventElement.GetString()!;
+
+            // Zoom URL validation challenge.
             if (eventName == "endpoint.url_validation")
             {
-                var plainToken = root.GetProperty("payload").GetProperty("plainToken").GetString() ?? string.Empty;
-                return Ok(new { plainToken, encryptedToken = ComputeHmac(plainToken) });
+                if (!root.TryGetProperty("payload", out var payload) ||
+                    payload.ValueKind != JsonValueKind.Object ||
+                    !payload.TryGetProperty("plainToken", out var token) ||
+                    token.ValueKind != JsonValueKind.String)
+                {
+                    return BadRequest();
+                }
+
+                var plainToken = token.GetString();
+
+                if (string.IsNullOrWhiteSpace(plainToken))
+                    return BadRequest();
+
+                var encryptedToken = Hash(secret, plainToken);
+
+                logger.LogInformation("Zoom webhook URL validation challenge received.");
+
+                // Return these fields directly, without an API wrapper.
+                return new JsonResult(new
+                {
+                    plainToken,
+                    encryptedToken
+                });
             }
 
-            var timestamp = Request.Headers["x-zm-request-timestamp"].ToString();
-            var signature = Request.Headers["x-zm-signature"].ToString();
-            var expected = "v0=" + ComputeHmac($"v0:{timestamp}:{body}");
-
-            if (!CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expected), Encoding.UTF8.GetBytes(signature)))
+            // Verify real event notifications.
+            if (!IsValidSignature(rawBody, secret))
             {
+                logger.LogWarning("Zoom webhook signature verification failed.");
                 return Unauthorized();
             }
 
-            // Handle Zoom webhook events.
+            var supported = eventName is "meeting.started" or
+                                         "meeting.participant_joined" or
+                                         "meeting.participant_left" or
+                                         "meeting.ended";
+
+            if (!supported)
+                return Ok();
+
+            // Persist before acknowledging.
+            // Duplicate deliveries should be treated as successful.
+            //await inbox.SaveIfNewAsync(
+            //    eventName,
+            //    rawBody,
+            //    cancellationToken);
+
+            logger.LogInformation(
+                "Zoom webhook accepted: {EventName}",
+                eventName);
+
             return Ok();
         }
+    }
 
-        private string ComputeHmac(string message)
-        {
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.WebhookSecretToken));
-            return Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(message))).ToLowerInvariant();
-        }
+    private bool IsValidSignature(string rawBody, string secret)
+    {
+        var timestamp = Request.Headers["x-zm-request-timestamp"].ToString();
+
+        var receivedSignature =
+            Request.Headers["x-zm-signature"].ToString();
+
+        if (!long.TryParse(timestamp, NumberStyles.Integer, CultureInfo.InvariantCulture, out var timestampSeconds))
+            return false;
+
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        // Application replay-protection policy: five-minute window.
+        if (timestampSeconds < now - 300 || timestampSeconds > now + 300)
+            return false;
+
+        var message = $"v0:{timestamp}:{rawBody}";
+        var expectedSignature = $"v0={Hash(secret, message)}";
+
+        return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expectedSignature),
+                                                       Encoding.UTF8.GetBytes(receivedSignature));
+    }
+
+    private static string Hash(string secret, string value)
+    {
+        var hash = HMACSHA256.HashData(
+            Encoding.UTF8.GetBytes(secret),
+            Encoding.UTF8.GetBytes(value));
+
+        return Convert.ToHexString(hash).ToLowerInvariant();
     }
 }
