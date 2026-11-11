@@ -1,15 +1,13 @@
 ﻿using CrescentSchool.BLL.Services;
-using CrescentSchool.Core.Options;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Repositories;
-using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace CrescentSchool.BLL.Jobs;
 
-public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepository, ISessionsRepository sessionsRepository, IZoomService zoomService, IOptions<ZoomOptions> zoomOptions)
+public class CreateUpcommingSessionsJob(IStudentsRepository studentsRepository, ISessionsRepository sessionsRepository, IZoomService zoomService)
 {
-    public const string Name = "CreateMonthlyUpcommingSessionsJob";
+    public const string Name = "CreateUpcommingSessionsJob";
 
     private static readonly string[] TimeFormats =
     [
@@ -23,10 +21,23 @@ public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepos
 
     public async Task Execute(object? state, CancellationToken cancellationToken = default)
     {
-        var now = DateTime.Now;
-        var nextMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1);
+        var cairoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Africa/Cairo");
 
-        var students = await studentsRepository.GetStudentsByIdsAsync([]);
+        var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cairoTimeZone);
+
+        var endDate = now.AddDays(7);
+
+        var students = await studentsRepository.GetStudentsByIdsAsync([], cancellationToken);
+
+
+        var instructorZoomUsers = students
+            .Where(student => student.Instructor is not null)
+            .Select(student => student.Instructor!)
+            .DistinctBy(instructor => instructor.Id)
+            .ToDictionary(
+                instructor => instructor.Id,
+                instructor => instructor.ZoomUserId);
+
         var upcomingSessions = new List<TimeTableSessionDto>();
 
         foreach (var student in students)
@@ -53,7 +64,7 @@ public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepos
                 if (sessionDateTime < now)
                     sessionDateTime = sessionDateTime.AddDays(7);
 
-                for (; sessionDateTime < nextMonth; sessionDateTime = sessionDateTime.AddDays(7))
+                for (; sessionDateTime < endDate; sessionDateTime = sessionDateTime.AddDays(7))
                 {
                     upcomingSessions.Add(new TimeTableSessionDto
                     {
@@ -67,23 +78,26 @@ public class CreateMonthlyUpcommingSessionsJob(IStudentsRepository studentsRepos
                 }
             }
         }
+
         foreach (var session in upcomingSessions)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var zoomMeetingResponse = await zoomService.CreateMeetingAsync(
-                topic: $"Lesson - {session.StudentName} - {session.InstructorName} - {session.SessionDateTime.ToString()}",
-                startTime: session.SessionDateTime,
-                cancellationToken: cancellationToken);
+            var zoomUserId = instructorZoomUsers[session.InstructorId]!;
 
-            session.ZoomMeeting = zoomMeetingResponse.JoinUrl;
-            session.ZoomMeetingId = zoomMeetingResponse.Id;
-            session.Uuid = zoomMeetingResponse.Uuid;
+            if (string.IsNullOrWhiteSpace(zoomUserId))
+                continue;
 
+            var topic = $"Lesson - {session.StudentName} - {session.InstructorName} - {session.SessionDateTime:yyyy-MM-dd HH:mm}";
+
+            var meeting = await zoomService.CreateMeetingAsync(hostUserId: zoomUserId, topic: topic, startTime: session.SessionDateTime, cancellationToken: cancellationToken);
+
+            session.ZoomMeeting = meeting.JoinUrl;
+
+            session.ZoomMeetingId = meeting.Id;
+            session.Uuid = meeting.Uuid;
+
+            await sessionsRepository.CreateUpCommingSessions([session], cancellationToken);
         }
-
-        if (upcomingSessions.Count > 0)
-            await sessionsRepository.CreateUpCommingSessions(upcomingSessions, cancellationToken);
     }
-
 }

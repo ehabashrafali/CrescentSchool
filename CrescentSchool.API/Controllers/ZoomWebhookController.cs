@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CrescentSchool.Core.Options;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,15 +14,15 @@ namespace CrescentSchool.API.Controllers;
 
 [ApiController]
 [Route("api/webhooks/zoom")]
-public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWebhookController> logger) : ControllerBase
+public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWebhookController> logger, IOptions<ZoomOptions> options) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost]
     [RequestSizeLimit(1_048_576)]
-    public async Task<IActionResult> Receive(
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Receive(CancellationToken cancellationToken)
     {
-        var secret = configuration["ZoomOptions:WebhookSecretToken"];
+        var secret = options.Value.WebhookSecretToken;
+
 
         if (string.IsNullOrWhiteSpace(secret) || secret.Contains("##{", StringComparison.Ordinal))
         {

@@ -11,32 +11,34 @@ public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOpti
 {
     private readonly ZoomOptions _options = options.Value;
     private readonly SemaphoreSlim _tokenLock = new(1, 1);
-
     private string? _accessToken;
     private DateTimeOffset _tokenExpiresAt;
 
-    public async Task<ZoomMeetingResponse> CreateMeetingAsync(string topic, DateTime startTime, CancellationToken cancellationToken = default)
+    public async Task<ZoomMeetingResponse> CreateMeetingAsync(string hostUserId, string topic, DateTime startTime, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(hostUserId))
+            throw new ArgumentException("The instructor's Zoom user ID is required.", nameof(hostUserId));
+
         var accessToken = await GetAccessTokenAsync(cancellationToken);
 
         var payload = new
         {
             topic,
-            type = 2, // Scheduled meeting
+            type = 2,
+            timezone = "Africa/Cairo",
             start_time = startTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture),
             settings = new
             {
-                host_video = true,
-                participant_video = true,
-                join_before_host = false,
-                waiting_room = true
+                join_before_host = true,
+                waiting_room = false,
+                meeting_authentication = false,
+                jbh_time = 10
             }
         };
 
+        var escapedHostUserId = Uri.EscapeDataString(hostUserId);
 
-        var hostUserId = Uri.EscapeDataString(_options.HostUserId);
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, $"https://api.zoom.us/v2/users/{hostUserId}/meetings")
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"https://api.zoom.us/v2/users/{escapedHostUserId}/meetings")
         {
             Content = JsonContent.Create(payload)
         };
@@ -55,7 +57,6 @@ public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOpti
 
         return meeting;
     }
-
     private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
     {
         await _tokenLock.WaitAsync(cancellationToken);

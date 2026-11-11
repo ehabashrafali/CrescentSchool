@@ -13,6 +13,10 @@ public class InstructorConfiguration : IEntityTypeConfiguration<Instructor>
         builder.Property(i => i.Id)
             .ValueGeneratedNever();
 
+        builder.Property(i => i.ZoomUserId)
+            .IsRequired()
+            .HasMaxLength(100);
+
         builder.Property(i => i.Fees)
             .HasColumnType("decimal(18,2)")
             .HasDefaultValue(0.00m);

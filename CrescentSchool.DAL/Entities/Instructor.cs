@@ -8,5 +8,6 @@ public class Instructor
     public List<Session> Sessions { get; set; } = [];
     public decimal Fees { get; set; }
     public string UserId { get; set; } = null!;
+    public string ZoomUserId { get; set; } = null!;
     public ApplicationUser User { get; set; } = null!;
 }

@@ -15,7 +15,7 @@ public class UpCommingSessionsConfigurations : IEntityTypeConfiguration<UpCommin
             s.SessionDateTime,
             s.StudentId,
             s.InstructorId
-        });
+        }).IsUnique();
 
         builder.Property(s => s.SessionDateTime)
                .IsRequired();
