@@ -97,6 +97,45 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
             if (!supported)
                 return Ok();
 
+            
+            if (!root.TryGetProperty("payload", out var element) ||
+                element.ValueKind != JsonValueKind.Object ||
+                !element.TryGetProperty("object", out var meeting) ||
+                meeting.ValueKind != JsonValueKind.Object)
+            {
+                return BadRequest();
+            }
+
+            var meetingId = ReadValue(meeting, "id");
+            var meetingUuid = ReadValue(meeting, "uuid");
+            var hostId = ReadValue(meeting, "host_id");
+            var eventTimestamp = ReadValue(root, "event_ts");
+
+            logger.LogInformation(
+                "Zoom event {EventName}, meeting {MeetingId}, UUID {MeetingUuid}, host {HostId}, event timestamp {EventTimestamp}",
+                eventName, meetingId, meetingUuid, hostId, eventTimestamp);
+
+            if (eventName is "meeting.participant_joined" or "meeting.participant_left")
+            {
+                if (!meeting.TryGetProperty("participant", out var participant) ||
+                    participant.ValueKind != JsonValueKind.Object)
+                {
+                    return BadRequest();
+                }
+
+                var participantName = ReadValue(participant, "user_name");
+                var participantUserId = ReadValue(participant, "participant_user_id");
+                var timeField = eventName == "meeting.participant_joined"
+                    ? "join_time"
+                    : "leave_time";
+                var participantTime = ReadValue(participant, timeField);
+
+                logger.LogInformation(
+                    "Zoom event {EventName}, meeting {MeetingId}, participant {ParticipantName}, Zoom user ID {ParticipantUserId}, {TimeField} {ParticipantTime}",
+                    eventName, meetingId, participantName, participantUserId,
+                    timeField, participantTime);
+            }
+
             // Persist before acknowledging.
             // Duplicate deliveries should be treated as successful.
             //await inbox.SaveIfNewAsync(
@@ -108,6 +147,7 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
                 "Zoom webhook accepted: {EventName}",
                 eventName);
 
+            
             return Ok();
         }
     }
@@ -142,5 +182,18 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
             Encoding.UTF8.GetBytes(value));
 
         return Convert.ToHexString(hash).ToLowerInvariant();
+    }
+    
+    private static string? ReadValue(JsonElement source, string name)
+    {
+        if (!source.TryGetProperty(name, out var value))
+            return null;
+
+        return value.ValueKind switch
+        {
+            JsonValueKind.String => value.GetString(),
+            JsonValueKind.Number => value.GetRawText(),
+            _ => null
+        };
     }
 }
