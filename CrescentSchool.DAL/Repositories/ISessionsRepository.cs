@@ -17,6 +17,6 @@ public interface ISessionsRepository
     Task CreateUpCommingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken);
     Task<List<UpCommingSessions>> GetStudentUpCommingSessions(Guid studentId, CancellationToken cancellationToken);
     Task<List<UpCommingSessions>> GetInstructorUpCommingSessions(Guid instructorId, CancellationToken cancellationToken);
-    Task MarkJoinedAsync(long zoomMeetingId, string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken);
-    Task MarkLeftAsync(long zoomMeetingId, string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken);
+    Task MarkJoinedAsync(string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken);
+    Task MarkLeftAsync(string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken);
 }

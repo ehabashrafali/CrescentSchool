@@ -36,6 +36,15 @@ public static class HangfireExtensions
             throw new ArgumentNullException(nameof(monthlyUpcommingSessionsOptions), "MonthlyUpcommingSessionsOptions configuration section is missing or invalid.");
 
         CreateMonthlyUpcommingSessions(builder, monthlyUpcommingSessionsOptions);
+        //ProcessZoomWebhookInbox(builder);
+    }
+
+    private static void ProcessZoomWebhookInbox(IApplicationBuilder builder)
+    {
+        var recurringJobManager = builder.ApplicationServices.GetRequiredService<IRecurringJobManager>();
+        recurringJobManager.AddOrUpdate<ProcessZoomWebhookInboxJob>(ProcessZoomWebhookInboxJob.Name,
+                                                      job => job.Execute(CancellationToken.None),
+                                                      Cron.Minutely());
     }
 
     private static void CreateMonthlyUpcommingSessions(IApplicationBuilder builder, MonthlyUpcommingSessionsOptions configuration)

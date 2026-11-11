@@ -1,10 +1,12 @@
-﻿using CrescentSchool.Core.Options;
+﻿using CrescentSchool.BLL.Services;
+using CrescentSchool.Core.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,7 +16,7 @@ namespace CrescentSchool.API.Controllers;
 
 [ApiController]
 [Route("api/webhooks/zoom")]
-public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWebhookController> logger, IOptions<ZoomOptions> options) : ControllerBase
+public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptions<ZoomOptions> options, IZoomWebhookInbox inbox) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost]
@@ -23,7 +25,6 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
     {
         var secret = options.Value.WebhookSecretToken;
 
-
         if (string.IsNullOrWhiteSpace(secret) || secret.Contains("##{", StringComparison.Ordinal))
         {
             logger.LogError("Zoom webhook secret is not configured.");
@@ -31,7 +32,6 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
         }
 
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
-
         var rawBody = await reader.ReadToEndAsync(cancellationToken);
 
         JsonDocument document;
@@ -52,102 +52,73 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
             if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("event", out var eventElement) || eventElement.ValueKind != JsonValueKind.String)
                 return BadRequest();
 
-            var eventName = eventElement.GetString()!;
+            var eventName = eventElement.GetString();
 
-            // Zoom URL validation challenge.
+            if (string.IsNullOrWhiteSpace(eventName))
+                return BadRequest();
+
             if (eventName == "endpoint.url_validation")
             {
-                if (!root.TryGetProperty("payload", out var payload) ||
-                    payload.ValueKind != JsonValueKind.Object ||
-                    !payload.TryGetProperty("plainToken", out var token) ||
-                    token.ValueKind != JsonValueKind.String)
-                {
+                if (!root.TryGetProperty("payload", out var validationPayload) || validationPayload.ValueKind != JsonValueKind.Object ||
+                    !validationPayload.TryGetProperty("plainToken", out var token) || token.ValueKind != JsonValueKind.String)
+
                     return BadRequest();
-                }
 
                 var plainToken = token.GetString();
 
                 if (string.IsNullOrWhiteSpace(plainToken))
                     return BadRequest();
 
-                var encryptedToken = Hash(secret, plainToken);
-
                 logger.LogInformation("Zoom webhook URL validation challenge received.");
 
-                // Return these fields directly, without an API wrapper.
                 return new JsonResult(new
                 {
                     plainToken,
-                    encryptedToken
+                    encryptedToken = Hash(secret, plainToken)
                 });
             }
 
-            // Verify real event notifications.
             if (!IsValidSignature(rawBody, secret))
             {
                 logger.LogWarning("Zoom webhook signature verification failed.");
                 return Unauthorized();
             }
 
-            var supported = eventName is "meeting.started" or
-                                         "meeting.participant_joined" or
-                                         "meeting.participant_left" or
-                                         "meeting.ended";
-
-            if (!supported)
+            if (eventName is not ("meeting.participant_joined" or "meeting.participant_left"))
                 return Ok();
 
-            
-            if (!root.TryGetProperty("payload", out var element) ||
-                element.ValueKind != JsonValueKind.Object ||
-                !element.TryGetProperty("object", out var meeting) ||
-                meeting.ValueKind != JsonValueKind.Object)
+            if (!root.TryGetProperty("payload", out var payload) ||
+                payload.ValueKind != JsonValueKind.Object ||
+                !payload.TryGetProperty("object", out var meeting) ||
+                meeting.ValueKind != JsonValueKind.Object ||
+                !meeting.TryGetProperty("uuid", out var uuidElement) ||
+                uuidElement.ValueKind != JsonValueKind.String ||
+                !meeting.TryGetProperty("participant", out var participant) ||
+                participant.ValueKind != JsonValueKind.Object)
             {
                 return BadRequest();
             }
 
-            var meetingId = ReadValue(meeting, "id");
-            var meetingUuid = ReadValue(meeting, "uuid");
-            var hostId = ReadValue(meeting, "host_id");
-            var eventTimestamp = ReadValue(root, "event_ts");
+            var meetingUuid = uuidElement.GetString();
 
-            logger.LogInformation(
-                "Zoom event {EventName}, meeting {MeetingId}, UUID {MeetingUuid}, host {HostId}, event timestamp {EventTimestamp}",
-                eventName, meetingId, meetingUuid, hostId, eventTimestamp);
+            if (string.IsNullOrWhiteSpace(meetingUuid) || meetingUuid.Length > 100)
+                return BadRequest();
 
-            if (eventName is "meeting.participant_joined" or "meeting.participant_left")
+            bool inserted;
+
+            try
             {
-                if (!meeting.TryGetProperty("participant", out var participant) ||
-                    participant.ValueKind != JsonValueKind.Object)
-                {
-                    return BadRequest();
-                }
+                inserted = await inbox.SaveIfNewAsync(eventName, meetingUuid, rawBody, cancellationToken);
+            }
+            catch (Exception exception) when (exception is DbUpdateException or DbException)
+            {
+                logger.LogError(exception, "Failed to save Zoom webhook {EventName} for meeting {MeetingUuid}.", eventName, meetingUuid);
 
-                var participantName = ReadValue(participant, "user_name");
-                var participantUserId = ReadValue(participant, "participant_user_id");
-                var timeField = eventName == "meeting.participant_joined"
-                    ? "join_time"
-                    : "leave_time";
-                var participantTime = ReadValue(participant, timeField);
-
-                logger.LogInformation(
-                    "Zoom event {EventName}, meeting {MeetingId}, participant {ParticipantName}, Zoom user ID {ParticipantUserId}, {TimeField} {ParticipantTime}",
-                    eventName, meetingId, participantName, participantUserId,
-                    timeField, participantTime);
+                return StatusCode(StatusCodes.Status503ServiceUnavailable);
             }
 
-            // Persist before acknowledging.
-            // Duplicate deliveries should be treated as successful.
-            //await inbox.SaveIfNewAsync(
-            //    eventName,
-            //    rawBody,
-            //    cancellationToken);
+            logger.LogInformation("Zoom webhook acknowledged. Event {EventName}, meeting {MeetingUuid}, inserted {Inserted}.", eventName, meetingUuid, inserted);
 
-            logger.LogInformation(
-                "Zoom webhook accepted: {EventName}",
-                eventName);
-
-            
             return Ok();
         }
     }
@@ -155,24 +126,20 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
     private bool IsValidSignature(string rawBody, string secret)
     {
         var timestamp = Request.Headers["x-zm-request-timestamp"].ToString();
+        var receivedSignature = Request.Headers["x-zm-signature"].ToString();
 
-        var receivedSignature =
-            Request.Headers["x-zm-signature"].ToString();
-
-        if (!long.TryParse(timestamp, NumberStyles.Integer, CultureInfo.InvariantCulture, out var timestampSeconds))
+        if (string.IsNullOrWhiteSpace(receivedSignature) || !long.TryParse(timestamp, NumberStyles.Integer, CultureInfo.InvariantCulture, out var timestampSeconds))
             return false;
 
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-        // Application replay-protection policy: five-minute window.
         if (timestampSeconds < now - 300 || timestampSeconds > now + 300)
             return false;
 
         var message = $"v0:{timestamp}:{rawBody}";
         var expectedSignature = $"v0={Hash(secret, message)}";
 
-        return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expectedSignature),
-                                                       Encoding.UTF8.GetBytes(receivedSignature));
+        return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expectedSignature), Encoding.UTF8.GetBytes(receivedSignature));
     }
 
     private static string Hash(string secret, string value)
@@ -182,18 +149,5 @@ public class ZoomWebhookController(IConfiguration configuration, ILogger<ZoomWeb
             Encoding.UTF8.GetBytes(value));
 
         return Convert.ToHexString(hash).ToLowerInvariant();
-    }
-    
-    private static string? ReadValue(JsonElement source, string name)
-    {
-        if (!source.TryGetProperty(name, out var value))
-            return null;
-
-        return value.ValueKind switch
-        {
-            JsonValueKind.String => value.GetString(),
-            JsonValueKind.Number => value.GetRawText(),
-            _ => null
-        };
     }
 }

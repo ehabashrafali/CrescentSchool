@@ -159,9 +159,9 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
             .Where(s => s.StudentId == studentId)
             .ToListAsync(cancellationToken);
 
-    public async Task MarkJoinedAsync(long zoomMeetingId, string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken)
+    public async Task MarkJoinedAsync(string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken)
     {
-        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingId == zoomMeetingId, cancellationToken);
+        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingUuid == zoomMeetingUuid, cancellationToken);
         if (session is null)
             return;
 
@@ -172,15 +172,12 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
 
         session.IsCurrentlyJoined = true;
 
-        if (!string.IsNullOrEmpty(zoomMeetingUuid))
-            session.ZoomMeetingUuid = zoomMeetingUuid;
-
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task MarkLeftAsync(long zoomMeetingId, string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken)
+    public async Task MarkLeftAsync(string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken)
     {
-        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingId == zoomMeetingId, cancellationToken);
+        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingUuid == zoomMeetingUuid, cancellationToken);
 
         if (session is null)
             return;

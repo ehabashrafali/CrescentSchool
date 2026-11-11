@@ -85,6 +85,8 @@ public class Program
         builder.Services.AddScoped<ISessionsRepository, SessionsRepository>();
         builder.Services.AddScoped<ISessionService, SessionService>();
         builder.Services.AddHttpClient<IZoomService, ZoomService>();
+        builder.Services.AddScoped<IZoomWebhookInboxRepository, ZoomWebhookInboxRepository>();
+        builder.Services.AddScoped<IZoomWebhookInbox, ZoomWebhookInbox>();
 
         // Register Exception Handling Middleware
         builder.Services.AddTransient<ExceptionHandlingMiddleware>();
