@@ -1,4 +1,5 @@
 ﻿using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
@@ -63,7 +64,8 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
 
     public async Task<Guid> UpdateSessionAsync(Guid id, UpdateSessionDto sessionDto, CancellationToken cancellationToken)
     {
-        var session = await sessionsRepository.GetSessionByIdAsync(id, cancellationToken);
+        var session = await sessionsRepository.GetSessionByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException($"Session with id {id} not found.");
 
         session.UpdateSession(
             sessionDto.StudentId,
@@ -93,36 +95,14 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
 
     public async Task<List<TimeTableSessionDto>> GetTimeTableSessionsDtoAsync(Guid id, Role role, CancellationToken cancellationToken = default)
     {
-        return role switch
+        var sessions = role switch
         {
-            Role.Student =>
-                await GetStudentTimeTableAsync(id, cancellationToken),
-
-            Role.Instructor =>
-                await GetInstructorTimeTableAsync(id, cancellationToken),
-
+            Role.Student => await sessionsRepository.GetStudentUpCommingSessions(id, cancellationToken),
+            Role.Instructor => await sessionsRepository.GetInstructorUpCommingSessions(id, cancellationToken),
             _ => throw new ArgumentOutOfRangeException(nameof(role), role, "Unsupported role.")
         };
-    }
 
-    private async Task<List<TimeTableSessionDto>> GetStudentTimeTableAsync(Guid id, CancellationToken cancellationToken)
-    {
-        return [.. (await sessionsRepository.GetStudentUpCommingSessions(id, cancellationToken))
-            .Select(session => new TimeTableSessionDto
-            {
-                SessionDateTime = session.SessionDateTime,
-                ZoomMeeting = session.ZoomMeeting,
-                StudentName = session.StudentName,
-                InstructorName = session.InstructorName,
-                ZoomMeetingId = session.ZoomMeetingId,
-                Canceled = session.Canceled
-            })];
-    }
-
-    private async Task<List<TimeTableSessionDto>> GetInstructorTimeTableAsync(Guid id, CancellationToken cancellationToken)
-    {
-        return [.. (await sessionsRepository.GetInstructorUpCommingSessions(id, cancellationToken))
-            .Select(session => new TimeTableSessionDto
+        return [.. sessions.Select(session => new TimeTableSessionDto
             {
                 SessionDateTime = session.SessionDateTime,
                 ZoomMeeting = session.ZoomMeeting,

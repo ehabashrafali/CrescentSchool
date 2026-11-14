@@ -8,7 +8,7 @@ using System.Text;
 
 namespace CrescentSchool.BLL.Services;
 
-public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> options, ISessionsRepository sessionsRepository) : IZoomService
+public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOptions> options) : IZoomService
 {
     private readonly ZoomOptions _options = options.Value;
     private readonly SemaphoreSlim _tokenLock = new(1, 1);
@@ -58,12 +58,6 @@ public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOpti
 
         return meeting;
     }
-
-    public async Task MarkAsJoined(string meetingUuid, string joinTime, CancellationToken cancellationToken = default)
-        => await sessionsRepository.MarkJoinedAsync(meetingUuid, DateTime.Parse(joinTime, null, DateTimeStyles.AdjustToUniversal), cancellationToken);
-
-    public async Task MarkAsLeft(string meetingUuid, string leftTime, CancellationToken cancellationToken = default)
-        => await sessionsRepository.MarkLeftAsync(meetingUuid, DateTime.Parse(leftTime, null, DateTimeStyles.AdjustToUniversal), cancellationToken);
 
     private async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
     {

@@ -38,7 +38,7 @@ public class AuthorizationController(UserManager<ApplicationUser> _userManager, 
         if (user is null)
             throw new UnauthorizedException("User not found");
 
-        var newToken = _jwtService.CreateToken(user);
+        var newToken = await _jwtService.CreateToken(user);
 
         return Ok(new
         {

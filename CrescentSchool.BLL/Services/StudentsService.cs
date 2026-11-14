@@ -1,5 +1,6 @@
 ﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.BLL.Mappings;
 using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
@@ -14,105 +15,20 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
     public async Task<StudentDto?> GetStudentByIdAsync(Guid studentId, CancellationToken cancellationToken = default)
     {
         var student = await studentsRepository.GetStudentByIdAsync(studentId, cancellationToken);
-        if (student is null)
-            return null;
-
-        return new StudentDto
-        {
-            Id = student.Id,
-            FirstName = student.User.FirstName,
-            LastName = student.User.LastName,
-            Email = student.User.Email,
-            Country = student.User.Country,
-            PhoneNumber = student.User.PhoneNumber,
-            DateOfBirth = student.User.DateOfBirth,
-            IsActive = student.Status == Models.Enums.StudentStatus.Active,
-            InstructorId = student.InstructorId,
-            Fees = student.Fees,
-            MonthlyReportDtos = [.. student.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
-            {
-                Id = r.Id,
-                Date = r.Date,
-                StudentId =  student.Id,
-                Memorization = r.Memorization,
-                Reading = r.Reading,
-                NoOfMemorizationAyah = r.NoOfMemorizationAyah,
-                MemorizationGrade = r.MemorizationGrade,
-                NoOfReadingAyah = r.NoOfReadingAyah,
-                ReadingGrade = r.ReadingGrade,
-                BasicQuranRecitationRulesProgress = r.BasicQuranRecitationRulesProgress,
-                BasicQuranRecitationRules = r.BasicQuranRecitationRules,
-                TajweedRules = r.TajweedRules,
-                TajweedRulesProgress = r.TajweedRulesProgress,
-                QuranComments = r.QuranComments,
-                IslamicStudiesComments = r.IslamicStudiesComments,
-                IslamicStudiesTopics = r.IslamicStudiesTopics,
-                IslamicStudiesBooks = r.IslamicStudiesBooks,
-                IslamicStudiesProgress = r.IslamicStudiesProgress,
-                OthersIslamicStudiesBooks = r.OthersIslamicStudiesBooks
-            })],
-            WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
-            {
-                Day = wa.Day,
-                Time = wa.Time,
-                TimeZone = wa.TimeZone
-            })]
-        };
+        return student?.ToStudentDto(includeReports: true);
     }
     public async Task AddMonthlyReport(Guid studentId, CreateMonthlyReportDto studentMonthlyReportDto)
         => await studentsRepository.AddMonthlyReport(studentId, studentMonthlyReportDto);
     public async Task<List<StudentDto>> GetStudentsAsync(List<Guid> studentIds, CancellationToken cancellationToken)
     {
         var students = await studentsRepository.GetStudentsByIdsAsync(studentIds, cancellationToken);
-        return [.. students.Where(s => s.User is not null).Select(student => new StudentDto
-        {
-            Id = student.Id,
-            FirstName = student.User.FirstName,
-            LastName = student.User.LastName,
-            Email = student.User.Email,
-            Country = student.User.Country,
-            PhoneNumber = student.User.PhoneNumber,
-            DateOfBirth = student.User.DateOfBirth,
-            IsActive = student.Status == Models.Enums.StudentStatus.Active,
-            InstructorId = student.InstructorId,
-            Fees = student.Fees,
-            WeeklyAppointments = [.. student.WeeklyAppointments.Select(wa => new WeeklyAppointmentDto
-            {
-                Day = wa.Day,
-                Time = wa.Time,
-                TimeZone = wa.TimeZone,
-            })]
-
-        })];
+        return [.. students.Where(s => s.User is not null).Select(s => s.ToStudentDto(includeReports: false))];
     }
     public async Task<List<MonthlyReportViewDto>> GetMonthlyReportsAsync(Guid id, CancellationToken cancellation = default)
     {
         var montlyReports = await studentsRepository.GetMonthlyReports(id, cancellation);
 
-        return [.. montlyReports.Select(r => new MonthlyReportViewDto
-        {
-            Id = r.Id,
-            StudentId = id,
-            Date = r.Date,
-            Memorization = r.Memorization,
-            Reading = r.Reading,
-            NoOfMemorizationAyah = r.NoOfMemorizationAyah,
-            MemorizationGrade = r.MemorizationGrade,
-            NoOfReadingAyah = r.NoOfReadingAyah,
-            ReadingGrade = r.ReadingGrade,
-            BasicQuranRecitationRulesProgress = r.BasicQuranRecitationRulesProgress,
-            BasicQuranRecitationRules = r.BasicQuranRecitationRules,
-            TajweedRules = r.TajweedRules,
-            TajweedRulesProgress = r.TajweedRulesProgress,
-            QuranComments = r.QuranComments,
-            IslamicStudiesComments = r.IslamicStudiesComments,
-            IslamicStudiesTopics = r.IslamicStudiesTopics,
-            IslamicStudiesBooks = r.IslamicStudiesBooks,
-            IslamicStudiesProgress = r.IslamicStudiesProgress,
-            OthersIslamicStudiesBooks = r.OthersIslamicStudiesBooks
-        }
-        )];
-
+        return [.. montlyReports.Select(r => r.ToMonthlyReportViewDto(id))];
     }
 
 
@@ -208,6 +124,8 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
     {
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description)));
     }
 
     public async Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken)

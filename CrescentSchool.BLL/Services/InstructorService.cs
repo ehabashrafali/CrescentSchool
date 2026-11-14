@@ -1,5 +1,7 @@
 ﻿using CrescentSchool.BLL.DTOs;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.BLL.Mappings;
+using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
@@ -17,10 +19,10 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
 
     public async Task DeleteInstructorAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByIdAsync(id.ToString());
+        var user = await _userManager.FindByIdAsync(id.ToString())
+            ?? throw new NotFoundException("Instructor not found");
 
-        if (user is not null)
-            user.IsDeleted = true;
+        user.IsDeleted = true;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -31,74 +33,18 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
     {
         var instructor = await instructorsRepository.GetByIdAsync(instructorId, cancellationToken);
 
-        if (instructor is null)
-            return new InstructorDto();
-
-        return new InstructorDto
-        {
-            Id = instructor.Id,
-            FirstName = instructor.User.FirstName,
-            LastName = instructor.User.LastName,
-            Email = instructor.User.Email,
-            PhoneNumber = instructor.User.PhoneNumber,
-            IsActive = instructor.User.IsActive,
-            Country = instructor.User.Country,
-            Fees = instructor.Fees
-        };
+        return instructor is null ? new InstructorDto() : instructor.ToInstructorDto();
     }
 
     public async Task<List<InstructorDto>> GetInstructorsAsync(List<Guid> instructorIds, CancellationToken cancellationToken)
     {
         var instructors = await instructorsRepository.GetInstructorsAsync(instructorIds, cancellationToken);
-        return [.. instructors.Select(i => new InstructorDto
-        {
-            Id = i.Id,
-            FirstName = i.User.FirstName,
-            LastName = i.User.LastName,
-            Email = i.User.Email,
-            PhoneNumber = i.User.PhoneNumber,
-            IsActive = i.User.IsActive,
-            Country = i.User.Country,
-            Fees = i.Fees
-        })];
+        return [.. instructors.Select(i => i.ToInstructorDto())];
     }
     public async Task<List<StudentDto>> GetInstructorStudents(Guid id, CancellationToken cancellationToken)
     {
         var students = await instructorsRepository.GetInstructorStudents(id, cancellationToken);
-        var studentDto = students.Select(s => new StudentDto
-        {
-            Id = s.Id,
-            FirstName = s.User.FirstName,
-            LastName = s.User.LastName,
-            Email = s.User.Email,
-            Country = s.User.Country,
-            PhoneNumber = s.User.PhoneNumber,
-            DateOfBirth = s.User.DateOfBirth,
-            IsActive = s.Status == StudentStatus.Active,
-            MonthlyReportDtos = [.. s.StudentMonthlyReports.Select(r => new MonthlyReportViewDto
-            {
-                Id = r.Id,
-                StudentId = id,
-                Date = r.Date,
-                Memorization = r.Memorization,
-                Reading = r.Reading,
-                NoOfMemorizationAyah = r.NoOfMemorizationAyah,
-                MemorizationGrade = r.MemorizationGrade,
-                NoOfReadingAyah = r.NoOfReadingAyah,
-                ReadingGrade = r.ReadingGrade,
-                BasicQuranRecitationRulesProgress = r.BasicQuranRecitationRulesProgress,
-                TajweedRules = r.TajweedRules,
-                TajweedRulesProgress = r.TajweedRulesProgress,
-                QuranComments = r.QuranComments,
-                IslamicStudiesComments = r.IslamicStudiesComments,
-                IslamicStudiesProgress = r.IslamicStudiesProgress,
-                IslamicStudiesTopics = r.IslamicStudiesTopics,
-                IslamicStudiesBooks = r.IslamicStudiesBooks,
-                BasicQuranRecitationRules = r.BasicQuranRecitationRules,
-                OthersIslamicStudiesBooks = r.OthersIslamicStudiesBooks
-            })]
-        }).ToList();
-        return studentDto;
+        return [.. students.Select(s => s.ToStudentDto(includeReports: true))];
     }
 
     public async Task<Guid> UpdateInstructorAsync(Guid id, UpdateInstructorDto updateInstructorDto, CancellationToken cancellationToken)
@@ -124,7 +70,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
         if (!result.Succeeded)
             throw new Exception("Failed to update identity user");
 
-        var instructor = await instructorsRepository.GetByIdAsync(id);
+        var instructor = await instructorsRepository.GetByIdAsync(id, cancellationToken);
         if (instructor is null)
             return Guid.Empty;
 
@@ -138,5 +84,7 @@ public class InstructorService(IInstructorsRepository instructorsRepository, Use
     {
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description)));
     }
 }
