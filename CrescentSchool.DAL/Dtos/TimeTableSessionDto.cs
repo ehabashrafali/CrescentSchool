@@ -10,5 +10,6 @@ public class TimeTableSessionDto
     public string Uuid { get; set; } = string.Empty;
     public Guid StudentId { get; set; }
     public Guid InstructorId { get; set; }
+    public bool IsCanceled { get; set; }
 }
 

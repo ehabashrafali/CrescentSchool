@@ -55,12 +55,18 @@ public class UpCommingSessionsConfigurations : IEntityTypeConfiguration<UpCommin
         builder.Property(s => s.LastLeftAt)
                .IsRequired(false);
 
-        builder.Property(s => s.TotalDurationInSeconds)
+        builder.Property(s => s.TotalDuration)
                .HasDefaultValue(0)
                .IsRequired();
 
-        builder.Property(s => s.IsCurrentlyJoined)
+        builder.Property(s => s.IsJoined)
                .HasDefaultValue(false)
                .IsRequired();
+
+        builder.Property(s => s.IsCancelled)
+            .HasDefaultValue(false);
+
+        builder.Property(s => s.IsRescheduled)
+            .HasDefaultValue(false);
     }
 }

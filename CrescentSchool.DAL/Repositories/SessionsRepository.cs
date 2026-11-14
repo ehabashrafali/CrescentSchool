@@ -84,6 +84,12 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
             .FirstOrDefaultAsync(session => session.Id == id, cancellationToken);
     }
 
+    public async Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken)
+    {
+        return await context.UpCommingSessions
+            .FirstOrDefaultAsync(session => session.ZoomMeetingId == meetingId, cancellationToken);
+    }
+
     public async Task<(List<Session>, int)> GetSessionsAsync(int? pageNumber, int? pageSize, CancellationToken cancellationToken)
     {
         IQueryable<Session> query = context.Sessions
@@ -170,7 +176,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         if (session.FirstJoinedAt is null || joinedAtUtc < session.FirstJoinedAt)
             session.FirstJoinedAt = joinedAtUtc;
 
-        session.IsCurrentlyJoined = true;
+        session.IsJoined = true;
 
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -187,10 +193,10 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         if (session.LastLeftAt is null || leftAtUtc > session.LastLeftAt)
             session.LastLeftAt = leftAtUtc;
 
-        session.IsCurrentlyJoined = false;
+        session.IsJoined = false;
 
         if (session.FirstJoinedAt is not null && session.LastLeftAt > session.FirstJoinedAt)
-            session.TotalDurationInSeconds = (int)(session.LastLeftAt.Value - session.FirstJoinedAt.Value).TotalSeconds;
+            session.TotalDuration = (int)(session.LastLeftAt.Value - session.FirstJoinedAt.Value).TotalSeconds;
 
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -199,5 +205,11 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
     {
         context.Update(session);
         await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task UpdateUpCommingSessions(UpCommingSessions session, CancellationToken cancellationToken)
+    {
+        context.Update(session);
+        return context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -114,7 +114,9 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
                 SessionDateTime = session.SessionDateTime,
                 ZoomMeeting = session.ZoomMeeting,
                 StudentName = session.StudentName,
-                InstructorName = session.InstructorName
+                InstructorName = session.InstructorName,
+                ZoomMeetingId = session.ZoomMeetingId,
+                IsCanceled = session.IsCancelled
             })];
     }
 
@@ -126,7 +128,16 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
                 SessionDateTime = session.SessionDateTime,
                 ZoomMeeting = session.ZoomMeeting,
                 StudentName = session.StudentName,
-                InstructorName = session.InstructorName
+                InstructorName = session.InstructorName,
+                ZoomMeetingId = session.ZoomMeetingId,
+                IsCanceled = session.IsCancelled
             })];
+    }
+
+    public async Task CancelUpCommingSessionAsync(long meetingId, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionsRepository.GetSessionByMeetingIdAsync(meetingId, cancellationToken) ?? throw new InvalidOperationException($"Session with id {meetingId} not found.");
+        session.IsCancelled = true;
+        await sessionsRepository.UpdateUpCommingSessions(session, cancellationToken);
     }
 }

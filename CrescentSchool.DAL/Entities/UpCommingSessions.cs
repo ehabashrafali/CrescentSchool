@@ -11,9 +11,11 @@ public class UpCommingSessions
     public Guid InstructorId { get; set; }
     public DateTime? FirstJoinedAt { get; set; }
     public DateTime? LastLeftAt { get; set; }
-    public int TotalDurationInSeconds { get; set; }
+    public int TotalDuration { get; set; }
     public long ZoomMeetingId { get; set; }
     public string ZoomMeetingUuid { get; set; }
     public string ZoomJoinUrl { get; set; }
-    public bool IsCurrentlyJoined { get; set; }
+    public bool IsJoined { get; set; }
+    public bool IsCancelled { get; set; } = false;
+    public bool IsRescheduled { get; set; } = false;
 }

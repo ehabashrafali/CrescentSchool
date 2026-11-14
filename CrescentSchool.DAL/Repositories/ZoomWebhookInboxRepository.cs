@@ -5,15 +5,15 @@ using Npgsql;
 
 namespace CrescentSchool.DAL.Repositories;
 
-public sealed class ZoomWebhookInboxRepository(ApplicationDbContext dbContext)
-    : IZoomWebhookInboxRepository
+public sealed class ZoomWebhookInboxRepository(ApplicationDbContext dbContext) : IZoomWebhookInboxRepository
 {
-    public async Task<bool> InsertIfNewAsync(string eventName, string meetingUuid, byte[] bodyHash, string rawBody, CancellationToken cancellationToken)
+    public async Task<bool> InsertIfNewAsync(string eventName, long meetingId, string meetingUuid, byte[] bodyHash, string rawBody, CancellationToken cancellationToken)
     {
         var message = new ZoomWebhookInboxMessage
         {
             Id = Guid.NewGuid(),
             EventName = eventName,
+            MeetingId = meetingId,
             MeetingUUID = meetingUuid,
             Payload = rawBody,
             BodySha256 = bodyHash,
@@ -38,25 +38,24 @@ public sealed class ZoomWebhookInboxRepository(ApplicationDbContext dbContext)
         }
     }
 
-    public Task<List<Guid>> GetPendingMessageIdsAsync(int take, CancellationToken cancellationToken) =>
-        dbContext.ZoomWebhookInboxMessages
-            .AsNoTracking()
-            .Where(message => message.ProcessedAt == null)
-            .OrderBy(message => message.ReceivedAt)
-            .ThenBy(message => message.Id)
-            .Select(message => message.Id)
-            .Take(take)
-            .ToListAsync(cancellationToken);
+    public async Task<Dictionary<long, List<ZoomWebhookInboxMessage>>> GetPendingMessagesAsync(CancellationToken cancellationToken)
+    {
+        var messages = await dbContext.ZoomWebhookInboxMessages
+                                      .Where(message => message.ProcessedAt == null).OrderBy(message => message.ReceivedAt)
+                                      .ToListAsync(cancellationToken);
+
+        var groupedMessages = messages.GroupBy(message => message.MeetingId).ToDictionary(group => group.Key, group => group.ToList());
+        return groupedMessages;
+    }
 
     public Task<ZoomWebhookInboxMessage?> GetPendingMessageAsync(Guid id, CancellationToken cancellationToken) =>
         dbContext.ZoomWebhookInboxMessages
             .FirstOrDefaultAsync(message => message.Id == id && message.ProcessedAt == null, cancellationToken);
 
-    public Task<List<UpCommingSessions>> GetSessionsByMeetingUuidAsync(string meetingUuid, CancellationToken cancellationToken) =>
+    public Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken) =>
         dbContext.UpCommingSessions
-            .Where(session => session.ZoomMeetingUuid == meetingUuid)
-            .Take(2)
-            .ToListAsync(cancellationToken);
+            .Where(session => session.ZoomMeetingId == meetingId)
+            .FirstOrDefaultAsync(cancellationToken);
 
     public async Task<ZoomSessionParticipants?> GetSessionParticipantsAsync(Guid studentId, Guid instructorId, CancellationToken cancellationToken)
     {

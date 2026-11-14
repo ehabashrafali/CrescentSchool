@@ -19,6 +19,9 @@ internal sealed class ZoomWebhookInboxMessageConfiguration
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.Property(message => message.MeetingId)
+            .IsRequired();
+
         builder.Property(message => message.Payload)
             .HasColumnType("text")
             .IsRequired();
@@ -37,5 +40,8 @@ internal sealed class ZoomWebhookInboxMessageConfiguration
         builder.HasIndex(message => message.BodySha256)
             .IsUnique()
             .HasDatabaseName("uq_zoom_webhook_inbox_body_sha256");
+
+        builder.HasIndex(message => message.MeetingId)
+            .HasDatabaseName("ix_zoom_webhook_inbox_meeting_id");
     }
 }

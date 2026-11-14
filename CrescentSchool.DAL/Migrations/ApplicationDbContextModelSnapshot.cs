@@ -387,7 +387,13 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsCurrentlyJoined")
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsJoined")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRescheduled")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastLeftAt")
@@ -403,7 +409,7 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TotalDurationInSeconds")
+                    b.Property<int>("TotalDuration")
                         .HasColumnType("integer");
 
                     b.Property<string>("ZoomJoinUrl")
@@ -452,6 +458,42 @@ namespace CrescentSchool.DAL.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("WeeklyAppointment");
+                });
+
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.ZoomWebhookInboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("BodySha256")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("MeetingId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("MeetingUUID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ZoomWebhookInboxMessages");
                 });
 
             modelBuilder.Entity("CrescentSchool.Models.BasicQuranRecitationRule", b =>

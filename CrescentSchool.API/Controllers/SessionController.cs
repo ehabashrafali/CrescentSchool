@@ -69,4 +69,10 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         var result = await sessionService.GetTimeTableSessionsDtoAsync(id, role, cancellationToken);
         return Ok(result);
     }
+    [HttpDelete("cancel-upcomming-session/{meetingId:long}")]
+    public async Task<IActionResult> CancelUpCommingSession([FromRoute] long meetingId, CancellationToken cancellationToken)
+    {
+        await sessionService.CancelUpCommingSessionAsync(meetingId, cancellationToken);
+        return Ok();
+    }
 }

@@ -88,6 +88,8 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
                 return Ok();
 
             if (!root.TryGetProperty("payload", out var payload) ||
+                !root.TryGetProperty("id", out var idElement) ||
+                idElement.ValueKind != JsonValueKind.String ||
                 payload.ValueKind != JsonValueKind.Object ||
                 !payload.TryGetProperty("object", out var meeting) ||
                 meeting.ValueKind != JsonValueKind.Object ||
@@ -100,6 +102,7 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
             }
 
             var meetingUuid = uuidElement.GetString();
+            var meetingId = idElement.GetInt64();
 
             if (string.IsNullOrWhiteSpace(meetingUuid) || meetingUuid.Length > 100)
                 return BadRequest();
@@ -108,7 +111,7 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
 
             try
             {
-                inserted = await inbox.SaveIfNewAsync(eventName, meetingUuid, rawBody, cancellationToken);
+                inserted = await inbox.SaveIfNewAsync(eventName, meetingId, meetingUuid, rawBody, cancellationToken);
             }
             catch (Exception exception) when (exception is DbUpdateException or DbException)
             {
