@@ -63,8 +63,8 @@ public class UpCommingSessionsConfigurations : IEntityTypeConfiguration<UpCommin
                .HasDefaultValue(false)
                .IsRequired();
 
-        builder.Property(s => s.IsCancelled)
-            .HasDefaultValue(false);
+        builder.Property(s => s.Canceled)
+            .HasDefaultValue(null);
 
         builder.Property(s => s.IsRescheduled)
             .HasDefaultValue(false);

@@ -1,4 +1,6 @@
-﻿namespace CrescentSchool.DAL.Entities;
+﻿using CrescentSchool.Models.Enums;
+
+namespace CrescentSchool.DAL.Entities;
 
 public class UpCommingSessions
 {
@@ -16,6 +18,6 @@ public class UpCommingSessions
     public string ZoomMeetingUuid { get; set; }
     public string ZoomJoinUrl { get; set; }
     public bool IsJoined { get; set; }
-    public bool IsCancelled { get; set; } = false;
+    public StudentAttendanceStatus? Canceled { get; set; } = null;
     public bool IsRescheduled { get; set; } = false;
 }

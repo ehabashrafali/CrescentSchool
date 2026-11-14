@@ -1,6 +1,6 @@
 ﻿namespace CrescentSchool.Core.Options;
 
-public class MonthlyUpcommingSessionsOptions
+public class UpcommingSessionsOptions
 {
     public string CronExpression { get; set; } = string.Empty;
 }

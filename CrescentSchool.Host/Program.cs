@@ -64,7 +64,7 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        builder.Services.BindOptions<MonthlyUpcommingSessionsOptions>("MonthlyUpcommingSessionsOptions");
+        builder.Services.BindOptions<UpcommingSessionsOptions>("UpcommingSessionsOptions");
 
         builder.Services.BindOptions<ZoomOptions>("ZoomOptions");
 

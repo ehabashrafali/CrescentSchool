@@ -19,7 +19,6 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
     {
         return await sessionsRepository.CreateSession(sessionDto, cancellationToken);
     }
-
     public async Task<List<GetSessionDto>> GetSessionsByUserIdAndDate(Guid id, Role role, DateTimeOffset date, CancellationToken cancellationToken = default)
     {
         if (role == Role.Student)
@@ -116,7 +115,7 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
                 StudentName = session.StudentName,
                 InstructorName = session.InstructorName,
                 ZoomMeetingId = session.ZoomMeetingId,
-                IsCanceled = session.IsCancelled
+                Canceled = session.Canceled
             })];
     }
 
@@ -130,14 +129,14 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
                 StudentName = session.StudentName,
                 InstructorName = session.InstructorName,
                 ZoomMeetingId = session.ZoomMeetingId,
-                IsCanceled = session.IsCancelled
+                Canceled = session.Canceled
             })];
     }
 
-    public async Task CancelUpCommingSessionAsync(long meetingId, CancellationToken cancellationToken = default)
+    public async Task CancelUpCommingSessionAsync(long meetingId, Role role, CancellationToken cancellationToken = default)
     {
         var session = await sessionsRepository.GetSessionByMeetingIdAsync(meetingId, cancellationToken) ?? throw new InvalidOperationException($"Session with id {meetingId} not found.");
-        session.IsCancelled = true;
+        session.Canceled = role == Role.Student ? StudentAttendanceStatus.Cancelled : StudentAttendanceStatus.CancelledByInstructor;
         await sessionsRepository.UpdateUpCommingSessions(session, cancellationToken);
     }
 }

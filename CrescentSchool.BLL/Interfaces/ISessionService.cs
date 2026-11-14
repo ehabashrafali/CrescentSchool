@@ -9,7 +9,7 @@ public interface ISessionService
     Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default);
     Task<List<GetSessionDto>> GetSessionsByInstructorIdAsync(Guid instructorId, CancellationToken cancellationToken = default);
     Task<Guid?> CreateSession(CreateSessionDto sessionDto, CancellationToken cancellationToken = default);
-    Task CancelUpCommingSessionAsync(long meetingId, CancellationToken cancellationToken = default);
+    Task CancelUpCommingSessionAsync(long meetingId, Role role, CancellationToken cancellationToken = default);
     Task<List<GetSessionDto>> GetSessionsByUserIdAndDate(Guid id, Role role, DateTimeOffset date, CancellationToken cancellationToken = default);
     Task DeleteSessionAsync(Guid id, CancellationToken cancellationToken);
     Task<GetSessionDto?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken);

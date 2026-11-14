@@ -1,4 +1,6 @@
-﻿namespace CrescentSchool.DAL.Dtos;
+﻿using CrescentSchool.Models.Enums;
+
+namespace CrescentSchool.DAL.Dtos;
 
 public class TimeTableSessionDto
 {
@@ -10,6 +12,6 @@ public class TimeTableSessionDto
     public string Uuid { get; set; } = string.Empty;
     public Guid StudentId { get; set; }
     public Guid InstructorId { get; set; }
-    public bool IsCanceled { get; set; }
+    public StudentAttendanceStatus? Canceled { get; set; }
 }
 

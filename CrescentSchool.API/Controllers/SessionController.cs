@@ -70,9 +70,9 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok(result);
     }
     [HttpDelete("cancel-upcomming-session/{meetingId:long}")]
-    public async Task<IActionResult> CancelUpCommingSession([FromRoute] long meetingId, CancellationToken cancellationToken)
+    public async Task<IActionResult> CancelUpCommingSession([FromRoute] long meetingId, [FromQuery] Role role, CancellationToken cancellationToken)
     {
-        await sessionService.CancelUpCommingSessionAsync(meetingId, cancellationToken);
+        await sessionService.CancelUpCommingSessionAsync(meetingId, role, cancellationToken);
         return Ok();
     }
 }

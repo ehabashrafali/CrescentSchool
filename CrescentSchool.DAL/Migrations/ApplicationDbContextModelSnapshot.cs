@@ -377,6 +377,9 @@ namespace CrescentSchool.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("Canceled")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("FirstJoinedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -386,9 +389,6 @@ namespace CrescentSchool.DAL.Migrations
                     b.Property<string>("InstructorName")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsCancelled")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsJoined")
                         .HasColumnType("boolean");

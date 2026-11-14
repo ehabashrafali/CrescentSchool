@@ -21,4 +21,6 @@ public interface ISessionsRepository
     Task MarkLeftAsync(string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken);
     Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken);
     Task UpdateUpCommingSessions(UpCommingSessions session, CancellationToken cancellationToken);
+    Task<List<UpCommingSessions>> GetUpCommingSessionsToSettleAsync(CancellationToken cancellationToken);
+    Task AddSessions(List<Session> sessions, CancellationToken cancellationToken);
 }

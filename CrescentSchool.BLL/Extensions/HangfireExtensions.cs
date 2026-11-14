@@ -31,12 +31,13 @@ public static class HangfireExtensions
 
     public static async Task AddHangfireJobsAsync(this IApplicationBuilder builder, IConfiguration configuration)
     {
-        var monthlyUpcommingSessionsOptions = configuration.GetSection("MonthlyUpcommingSessionsOptions").Get<MonthlyUpcommingSessionsOptions>();
-        if (monthlyUpcommingSessionsOptions is null)
-            throw new ArgumentNullException(nameof(monthlyUpcommingSessionsOptions), "MonthlyUpcommingSessionsOptions configuration section is missing or invalid.");
+        var UpcommingSessionsOptions = configuration.GetSection("UpcommingSessionsOptions").Get<UpcommingSessionsOptions>();
+        if (UpcommingSessionsOptions is null)
+            throw new ArgumentNullException(nameof(UpcommingSessionsOptions), "UpcommingSessionsOptions configuration section is missing or invalid.");
 
-        CreateMonthlyUpcommingSessions(builder, monthlyUpcommingSessionsOptions);
+        CreateMonthlyUpcommingSessions(builder, UpcommingSessionsOptions);
         ProcessZoomWebhookInbox(builder);
+        //SettleUpcommingSessions(builder);
     }
 
     private static void ProcessZoomWebhookInbox(IApplicationBuilder builder)
@@ -44,14 +45,23 @@ public static class HangfireExtensions
         var recurringJobManager = builder.ApplicationServices.GetRequiredService<IRecurringJobManager>();
         recurringJobManager.AddOrUpdate<ProcessZoomWebhookInboxJob>(ProcessZoomWebhookInboxJob.Name,
                                                       job => job.Execute(CancellationToken.None),
-                                                      Cron.Daily(7, 0));
+                                                      Cron.Daily());
     }
 
-    private static void CreateMonthlyUpcommingSessions(IApplicationBuilder builder, MonthlyUpcommingSessionsOptions configuration)
+    private static void CreateMonthlyUpcommingSessions(IApplicationBuilder builder, UpcommingSessionsOptions configuration)
     {
         var recurringJobManager = builder.ApplicationServices.GetRequiredService<IRecurringJobManager>();
         recurringJobManager.AddOrUpdate<CreateUpcommingSessionsJob>(CreateUpcommingSessionsJob.Name,
                                                       job => job.Execute(null, CancellationToken.None),
                                                       configuration.CronExpression);
     }
+
+    private static void SettleUpcommingSessions(IApplicationBuilder builder)
+    {
+        var recurringJobManager = builder.ApplicationServices.GetRequiredService<IRecurringJobManager>();
+        recurringJobManager.AddOrUpdate<SettleUpcommingSessionsJob>(SettleUpcommingSessionsJob.Name,
+                                                      job => job.Execute(null, CancellationToken.None),
+                                                     Cron.Daily());
+    }
+
 }

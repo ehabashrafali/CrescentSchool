@@ -165,6 +165,11 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
             .Where(s => s.StudentId == studentId)
             .ToListAsync(cancellationToken);
 
+    public async Task<List<UpCommingSessions>> GetUpCommingSessionsToSettleAsync(CancellationToken cancellationToken)
+        => await context.UpCommingSessions
+            .Where(s => s.IsJoined == true && s.FirstJoinedAt != null && s.LastLeftAt != null)
+            .ToListAsync();
+
     public async Task MarkJoinedAsync(string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken)
     {
         var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingUuid == zoomMeetingUuid, cancellationToken);
@@ -211,5 +216,11 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
     {
         context.Update(session);
         return context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddSessions(List<Session> sessions, CancellationToken cancellationToken)
+    {
+        await context.Sessions.AddRangeAsync(sessions, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
