@@ -223,4 +223,15 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         await context.Sessions.AddRangeAsync(sessions, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
     }
+    
+    public async Task<bool> UpComingSessionExistsAsync(
+        Guid instructorId,
+        Guid studentId,
+        DateTime sessionDateTime,
+        CancellationToken cancellationToken) =>
+        await context.UpCommingSessions.AnyAsync(
+            session => session.InstructorId == instructorId &&
+                       session.StudentId == studentId &&
+                       session.SessionDateTime == sessionDateTime,
+            cancellationToken);
 }

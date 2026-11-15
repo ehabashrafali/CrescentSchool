@@ -48,8 +48,16 @@ public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOpti
 
         using var response = await httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
+            throw new HttpRequestException(
+                $"Zoom Create Meeting failed with HTTP {(int)response.StatusCode}. " +
+                $"Host user ID: '{hostUserId}'. Response: {errorBody}",
+                inner: null,
+                statusCode: response.StatusCode);
+        }
         var meeting = await response.Content.ReadFromJsonAsync<ZoomMeetingResponse>(cancellationToken: cancellationToken);
 
         if (string.IsNullOrWhiteSpace(meeting?.JoinUrl))

@@ -68,7 +68,7 @@ public class CreateUpcommingSessionsJob(IStudentsRepository studentsRepository, 
                 {
                     upcomingSessions.Add(new TimeTableSessionDto
                     {
-                        SessionDateTime = sessionDateTime,
+                        SessionDateTime = TimeZoneInfo.ConvertTimeToUtc(sessionDateTime, cairoTimeZone),
                         ZoomMeeting = string.Empty,
                         StudentName = studentName,
                         InstructorName = instructorName,
@@ -79,21 +79,37 @@ public class CreateUpcommingSessionsJob(IStudentsRepository studentsRepository, 
             }
         }
 
-        foreach (var session in upcomingSessions)
+        foreach (var session in upcomingSessions.DistinctBy(session => (
+                     session.InstructorId,
+                     session.StudentId,
+                     session.SessionDateTime)))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var zoomUserId = instructorZoomUsers[session.InstructorId]!;
-
-            if (string.IsNullOrWhiteSpace(zoomUserId))
+            if (!instructorZoomUsers.TryGetValue(session.InstructorId, out var zoomUserId) ||
+                string.IsNullOrWhiteSpace(zoomUserId))
+            {
                 continue;
+            }
+
+            if (await sessionsRepository.UpComingSessionExistsAsync(
+                    session.InstructorId,
+                    session.StudentId,
+                    session.SessionDateTime,
+                    cancellationToken))
+            {
+                continue;
+            }
 
             var topic = $"Lesson - {session.StudentName} - {session.InstructorName} - {session.SessionDateTime:yyyy-MM-dd HH:mm}";
 
-            var meeting = await zoomService.CreateMeetingAsync(hostUserId: zoomUserId, topic: topic, startTime: session.SessionDateTime, cancellationToken: cancellationToken);
+            var meeting = await zoomService.CreateMeetingAsync(
+                hostUserId: zoomUserId,
+                topic: topic,
+                startTime: session.SessionDateTime,
+                cancellationToken: cancellationToken);
 
             session.ZoomMeeting = meeting.JoinUrl;
-
             session.ZoomMeetingId = meeting.Id;
             session.Uuid = meeting.Uuid;
 

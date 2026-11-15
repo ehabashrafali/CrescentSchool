@@ -23,4 +23,10 @@ public interface ISessionsRepository
     Task UpdateUpCommingSessions(UpCommingSessions session, CancellationToken cancellationToken);
     Task<List<UpCommingSessions>> GetUpCommingSessionsToSettleAsync(CancellationToken cancellationToken);
     Task AddSessions(List<Session> sessions, CancellationToken cancellationToken);
+
+    public Task<bool> UpComingSessionExistsAsync(
+        Guid instructorId,
+        Guid studentId,
+        DateTime sessionDateTime,
+        CancellationToken cancellationToken);
 }
