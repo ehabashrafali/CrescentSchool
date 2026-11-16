@@ -7,7 +7,7 @@ namespace CrescentSchool.BLL.Mappings;
 
 internal static class DtoMappings
 {
-    public static MonthlyReportViewDto ToMonthlyReportViewDto(this StudentMonthlyReport r, Guid studentId) => new()
+    public static MonthlyReportViewDto ToMonthlyReportViewDto(this StudentMonthlyReport r, Guid studentId, bool referenceValuesOnly = false) => new()
     {
         Id = r.Id,
         StudentId = studentId,

@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.Models;
+namespace CrescentSchool.Models;
 
 public static class SystemConstants
 {
@@ -45,4 +45,3 @@ public static class SystemConstants
         return dateTime.ToString("MMM dd, yyyy hh:mm tt") + " (UTC)";
     }
 }
-

@@ -1,4 +1,4 @@
-﻿using CrescentSchool.Core.Extensions;
+using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.DbContext;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
@@ -102,19 +102,19 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
             .Include(r => r.BasicQuranRecitationRules)
             .FirstOrDefaultAsync(cancellationToken);
     }
-    public Task DeactivateStudent(Guid id, CancellationToken cancellationToken)
+    public async Task DeactivateStudent(Guid id, CancellationToken cancellationToken)
     {
-        var student = context.Students.Include(s => s.User).FirstOrDefault(s => s.Id == id)
+        var student = await context.Students.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == id, cancellationToken)
             ?? throw new NotFoundException("Student", id);
         student.Status = StudentStatus.InActive;
-        return context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
-    public Task ActivateStudent(Guid id, CancellationToken cancellationToken)
+    public async Task ActivateStudent(Guid id, CancellationToken cancellationToken)
     {
-        var student = context.Students.Include(s => s.User).FirstOrDefault(s => s.Id == id)
+        var student = await context.Students.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == id, cancellationToken)
             ?? throw new NotFoundException("Student", id);
         student.Status = StudentStatus.Active;
-        return context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
     public async Task UpdateStudentAsync(Student student, CancellationToken cancellationToken)
     {

@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.Models;
+namespace CrescentSchool.Models;
 
 public abstract class AuditableEntity
 {

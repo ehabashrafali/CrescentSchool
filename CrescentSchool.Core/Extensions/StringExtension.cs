@@ -1,4 +1,4 @@
-﻿namespace CrescentSchool.Core.Extensions;
+namespace CrescentSchool.Core.Extensions;
 
 public static class StringExtension
 {
