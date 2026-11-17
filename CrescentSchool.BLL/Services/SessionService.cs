@@ -97,8 +97,8 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
     {
         var sessions = role switch
         {
-            Role.Student => await sessionsRepository.GetStudentUpCommingSessions(id, cancellationToken),
-            Role.Instructor => await sessionsRepository.GetInstructorUpCommingSessions(id, cancellationToken),
+            Role.Student => await sessionsRepository.GetStudentUpComingSessions(id, cancellationToken),
+            Role.Instructor => await sessionsRepository.GetInstructorUpComingSessions(id, cancellationToken),
             _ => throw new ArgumentOutOfRangeException(nameof(role), role, "Unsupported role.")
         };
 
@@ -113,10 +113,20 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
             })];
     }
 
+    public async Task RescheduleSessionAsync(long meetingId, DateTimeOffset newDateTime, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionsRepository.GetUpComingSessionByIdAsync(meetingId, cancellationToken)
+            ?? throw new NotFoundException($"Session with meeting Id {meetingId} not found.");
+
+        session.SessionDateTime = newDateTime.UtcDateTime;
+        session.IsRescheduled = true;
+        await sessionsRepository.UpdateUpComingSessions(session, cancellationToken);
+    }
+
     public async Task CancelUpCommingSessionAsync(long meetingId, Role role, CancellationToken cancellationToken = default)
     {
         var session = await sessionsRepository.GetSessionByMeetingIdAsync(meetingId, cancellationToken) ?? throw new InvalidOperationException($"Session with id {meetingId} not found.");
         session.Canceled = role == Role.Student ? StudentAttendanceStatus.Cancelled : StudentAttendanceStatus.CancelledByInstructor;
-        await sessionsRepository.UpdateUpCommingSessions(session, cancellationToken);
+        await sessionsRepository.UpdateUpComingSessions(session, cancellationToken);
     }
 }

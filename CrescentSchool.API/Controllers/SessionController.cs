@@ -63,6 +63,13 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok(session);
     }
 
+    [HttpPut("reschedule-session")]
+    public async Task<IActionResult> RescheduleSession([FromBody] RescheduleSessionDto request, CancellationToken cancellationToken)
+    {
+        await sessionService.RescheduleSessionAsync(request.MeetingId, request.NewDateTime!.Value, cancellationToken);
+        return NoContent();
+    }
+
     [HttpGet("time-table/{id:guid}")]
     public async Task<IActionResult> GetTimeTable([FromRoute] Guid id, [FromQuery] Role role, CancellationToken cancellationToken = default)
     {

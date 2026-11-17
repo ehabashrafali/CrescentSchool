@@ -14,14 +14,12 @@ public interface ISessionsRepository
     Task UpdateSession(Session session, CancellationToken cancellationToken);
     Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation);
-    Task CreateUpCommingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken);
-    Task<List<UpCommingSessions>> GetStudentUpCommingSessions(Guid studentId, CancellationToken cancellationToken);
-    Task<List<UpCommingSessions>> GetInstructorUpCommingSessions(Guid instructorId, CancellationToken cancellationToken);
-    Task MarkJoinedAsync(string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken);
-    Task MarkLeftAsync(string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken);
+    Task CreateUpComingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken);
+    Task<List<UpCommingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken);
+    Task<List<UpCommingSessions>> GetInstructorUpComingSessions(Guid instructorId, CancellationToken cancellationToken);
     Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken);
-    Task UpdateUpCommingSessions(UpCommingSessions session, CancellationToken cancellationToken);
-    Task<List<UpCommingSessions>> GetUpCommingSessionsToSettleAsync(CancellationToken cancellationToken);
+    Task UpdateUpComingSessions(UpCommingSessions session, CancellationToken cancellationToken);
+    Task<List<UpCommingSessions>> GetUpComingSessionsToSettleAsync(CancellationToken cancellationToken);
     Task AddSessions(List<Session> sessions, CancellationToken cancellationToken);
 
     public Task<bool> UpComingSessionExistsAsync(
@@ -29,4 +27,6 @@ public interface ISessionsRepository
         Guid studentId,
         DateTime sessionDateTime,
         CancellationToken cancellationToken);
+
+    Task<UpCommingSessions> GetUpComingSessionByIdAsync(long meetingId, CancellationToken cancellationToken);
 }

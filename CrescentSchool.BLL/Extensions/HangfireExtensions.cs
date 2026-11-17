@@ -51,7 +51,7 @@ public static class HangfireExtensions
     private static void CreateMonthlyUpcommingSessions(IApplicationBuilder builder, UpcommingSessionsOptions configuration)
     {
         var recurringJobManager = builder.ApplicationServices.GetRequiredService<IRecurringJobManager>();
-        recurringJobManager.AddOrUpdate<CreateUpcommingSessionsJob>(CreateUpcommingSessionsJob.Name,
+        recurringJobManager.AddOrUpdate<CreateUpcomingSessionsJob>(CreateUpcomingSessionsJob.Name,
                                                       job => job.Execute(null, CancellationToken.None),
                                                       configuration.CronExpression);
     }

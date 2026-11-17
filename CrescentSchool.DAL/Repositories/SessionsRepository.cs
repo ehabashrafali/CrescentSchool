@@ -30,7 +30,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         }
     }
 
-    public async Task CreateUpCommingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken)
+    public async Task CreateUpComingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken)
     {
         try
         {
@@ -67,7 +67,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         await context.SaveChangesAsync(cancellation);
     }
 
-    public Task<List<UpCommingSessions>> GetInstructorUpCommingSessions(Guid instructorId, CancellationToken cancellationToken)
+    public Task<List<UpCommingSessions>> GetInstructorUpComingSessions(Guid instructorId, CancellationToken cancellationToken)
     {
         return context.UpCommingSessions
             .Where(s => s.InstructorId == instructorId)
@@ -83,7 +83,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 .ThenInclude(s => s.User)
             .FirstOrDefaultAsync(session => session.Id == id, cancellationToken);
     }
-
+    
     public async Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken)
     {
         return await context.UpCommingSessions
@@ -160,51 +160,15 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         .ThenInclude(s => s.User)
                     .ToListAsync(cancellationToken);
 
-    public async Task<List<UpCommingSessions>> GetStudentUpCommingSessions(Guid studentId, CancellationToken cancellationToken)
+    public async Task<List<UpCommingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken)
         => await context.UpCommingSessions
             .Where(s => s.StudentId == studentId)
             .ToListAsync(cancellationToken);
 
-    public async Task<List<UpCommingSessions>> GetUpCommingSessionsToSettleAsync(CancellationToken cancellationToken)
+    public async Task<List<UpCommingSessions>> GetUpComingSessionsToSettleAsync(CancellationToken cancellationToken)
         => await context.UpCommingSessions
             .Where(s => s.IsJoined == true && s.FirstJoinedAt != null && s.LastLeftAt != null)
             .ToListAsync();
-
-    public async Task MarkJoinedAsync(string zoomMeetingUuid, DateTime joinedAtUtc, CancellationToken cancellationToken)
-    {
-        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingUuid == zoomMeetingUuid, cancellationToken);
-        if (session is null)
-            return;
-
-        joinedAtUtc = DateTime.SpecifyKind(joinedAtUtc, DateTimeKind.Utc);
-
-        if (session.FirstJoinedAt is null || joinedAtUtc < session.FirstJoinedAt)
-            session.FirstJoinedAt = joinedAtUtc;
-
-        session.IsJoined = true;
-
-        await context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task MarkLeftAsync(string zoomMeetingUuid, DateTime leftAtUtc, CancellationToken cancellationToken)
-    {
-        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingUuid == zoomMeetingUuid, cancellationToken);
-
-        if (session is null)
-            return;
-
-        leftAtUtc = DateTime.SpecifyKind(leftAtUtc, DateTimeKind.Utc);
-
-        if (session.LastLeftAt is null || leftAtUtc > session.LastLeftAt)
-            session.LastLeftAt = leftAtUtc;
-
-        session.IsJoined = false;
-
-        if (session.FirstJoinedAt is not null && session.LastLeftAt > session.FirstJoinedAt)
-            session.TotalDuration = (int)(session.LastLeftAt.Value - session.FirstJoinedAt.Value).TotalSeconds;
-
-        await context.SaveChangesAsync(cancellationToken);
-    }
 
     public async Task UpdateSession(Session session, CancellationToken cancellationToken)
     {
@@ -212,7 +176,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task UpdateUpCommingSessions(UpCommingSessions session, CancellationToken cancellationToken)
+    public Task UpdateUpComingSessions(UpCommingSessions session, CancellationToken cancellationToken)
     {
         context.Update(session);
         return context.SaveChangesAsync(cancellationToken);
@@ -234,4 +198,12 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                        session.StudentId == studentId &&
                        session.SessionDateTime == sessionDateTime,
             cancellationToken);
+
+    public async Task<UpCommingSessions> GetUpComingSessionByIdAsync(long meetingId, CancellationToken cancellationToken)
+    {
+        var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingId == meetingId, cancellationToken);
+        if (session is null)
+            throw new NotFoundException($"session with meeting Id {meetingId} not found.");
+        return session;
+    }
 }

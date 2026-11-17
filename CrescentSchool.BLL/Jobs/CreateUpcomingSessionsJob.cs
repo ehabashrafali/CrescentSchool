@@ -5,9 +5,9 @@ using System.Globalization;
 
 namespace CrescentSchool.BLL.Jobs;
 
-public class CreateUpcommingSessionsJob(IStudentsRepository studentsRepository, ISessionsRepository sessionsRepository, IZoomService zoomService)
+public class CreateUpcomingSessionsJob(IStudentsRepository studentsRepository, ISessionsRepository sessionsRepository, IZoomService zoomService)
 {
-    public const string Name = "CreateUpcommingSessionsJob";
+    public const string Name = "CreateUpcomingSessionsJob";
 
     private static readonly string[] TimeFormats =
     [
@@ -113,7 +113,7 @@ public class CreateUpcommingSessionsJob(IStudentsRepository studentsRepository, 
             session.ZoomMeetingId = meeting.Id;
             session.Uuid = meeting.Uuid;
 
-            await sessionsRepository.CreateUpCommingSessions([session], cancellationToken);
+            await sessionsRepository.CreateUpComingSessions([session], cancellationToken);
         }
     }
 }
