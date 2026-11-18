@@ -4,9 +4,9 @@ using CrescentSchool.Models.Enums;
 
 namespace CrescentSchool.BLL.Jobs;
 
-public class SettleUpcommingSessionsJob(ISessionsRepository sessionsRepository)
+public class SettleUpcomingSessionsJob(ISessionsRepository sessionsRepository)
 {
-    public static string Name => "SettleUpcommingSessionsJob";
+    public static string Name => "SettleUpcomingSessionsJob";
     public async Task Execute(object? state, CancellationToken cancellationToken = default)
     {
         var upComingSessions = await sessionsRepository.GetUpComingSessionsToSettleAsync(cancellationToken);

@@ -30,10 +30,20 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
             logger.LogError("Zoom webhook secret is not configured.");
             return StatusCode(StatusCodes.Status503ServiceUnavailable);
         }
+        string rawBody;
+        try
+        {
+            using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+            rawBody = await reader.ReadToEndAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+            when (HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            logger.LogWarning(
+                "Zoom webhook request disconnected before the body was fully received.");
 
-        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
-        var rawBody = await reader.ReadToEndAsync(cancellationToken);
-
+            return new EmptyResult();
+        }
         JsonDocument document;
 
         try
@@ -88,11 +98,10 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
                 return Ok();
 
             if (!root.TryGetProperty("payload", out var payload) ||
-                !root.TryGetProperty("id", out var idElement) ||
-                idElement.ValueKind != JsonValueKind.String ||
                 payload.ValueKind != JsonValueKind.Object ||
                 !payload.TryGetProperty("object", out var meeting) ||
                 meeting.ValueKind != JsonValueKind.Object ||
+                !meeting.TryGetProperty("id", out var idElement) ||
                 !meeting.TryGetProperty("uuid", out var uuidElement) ||
                 uuidElement.ValueKind != JsonValueKind.String ||
                 !meeting.TryGetProperty("participant", out var participant) ||
@@ -102,7 +111,19 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
             }
 
             var meetingUuid = uuidElement.GetString();
-            var meetingId = idElement.GetInt64();
+            long meetingId = 0;
+            var validMeetingId = idElement.ValueKind switch
+            {
+                JsonValueKind.String => long.TryParse(idElement.GetString(), NumberStyles.None, CultureInfo.InvariantCulture, out meetingId),
+                JsonValueKind.Number => idElement.TryGetInt64(out meetingId),
+                _ => false
+            };
+
+            if (!validMeetingId || meetingId <= 0)
+            {
+                logger.LogWarning("Zoom webhook has an invalid payload.object.id for event {EventName}.", eventName);
+                return BadRequest();
+            }
 
             if (string.IsNullOrWhiteSpace(meetingUuid) || meetingUuid.Length > 100)
                 return BadRequest();

@@ -31,13 +31,13 @@ public static class HangfireExtensions
 
     public static async Task AddHangfireJobsAsync(this IApplicationBuilder builder, IConfiguration configuration)
     {
-        var UpcommingSessionsOptions = configuration.GetSection("UpcommingSessionsOptions").Get<UpcommingSessionsOptions>();
-        if (UpcommingSessionsOptions is null)
-            throw new ArgumentNullException(nameof(UpcommingSessionsOptions), "UpcommingSessionsOptions configuration section is missing or invalid.");
+        var UpcomingSessionsOptions = configuration.GetSection("UpcommingSessionsOptions").Get<UpcommingSessionsOptions>();
+        if (UpcomingSessionsOptions is null)
+            throw new ArgumentNullException(nameof(UpcomingSessionsOptions), "UpcommingSessionsOptions configuration section is missing or invalid.");
 
-        CreateMonthlyUpcommingSessions(builder, UpcommingSessionsOptions);
+        CreateMonthlyUpcommingSessions(builder, UpcomingSessionsOptions);
         ProcessZoomWebhookInbox(builder);
-        //SettleUpcommingSessions(builder);
+        SettleUpcomingSessions(builder);
     }
 
     private static void ProcessZoomWebhookInbox(IApplicationBuilder builder)
@@ -56,10 +56,10 @@ public static class HangfireExtensions
                                                       configuration.CronExpression);
     }
 
-    private static void SettleUpcommingSessions(IApplicationBuilder builder)
+    private static void SettleUpcomingSessions(IApplicationBuilder builder)
     {
         var recurringJobManager = builder.ApplicationServices.GetRequiredService<IRecurringJobManager>();
-        recurringJobManager.AddOrUpdate<SettleUpcommingSessionsJob>(SettleUpcommingSessionsJob.Name,
+        recurringJobManager.AddOrUpdate<SettleUpcomingSessionsJob>(SettleUpcomingSessionsJob.Name,
                                                       job => job.Execute(null, CancellationToken.None),
                                                      Cron.Daily());
     }
