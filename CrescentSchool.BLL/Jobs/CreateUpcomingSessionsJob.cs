@@ -9,15 +9,7 @@ public class CreateUpcomingSessionsJob(IStudentsRepository studentsRepository, I
 {
     public const string Name = "CreateUpcomingSessionsJob";
 
-    private static readonly string[] TimeFormats =
-    [
-        @"hh\.mm",
-        @"h\.mm",
-        @"hh\:mm",
-        @"h\:mm",
-        @"%h",
-        @"hh"
-    ];
+    private static readonly string[] TimeFormats = ["HH:mm", "H:mm", "HH:mm:ss", "H:mm:ss"];
 
     public async Task Execute(object? state, CancellationToken cancellationToken = default)
     {
@@ -53,13 +45,13 @@ public class CreateUpcomingSessionsJob(IStudentsRepository studentsRepository, I
                     !Enum.IsDefined(typeof(DayOfWeek), dayOfWeek))
                     continue;
 
-                if (!TimeSpan.TryParseExact(appointment.Time?.Trim(), TimeFormats, CultureInfo.InvariantCulture, out var time) ||
-                    time < TimeSpan.Zero || time >= TimeSpan.FromDays(1))
+                if (!TimeOnly.TryParseExact(appointment.Time?.Trim(), TimeFormats, CultureInfo.InvariantCulture,
+                    DateTimeStyles.None, out var time))
                     continue;
 
                 var daysUntilAppointment = ((int)dayOfWeek - (int)now.DayOfWeek + 7) % 7;
 
-                var sessionDateTime = now.Date.AddDays(daysUntilAppointment).Add(time);
+                var sessionDateTime = now.Date.AddDays(daysUntilAppointment).Add(time.ToTimeSpan());
 
                 if (sessionDateTime < now)
                     sessionDateTime = sessionDateTime.AddDays(7);
