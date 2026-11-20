@@ -33,6 +33,10 @@ internal sealed class ZoomWebhookInboxMessageConfiguration
         builder.Property(message => message.ReceivedAt)
             .HasColumnType("timestamp with time zone")
             .IsRequired();
+        
+        builder.Property(message => message.StartTime)
+            .HasColumnType("timestamp with time zone")
+            .IsRequired();
 
         builder.Property(message => message.ProcessedAt)
             .HasColumnType("timestamp with time zone");

@@ -9,5 +9,6 @@ public class ZoomWebhookInboxMessage
     public string Payload { get; set; } = string.Empty;
     public byte[] BodySha256 { get; set; } = [];
     public DateTime ReceivedAt { get; set; }
+    public DateTime StartTime { get; set; }
     public DateTime? ProcessedAt { get; set; }
 }

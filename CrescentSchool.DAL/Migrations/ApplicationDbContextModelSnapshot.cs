@@ -371,7 +371,7 @@ namespace CrescentSchool.DAL.Migrations
                     b.ToTable("Tajweed");
                 });
 
-            modelBuilder.Entity("CrescentSchool.DAL.Entities.UpCommingSessions", b =>
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.UpComingSessions", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -489,6 +489,9 @@ namespace CrescentSchool.DAL.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");

@@ -6,7 +6,7 @@ public sealed record ZoomSessionParticipants(string? StudentEmail, string? Instr
 
 public interface IZoomWebhookInboxRepository
 {
-    Task<bool> InsertIfNewAsync(string eventName, long meetingId, string meetingUuid, byte[] bodyHash, string rawBody, CancellationToken cancellationToken);
+    Task<bool> InsertIfNewAsync(string eventName,DateTime startTimeUtc, long meetingId, string meetingUuid, byte[] bodyHash, string rawBody, CancellationToken cancellationToken);
     Task<Dictionary<long, List<ZoomWebhookInboxMessage>>> GetPendingMessagesAsync(CancellationToken cancellationToken);
     Task<ZoomWebhookInboxMessage?> GetPendingMessageAsync(Guid id, CancellationToken cancellationToken);
     Task<UpComingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken);

@@ -135,7 +135,7 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
 
             try
             {
-                inserted = await inbox.SaveIfNewAsync(eventName, meetingId, meetingUuid, rawBody, cancellationToken);
+                inserted = await inbox.SaveIfNewAsync(eventName, startTimeUtc, meetingId, meetingUuid, rawBody, cancellationToken);
             }
             catch (Exception exception) when (exception is DbUpdateException or DbException)
             {

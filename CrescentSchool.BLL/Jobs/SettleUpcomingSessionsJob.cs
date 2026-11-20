@@ -12,37 +12,42 @@ public class SettleUpcomingSessionsJob(ISessionsRepository sessionsRepository, T
     {
         var utcNow = timeProvider.GetUtcNow().UtcDateTime;
         var noAttendanceCutoff = utcNow.AddMinutes(-40);
-        var upComingSessions = await sessionsRepository.GetUpComingSessionsToSettleAsync(utcNow, cancellationToken);
+        var lateThreshold = TimeSpan.FromMinutes(5);
 
-        var sessions = upComingSessions.Select(s =>
+        var upcomingSessions = await sessionsRepository.GetUpComingSessionsToSettleAsync(utcNow, cancellationToken);
+
+        var sessions = upcomingSessions.Select(s =>
         {
-            var noAttendance = s.SessionDateTime <= noAttendanceCutoff
-                && s.FirstJoinedAt is null && s.LastLeftAt is null;
+            var (studentStatus, instructorStatus) = s.Canceled switch
+            {
+                StudentAttendanceStatus.CancelledByInstructor =>
+                    (StudentAttendanceStatus.CancelledByInstructor,
+                     InstructorAttendanceStatus.Cancelled),
 
-            var studentStatus = noAttendance
-                ? StudentAttendanceStatus.CancelledByInstructor
-                : s.Canceled switch
-                {
-                    StudentAttendanceStatus.Cancelled => StudentAttendanceStatus.Cancelled,
-                    StudentAttendanceStatus.CancelledByInstructor => StudentAttendanceStatus.CancelledByInstructor,
-                    _ => StudentAttendanceStatus.Attend
-                };
-            var instructorStatus = noAttendance
-                ? InstructorAttendanceStatus.Absent
-                : s.Canceled == StudentAttendanceStatus.CancelledByInstructor
-                    ? InstructorAttendanceStatus.Cancelled
-                    : InstructorAttendanceStatus.Attend;
+                StudentAttendanceStatus.Cancelled =>
+                    (StudentAttendanceStatus.Cancelled,
+                     InstructorAttendanceStatus.Attend),
 
-            return new Session(
-                instructorId: s.InstructorId,
-                studentId: s.StudentId,
-                sessionDuration: s.TotalDuration > 30 ? (SessionDuration)s.TotalDuration : SessionDuration.ThirtyMinutes,
-                date: s.SessionDateTime,
-                studentSessionStatus: studentStatus,
-                instructorSessionStatus: instructorStatus);
+                _ when s.SessionDateTime <= noAttendanceCutoff
+                    && s.FirstJoinedAt is null
+                    && s.LastLeftAt is null =>
+                    (StudentAttendanceStatus.CancelledByInstructor,
+                     InstructorAttendanceStatus.Absent),
+
+                _ when s.FirstJoinedAt is { } firstJoinedAt && firstJoinedAt - s.SessionDateTime > lateThreshold => (StudentAttendanceStatus.Attend, InstructorAttendanceStatus.Late),
+
+                _ => (StudentAttendanceStatus.Attend, InstructorAttendanceStatus.Attend)
+            };
+
+            return new Session(instructorId: s.InstructorId, studentId: s.StudentId, sessionDuration: s.TotalDuration > 30 ? (SessionDuration)s.TotalDuration : SessionDuration.ThirtyMinutes,
+                                date: s.SessionDateTime,
+                                studentSessionStatus: studentStatus,
+                                instructorSessionStatus: instructorStatus);
         }).ToList();
 
         if (sessions.Count > 0)
+        {
             await sessionsRepository.AddSessions(sessions, cancellationToken);
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace CrescentSchool.DAL.Repositories;
 
 public sealed class ZoomWebhookInboxRepository(ApplicationDbContext dbContext) : IZoomWebhookInboxRepository
 {
-    public async Task<bool> InsertIfNewAsync(string eventName, long meetingId, string meetingUuid, byte[] bodyHash, string rawBody, CancellationToken cancellationToken)
+    public async Task<bool> InsertIfNewAsync(string eventName, DateTime startTimeUtc, long meetingId, string meetingUuid, byte[] bodyHash, string rawBody, CancellationToken cancellationToken)
     {
         var message = new ZoomWebhookInboxMessage
         {
@@ -17,7 +17,8 @@ public sealed class ZoomWebhookInboxRepository(ApplicationDbContext dbContext) :
             MeetingUUID = meetingUuid,
             Payload = rawBody,
             BodySha256 = bodyHash,
-            ReceivedAt = DateTime.UtcNow
+            ReceivedAt = DateTime.UtcNow,
+            StartTime =  startTimeUtc
         };
 
         var entry = dbContext.Set<ZoomWebhookInboxMessage>().Add(message);
