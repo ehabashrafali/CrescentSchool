@@ -34,7 +34,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
     {
         try
         {
-            var upCommingSessions = upcomingSessions.Select(s => new UpCommingSessions
+            var upCommingSessions = upcomingSessions.Select(s => new UpComingSessions
             {
                 ZoomMeetingId = s.ZoomMeetingId,
                 ZoomMeetingUuid = s.Uuid,
@@ -67,7 +67,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         await context.SaveChangesAsync(cancellation);
     }
 
-    public Task<List<UpCommingSessions>> GetInstructorUpComingSessions(Guid instructorId, CancellationToken cancellationToken)
+    public Task<List<UpComingSessions>> GetInstructorUpComingSessions(Guid instructorId, CancellationToken cancellationToken)
     {
         return context.UpCommingSessions
             .Where(s => s.InstructorId == instructorId)
@@ -84,7 +84,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
             .FirstOrDefaultAsync(session => session.Id == id, cancellationToken);
     }
     
-    public async Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken)
+    public async Task<UpComingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken)
     {
         return await context.UpCommingSessions
             .FirstOrDefaultAsync(session => session.ZoomMeetingId == meetingId, cancellationToken);
@@ -160,15 +160,20 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                         .ThenInclude(s => s.User)
                     .ToListAsync(cancellationToken);
 
-    public async Task<List<UpCommingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken)
+    public async Task<List<UpComingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken)
         => await context.UpCommingSessions
             .Where(s => s.StudentId == studentId)
             .ToListAsync(cancellationToken);
 
-    public async Task<List<UpCommingSessions>> GetUpComingSessionsToSettleAsync(CancellationToken cancellationToken)
-        => await context.UpCommingSessions
-            .Where(s => s.IsJoined == true && s.FirstJoinedAt != null && s.LastLeftAt != null)
-            .ToListAsync();
+    public async Task<List<UpComingSessions>> GetUpComingSessionsToSettleAsync(DateTime utcNow, CancellationToken cancellationToken)
+    {
+        var today = utcNow.Date;
+        var yesterday = today.AddDays(-1);
+
+        return await context.UpCommingSessions
+            .Where(s => s.SessionDateTime >= yesterday && s.SessionDateTime < today)
+            .ToListAsync(cancellationToken);
+    }
 
     public async Task UpdateSession(Session session, CancellationToken cancellationToken)
     {
@@ -176,7 +181,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task UpdateUpComingSessions(UpCommingSessions session, CancellationToken cancellationToken)
+    public Task UpdateUpComingSessions(UpComingSessions session, CancellationToken cancellationToken)
     {
         context.Update(session);
         return context.SaveChangesAsync(cancellationToken);
@@ -199,7 +204,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                        session.SessionDateTime == sessionDateTime,
             cancellationToken);
 
-    public async Task<UpCommingSessions> GetUpComingSessionByIdAsync(long meetingId, CancellationToken cancellationToken)
+    public async Task<UpComingSessions> GetUpComingSessionByIdAsync(long meetingId, CancellationToken cancellationToken)
     {
         var session = await context.UpCommingSessions.FirstOrDefaultAsync(s => s.ZoomMeetingId == meetingId, cancellationToken);
         if (session is null)

@@ -15,7 +15,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Course> Courses { get; set; }
     public DbSet<Session> Sessions { get; set; }
     public DbSet<StudentMonthlyReport> StudentMonthlyReports { get; set; }
-    public DbSet<UpCommingSessions> UpCommingSessions { get; set; }
+    public DbSet<UpComingSessions> UpCommingSessions { get; set; }
     public DbSet<ZoomWebhookInboxMessage> ZoomWebhookInboxMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {

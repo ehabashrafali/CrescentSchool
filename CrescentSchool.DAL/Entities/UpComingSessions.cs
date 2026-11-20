@@ -2,7 +2,7 @@
 
 namespace CrescentSchool.DAL.Entities;
 
-public class UpCommingSessions
+public class UpComingSessions
 {
     public Guid Id { get; set; }
     public DateTime SessionDateTime { get; set; }

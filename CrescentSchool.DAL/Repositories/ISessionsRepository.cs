@@ -15,11 +15,11 @@ public interface ISessionsRepository
     Task<Session?> GetSessionByIdAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteSessionAsync(Guid sessionId, CancellationToken cancellation);
     Task CreateUpComingSessions(List<TimeTableSessionDto> upcomingSessions, CancellationToken cancellationToken);
-    Task<List<UpCommingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken);
-    Task<List<UpCommingSessions>> GetInstructorUpComingSessions(Guid instructorId, CancellationToken cancellationToken);
-    Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken);
-    Task UpdateUpComingSessions(UpCommingSessions session, CancellationToken cancellationToken);
-    Task<List<UpCommingSessions>> GetUpComingSessionsToSettleAsync(CancellationToken cancellationToken);
+    Task<List<UpComingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken);
+    Task<List<UpComingSessions>> GetInstructorUpComingSessions(Guid instructorId, CancellationToken cancellationToken);
+    Task<UpComingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken);
+    Task UpdateUpComingSessions(UpComingSessions session, CancellationToken cancellationToken);
+    Task<List<UpComingSessions>> GetUpComingSessionsToSettleAsync(DateTime utcNow, CancellationToken cancellationToken);
     Task AddSessions(List<Session> sessions, CancellationToken cancellationToken);
 
     public Task<bool> UpComingSessionExistsAsync(
@@ -28,5 +28,5 @@ public interface ISessionsRepository
         DateTime sessionDateTime,
         CancellationToken cancellationToken);
 
-    Task<UpCommingSessions> GetUpComingSessionByIdAsync(long meetingId, CancellationToken cancellationToken);
+    Task<UpComingSessions> GetUpComingSessionByIdAsync(long meetingId, CancellationToken cancellationToken);
 }

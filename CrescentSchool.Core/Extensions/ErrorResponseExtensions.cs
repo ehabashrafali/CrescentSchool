@@ -14,18 +14,15 @@ public static class ErrorResponseExtensions
             UnauthorizedException => ErrorResponseHelper.GetUnauthorizedResponse(),
             ForbiddenAccessException => ErrorResponseHelper.GetForbiddenResponse(),
             NotFoundException => ErrorResponseHelper.GetNotFoundResponse(exception.Message),
-            ValidationException => ErrorResponseHelper.GetBadRequestResponse(
-                GetErrors(GetValidationException(exception))),
+            BusinessValidationException => ErrorResponseHelper.GetBadRequestResponse(exception.Message),
+            ValidationException validationException when validationException.ErrorsDictionary.Count == 0 =>
+                ErrorResponseHelper.GetBadRequestResponse(validationException.Message),
+            ValidationException validationException => ErrorResponseHelper.GetBadRequestResponse(
+                validationException.ErrorsDictionary),
             ConflictException =>
                 ErrorResponseHelper.GetConflictResponse(GetConflictException(exception)?.LatestVersion),
             _ => ErrorResponseHelper.GetInternalServerErrorResponse(exception.Message)
         };
-
-    private static ValidationException? GetValidationException(Exception exception)
-    {
-        if (exception is ValidationException validationException) return validationException;
-        return null;
-    }
 
     private static ConflictException? GetConflictException(Exception exception)
     {
@@ -33,6 +30,4 @@ public static class ErrorResponseExtensions
         return null;
     }
 
-    private static IReadOnlyDictionary<string, ValidationError[]> GetErrors(ValidationException? exception)
-        => exception?.ErrorsDictionary ?? new Dictionary<string, ValidationError[]>();
 }

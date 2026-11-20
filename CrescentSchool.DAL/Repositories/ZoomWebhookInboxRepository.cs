@@ -52,7 +52,7 @@ public sealed class ZoomWebhookInboxRepository(ApplicationDbContext dbContext) :
         dbContext.ZoomWebhookInboxMessages
             .FirstOrDefaultAsync(message => message.Id == id && message.ProcessedAt == null, cancellationToken);
 
-    public Task<UpCommingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken) =>
+    public Task<UpComingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken) =>
         dbContext.UpCommingSessions
             .Where(session => session.ZoomMeetingId == meetingId)
             .FirstOrDefaultAsync(cancellationToken);

@@ -25,7 +25,7 @@ public class ProcessZoomWebhookInboxJob(IZoomWebhookInboxRepository inboxReposit
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
-                logger.LogError(exception, "Failed to process Zoom webhook messages for meeting UUID: {MeetingUUID}", item.Key);
+                logger.LogError(exception, "Failed to process Zoom webhook messages for meeting Id: {Id}", item.Key);
                 inboxRepository.ResetContext();
             }
         }
@@ -33,43 +33,47 @@ public class ProcessZoomWebhookInboxJob(IZoomWebhookInboxRepository inboxReposit
 
     private async Task ProcessMessageAsync(KeyValuePair<long, List<ZoomWebhookInboxMessage>> item, CancellationToken cancellationToken)
     {
-        var upComming = await sessionsRepository.GetSessionByMeetingIdAsync(item.Key, cancellationToken);
+        var upComing = await sessionsRepository.GetSessionByMeetingIdAsync(item.Key, cancellationToken);
 
-        if (upComming is null)
+        if (upComing is null)
             logger.LogWarning("No upcoming session found for meeting Id: {MeetingId}", item.Key);
 
         else
         {
             foreach (var message in item.Value.OrderBy(message => message.ReceivedAt))
             {
-                if (message.EventName == ParticipantJoined)
+                if (message.EventName != ParticipantJoined)
+                {
+                    switch (message.EventName)
+                    {
+                        case ParticipantLeft:
+                        {
+                            var leftAt = GetEventTime(message, "leave_time");
+
+                            if (upComing.LastLeftAt is null || leftAt > upComing.LastLeftAt)
+                                upComing.LastLeftAt = leftAt;
+                            break;
+                        }
+                    }
+                }
+                else
                 {
                     var joinedAt = GetEventTime(message, "join_time");
 
-                    if (upComming.FirstJoinedAt is null || joinedAt < upComming.FirstJoinedAt)
-                        upComming.FirstJoinedAt = joinedAt;
+                    if (upComing.FirstJoinedAt is null || joinedAt < upComing.FirstJoinedAt)
+                        upComing.FirstJoinedAt = joinedAt;
                 }
-                else if (message.EventName == ParticipantLeft)
-                {
-                    var leftAt = GetEventTime(message, "leave_time");
-
-                    if (upComming.LastLeftAt is null || leftAt > upComming.LastLeftAt)
-                        upComming.LastLeftAt = leftAt;
-                }
-
             }
 
-            upComming.IsJoined = true;
+            upComing.IsJoined = true;
 
-            if (upComming.FirstJoinedAt is not null && upComming.LastLeftAt > upComming.FirstJoinedAt)
-                upComming.TotalDuration = (int)(upComming.LastLeftAt.Value - upComming.FirstJoinedAt.Value).TotalMinutes;
+            if (upComing.FirstJoinedAt is not null && upComing.LastLeftAt > upComing.FirstJoinedAt)
+                upComing.TotalDuration = (int)(upComing.LastLeftAt.Value - upComing.FirstJoinedAt.Value).TotalMinutes;
         }
 
         var processedAt = DateTime.UtcNow;
         foreach (var message in item.Value)
-        {
             message.ProcessedAt = processedAt;
-        }
 
         await inboxRepository.SaveChangesAsync(cancellationToken);
     }

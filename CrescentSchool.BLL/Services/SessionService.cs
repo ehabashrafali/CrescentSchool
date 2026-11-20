@@ -1,5 +1,7 @@
 ﻿using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.BLL.Validation;
 using CrescentSchool.Core.Extensions;
+using CrescentSchool.Core.Exceptions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
@@ -7,7 +9,7 @@ using CrescentSchool.Models.Enums;
 
 namespace CrescentSchool.BLL.Services;
 
-public class SessionService(ISessionsRepository sessionsRepository) : ISessionService
+public class SessionService(ISessionsRepository sessionsRepository, RescheduleSessionValidator rescheduleSessionValidator, CancelSessionValidator cancelSessionValidator) : ISessionService
 {
 
     public async Task<List<GetSessionDto>> GetSessionsByStudentIdAsync(Guid studentId, CancellationToken cancellationToken = default)
@@ -118,6 +120,13 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
         var session = await sessionsRepository.GetUpComingSessionByIdAsync(meetingId, cancellationToken)
             ?? throw new NotFoundException($"Session with meeting Id {meetingId} not found.");
 
+        var validation = await rescheduleSessionValidator.ValidateAsync(session, cancellationToken);
+        if (!validation.IsValid)
+        {
+            throw new BusinessValidationException(
+                validation.Errors[0].ErrorMessage);
+        }
+
         session.SessionDateTime = newDateTime.UtcDateTime;
         session.IsRescheduled = true;
         await sessionsRepository.UpdateUpComingSessions(session, cancellationToken);
@@ -126,6 +135,14 @@ public class SessionService(ISessionsRepository sessionsRepository) : ISessionSe
     public async Task CancelUpCommingSessionAsync(long meetingId, Role role, CancellationToken cancellationToken = default)
     {
         var session = await sessionsRepository.GetSessionByMeetingIdAsync(meetingId, cancellationToken) ?? throw new InvalidOperationException($"Session with id {meetingId} not found.");
+        var validation = await cancelSessionValidator.ValidateAsync(
+            new CancelSessionValidation(session.SessionDateTime, role), cancellationToken);
+        if (!validation.IsValid)
+        {
+            throw new BusinessValidationException(
+                validation.Errors[0].ErrorMessage);
+        }
+
         session.Canceled = role == Role.Student ? StudentAttendanceStatus.Cancelled : StudentAttendanceStatus.CancelledByInstructor;
         await sessionsRepository.UpdateUpComingSessions(session, cancellationToken);
     }

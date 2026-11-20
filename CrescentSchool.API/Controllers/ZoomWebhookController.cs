@@ -96,7 +96,6 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
 
             if (eventName is not ("meeting.participant_joined" or "meeting.participant_left"))
                 return Ok();
-
             if (!root.TryGetProperty("payload", out var payload) ||
                 payload.ValueKind != JsonValueKind.Object ||
                 !payload.TryGetProperty("object", out var meeting) ||
@@ -105,11 +104,15 @@ public class ZoomWebhookController(ILogger<ZoomWebhookController> logger, IOptio
                 !meeting.TryGetProperty("uuid", out var uuidElement) ||
                 uuidElement.ValueKind != JsonValueKind.String ||
                 !meeting.TryGetProperty("participant", out var participant) ||
-                participant.ValueKind != JsonValueKind.Object)
+                participant.ValueKind != JsonValueKind.Object ||
+                !meeting.TryGetProperty("start_time", out var startTime) ||
+                startTime.ValueKind != JsonValueKind.String ||
+                !startTime.TryGetDateTimeOffset(out var startTimeDate))
             {
                 return BadRequest();
             }
 
+            var startTimeUtc = startTimeDate.UtcDateTime;
             var meetingUuid = uuidElement.GetString();
             long meetingId = 0;
             var validMeetingId = idElement.ValueKind switch

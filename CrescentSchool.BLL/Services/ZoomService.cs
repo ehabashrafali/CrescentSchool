@@ -30,10 +30,9 @@ public sealed partial class ZoomService(HttpClient httpClient, IOptions<ZoomOpti
             start_time = startTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture),
             settings = new
             {
-                join_before_host = true,
+                join_before_host = false,
                 waiting_room = false,
-                meeting_authentication = false,
-                jbh_time = 10
+                meeting_authentication = false
             }
         };
 

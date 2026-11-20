@@ -1,5 +1,6 @@
 using CrescentSchool.BLL.Extensions;
 using CrescentSchool.BLL.Interfaces;
+using CrescentSchool.BLL.Validation;
 using CrescentSchool.BLL.Services;
 using CrescentSchool.Core.Enums.Jobs;
 using CrescentSchool.Core.ExceptionHandling;
@@ -83,6 +84,9 @@ public class Program
         builder.Services.AddScoped<IStudentsRepository, StudentsRepository>();
         builder.Services.AddScoped<IStudentService, StudentsService>();
         builder.Services.AddScoped<ISessionsRepository, SessionsRepository>();
+        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+        builder.Services.AddScoped<RescheduleSessionValidator>();
+        builder.Services.AddScoped<CancelSessionValidator>();
         builder.Services.AddScoped<ISessionService, SessionService>();
         builder.Services.AddHttpClient<IZoomService, ZoomService>();
         builder.Services.AddScoped<IZoomWebhookInboxRepository, ZoomWebhookInboxRepository>();

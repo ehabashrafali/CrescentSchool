@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrescentSchool.DAL.Configurations;
 
-public class UpCommingSessionsConfigurations : IEntityTypeConfiguration<UpCommingSessions>
+public class UpComingSessionsConfigurations : IEntityTypeConfiguration<UpComingSessions>
 {
-    public void Configure(EntityTypeBuilder<UpCommingSessions> builder)
+    public void Configure(EntityTypeBuilder<UpComingSessions> builder)
     {
         builder.HasKey(c => c.Id);
 
