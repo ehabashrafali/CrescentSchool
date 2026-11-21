@@ -72,6 +72,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
     {
         return context.UpCommingSessions
             .Where(s => s.InstructorId == instructorId)
+            .OrderBy(s=>s.SessionDateTime)
             .ToListAsync(cancellationToken);
     }
 
@@ -164,6 +165,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
     public async Task<List<UpComingSessions>> GetStudentUpComingSessions(Guid studentId, CancellationToken cancellationToken)
         => await context.UpCommingSessions
             .Where(s => s.StudentId == studentId)
+            .OrderBy(s => s.SessionDateTime)
             .ToListAsync(cancellationToken);
 
     public async Task<List<UpComingSessions>> GetUpComingSessionsToSettleAsync(DateTime utcNow, CancellationToken cancellationToken)
