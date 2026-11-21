@@ -44,6 +44,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 InstructorName = s.InstructorName,
                 StudentName = s.StudentName,
                 ZoomMeeting = s.ZoomMeeting,
+                TotalDuration = s.Duration,
                 SessionDateTime = s.SessionDateTime.Kind == DateTimeKind.Utc
                     ? s.SessionDateTime
                     : s.SessionDateTime.ToUniversalTime()

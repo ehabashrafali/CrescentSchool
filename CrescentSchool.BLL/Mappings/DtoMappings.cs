@@ -49,6 +49,7 @@ internal static class DtoMappings
         {
             Day = wa.Day,
             Time = wa.Time,
+            Duration = wa.Duration,
             TimeZone = wa.TimeZone
         })]
     };

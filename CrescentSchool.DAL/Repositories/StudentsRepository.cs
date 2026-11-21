@@ -156,6 +156,7 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                     {
                         Day = w.Day,
                         Time = w.Time,
+                        Duration = w.Duration,
                         TimeZone = w.TimeZone,
                     })],
                 dto.ZoomLink,

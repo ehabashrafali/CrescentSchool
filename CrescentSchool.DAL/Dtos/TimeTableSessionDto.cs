@@ -13,5 +13,6 @@ public class TimeTableSessionDto
     public Guid StudentId { get; set; }
     public Guid InstructorId { get; set; }
     public StudentAttendanceStatus? Canceled { get; set; }
+    public SessionDuration Duration { get; set; }
 }
 

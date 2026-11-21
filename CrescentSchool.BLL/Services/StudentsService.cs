@@ -113,6 +113,7 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         {
             Day = wa.Day,
             Time = wa.Time,
+            Duration = wa.Duration,
             TimeZone = wa.TimeZone,
         })];
         await studentsRepository.UpdateStudentAsync(student, cancellationToken);

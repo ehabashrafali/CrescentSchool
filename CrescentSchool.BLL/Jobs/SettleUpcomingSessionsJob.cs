@@ -39,7 +39,7 @@ public class SettleUpcomingSessionsJob(ISessionsRepository sessionsRepository, T
                 _ => (StudentAttendanceStatus.Attend, InstructorAttendanceStatus.Attend)
             };
 
-            return new Session(instructorId: s.InstructorId, studentId: s.StudentId, sessionDuration: s.TotalDuration > 30 ? (SessionDuration)s.TotalDuration : SessionDuration.ThirtyMinutes,
+            return new Session(instructorId: s.InstructorId, studentId: s.StudentId, sessionDuration: s.TotalDuration,
                                 date: s.SessionDateTime,
                                 studentSessionStatus: studentStatus,
                                 instructorSessionStatus: instructorStatus);

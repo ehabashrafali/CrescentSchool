@@ -1,4 +1,5 @@
 ﻿using CrescentSchool.DAL.Entities;
+using CrescentSchool.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -56,7 +57,7 @@ public class UpComingSessionsConfigurations : IEntityTypeConfiguration<UpComingS
                .IsRequired(false);
 
         builder.Property(s => s.TotalDuration)
-               .HasDefaultValue(0)
+               .HasDefaultValue(SessionDuration.ZeroMinutes)
                .IsRequired();
 
         builder.Property(s => s.IsJoined)

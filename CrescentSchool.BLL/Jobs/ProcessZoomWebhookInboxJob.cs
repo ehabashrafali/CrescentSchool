@@ -1,3 +1,4 @@
+using CrescentSchool.Models.Enums;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
 using Hangfire;
@@ -68,7 +69,7 @@ public class ProcessZoomWebhookInboxJob(IZoomWebhookInboxRepository inboxReposit
             upComing.IsJoined = true;
 
             if (upComing.FirstJoinedAt is not null && upComing.LastLeftAt > upComing.FirstJoinedAt)
-                upComing.TotalDuration = (int)(upComing.LastLeftAt.Value - upComing.FirstJoinedAt.Value).TotalMinutes;
+                upComing.TotalDuration = (SessionDuration)(int)(upComing.LastLeftAt.Value - upComing.FirstJoinedAt.Value).TotalMinutes;
         }
 
         var processedAt = DateTime.UtcNow;

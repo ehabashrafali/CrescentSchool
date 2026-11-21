@@ -64,6 +64,7 @@ public class CreateUpcomingSessionsJob(IStudentsRepository studentsRepository, I
                         StudentName = studentName,
                         InstructorName = instructorName,
                         StudentId = student.Id,
+                        Duration = appointment.Duration,
                         InstructorId = student.Instructor?.Id ?? Guid.Empty
                     });
                 }
