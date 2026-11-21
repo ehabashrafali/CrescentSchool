@@ -8,15 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CrescentSchool.DAL.Repositories;
 
-public class StudentsRepository(ApplicationDbContext context, UserManager<ApplicationUser> _userManager) : IStudentsRepository
+public class StudentsRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : IStudentsRepository
 {
-    public async Task<List<Student>> GetStudentsByIdsAsync(List<Guid> studentIds, CancellationToken cancellation = default)
+    public async Task<List<Student>> GetStudentsByIdsAsync(List<Guid> studentIds, CancellationToken cancellation, bool includeInactive)
     {
-        var query = context.Students
+        IQueryable<Student> query = context.Students
             .Include(s => s.Instructor)
             .ThenInclude(i => i.User)
             .Include(s => s.User)
             .Include(s => s.WeeklyAppointments);
+        
+        if (!includeInactive)
+            query = query.Where(s => s.Status == StudentStatus.Active);
 
         if (studentIds.Count == 0)
             return await query.ToListAsync(cancellation);
@@ -140,12 +143,12 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
                 IsActive = true
             };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
+            var result = await userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
                 throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, nameof(Role.Student));
+            await userManager.AddToRoleAsync(user, nameof(Role.Student));
 
             var student = new Student(new Guid(user.Id), dto.InstructorId, dto.Fees,
                 [.. dto.WeeklyAppointments.Select(w =>

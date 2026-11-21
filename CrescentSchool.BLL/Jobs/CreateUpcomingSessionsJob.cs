@@ -19,8 +19,7 @@ public class CreateUpcomingSessionsJob(IStudentsRepository studentsRepository, I
 
         var endDate = now.AddDays(7);
 
-        var students = await studentsRepository.GetStudentsByIdsAsync([], cancellationToken);
-
+        var students = await studentsRepository.GetStudentsByIdsAsync([], cancellationToken, false);
 
         var instructorZoomUsers = students
             .Where(student => student.Instructor is not null)
