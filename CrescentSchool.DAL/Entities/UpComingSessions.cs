@@ -19,5 +19,5 @@ public class UpComingSessions
     public string ZoomJoinUrl { get; set; }
     public bool IsJoined { get; set; }
     public StudentAttendanceStatus? Canceled { get; set; } = null;
-    public bool IsRescheduled { get; set; } = false;
+    public bool IsPendingRescheduled { get; set; } = false;
 }

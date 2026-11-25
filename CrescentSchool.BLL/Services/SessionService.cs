@@ -1,7 +1,7 @@
 ﻿using CrescentSchool.BLL.Interfaces;
 using CrescentSchool.BLL.Validation;
-using CrescentSchool.Core.Extensions;
 using CrescentSchool.Core.Exceptions;
+using CrescentSchool.Core.Extensions;
 using CrescentSchool.DAL.Dtos;
 using CrescentSchool.DAL.Entities;
 using CrescentSchool.DAL.Repositories;
@@ -122,13 +122,19 @@ public class SessionService(ISessionsRepository sessionsRepository, RescheduleSe
 
         var validation = await rescheduleSessionValidator.ValidateAsync(session, cancellationToken);
         if (!validation.IsValid)
-        {
-            throw new BusinessValidationException(
-                validation.Errors[0].ErrorMessage);
-        }
+            throw new BusinessValidationException(validation.Errors[0].ErrorMessage);
 
         session.SessionDateTime = newDateTime.UtcDateTime;
-        session.IsRescheduled = true;
+        session.IsPendingRescheduled = false;
+        await sessionsRepository.UpdateUpComingSessions(session, cancellationToken);
+    }
+
+    public async Task SetAsPendingRescheduleAsync(long meetingId, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionsRepository.GetUpComingSessionByIdAsync(meetingId, cancellationToken)
+            ?? throw new NotFoundException($"Session with meeting Id {meetingId} not found.");
+
+        session.IsPendingRescheduled = true;
         await sessionsRepository.UpdateUpComingSessions(session, cancellationToken);
     }
 

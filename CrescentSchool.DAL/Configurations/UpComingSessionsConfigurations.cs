@@ -67,7 +67,7 @@ public class UpComingSessionsConfigurations : IEntityTypeConfiguration<UpComingS
         builder.Property(s => s.Canceled)
             .HasDefaultValue(null);
 
-        builder.Property(s => s.IsRescheduled)
+        builder.Property(s => s.IsPendingRescheduled)
             .HasDefaultValue(false);
     }
 }

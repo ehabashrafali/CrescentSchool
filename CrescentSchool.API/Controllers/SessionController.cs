@@ -76,6 +76,12 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         var result = await sessionService.GetTimeTableSessionsDtoAsync(id, role, cancellationToken);
         return Ok(result);
     }
+    [HttpPut("set-as-pending/{meetingId:long}")]
+    public async Task<IActionResult> SetAsPending([FromRoute] long meetingId, CancellationToken cancellationToken)
+    {
+        await sessionService.SetAsPendingRescheduleAsync(meetingId, cancellationToken);
+        return NoContent();
+    }
     [HttpDelete("cancel-upcomming-session/{meetingId:long}")]
     public async Task<IActionResult> CancelUpCommingSession([FromRoute] long meetingId, [FromQuery] Role role, CancellationToken cancellationToken)
     {
@@ -83,3 +89,4 @@ public class SessionController(ISessionService sessionService) : ControllerBase
         return Ok();
     }
 }
+
