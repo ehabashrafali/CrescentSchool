@@ -14,5 +14,6 @@ public class TimeTableSessionDto
     public Guid InstructorId { get; set; }
     public StudentAttendanceStatus? Canceled { get; set; }
     public SessionDuration Duration { get; set; }
+    public bool isPendingReschedule { get; set; } = false;
 }
 

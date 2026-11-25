@@ -111,7 +111,10 @@ public class SessionService(ISessionsRepository sessionsRepository, RescheduleSe
                 StudentName = session.StudentName,
                 InstructorName = session.InstructorName,
                 ZoomMeetingId = session.ZoomMeetingId,
-                Canceled = session.Canceled
+                InstructorId = session.InstructorId,
+                StudentId = session.StudentId,
+                Canceled = session.Canceled,
+                isPendingReschedule= session.IsPendingRescheduled
             })];
     }
 
