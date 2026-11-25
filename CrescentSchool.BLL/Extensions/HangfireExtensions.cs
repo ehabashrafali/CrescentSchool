@@ -35,9 +35,9 @@ public static class HangfireExtensions
         if (UpcomingSessionsOptions is null)
             throw new ArgumentNullException(nameof(UpcomingSessionsOptions), "UpcommingSessionsOptions configuration section is missing or invalid.");
 
-        CreateMonthlyUpcommingSessions(builder, UpcomingSessionsOptions);
-        ProcessZoomWebhookInbox(builder);
-        SettleUpcomingSessions(builder);
+        //CreateMonthlyUpcommingSessions(builder, UpcomingSessionsOptions);
+        //ProcessZoomWebhookInbox(builder);
+        //SettleUpcomingSessions(builder);
     }
 
     private static void ProcessZoomWebhookInbox(IApplicationBuilder builder)
