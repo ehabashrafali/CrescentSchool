@@ -72,7 +72,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
     {
         return context.UpCommingSessions
             .Where(s => s.InstructorId == instructorId)
-            .OrderBy(s=>s.SessionDateTime)
+            .OrderBy(s => s.SessionDateTime)
             .ToListAsync(cancellationToken);
     }
 
@@ -85,7 +85,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
                 .ThenInclude(s => s.User)
             .FirstOrDefaultAsync(session => session.Id == id, cancellationToken);
     }
-    
+
     public async Task<UpComingSessions?> GetSessionByMeetingIdAsync(long meetingId, CancellationToken cancellationToken)
     {
         return await context.UpCommingSessions
@@ -174,7 +174,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         var yesterday = today.AddDays(-1);
 
         return await context.UpCommingSessions
-            .Where(s => s.SessionDateTime >= yesterday && s.SessionDateTime < today)
+            .Where(s => s.SessionDateTime >= yesterday && s.SessionDateTime < today && s.IsPendingRescheduled == false)
             .ToListAsync(cancellationToken);
     }
 
@@ -195,7 +195,7 @@ public class SessionsRepository(ApplicationDbContext context) : ISessionsReposit
         await context.Sessions.AddRangeAsync(sessions, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
     }
-    
+
     public async Task<bool> UpComingSessionExistsAsync(
         Guid instructorId,
         Guid studentId,
