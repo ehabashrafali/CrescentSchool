@@ -123,7 +123,8 @@ public class SessionService(ISessionsRepository sessionsRepository, RescheduleSe
         var session = await sessionsRepository.GetUpComingSessionByIdAsync(meetingId, cancellationToken)
             ?? throw new NotFoundException($"Session with meeting Id {meetingId} not found.");
 
-        var validation = await rescheduleSessionValidator.ValidateAsync(session, cancellationToken);
+        var validation = await rescheduleSessionValidator.ValidateAsync(
+             new RescheduleSessionValidation(session.SessionDateTime, newDateTime.UtcDateTime), cancellationToken);
         if (!validation.IsValid)
             throw new BusinessValidationException(validation.Errors[0].ErrorMessage);
 

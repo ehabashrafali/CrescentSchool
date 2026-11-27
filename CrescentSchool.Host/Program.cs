@@ -1,7 +1,7 @@
 using CrescentSchool.BLL.Extensions;
 using CrescentSchool.BLL.Interfaces;
-using CrescentSchool.BLL.Validation;
 using CrescentSchool.BLL.Services;
+using CrescentSchool.BLL.Validation;
 using CrescentSchool.Core.Enums.Jobs;
 using CrescentSchool.Core.ExceptionHandling;
 using CrescentSchool.Core.Extensions;
@@ -140,12 +140,15 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.MapGet("/health", () => Results.Ok("OK")).AllowAnonymous();
+
         app.UseHttpsRedirection();
 
         app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
+
 
         app.Run();
     }
