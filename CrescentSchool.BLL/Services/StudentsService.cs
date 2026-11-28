@@ -17,6 +17,11 @@ public class StudentsService(IStudentsRepository studentsRepository, UserManager
         var student = await studentsRepository.GetStudentByIdAsync(studentId, cancellationToken);
         return student?.ToStudentDto(includeReports: true);
     }
+    public async Task<List<StudentDto>> GetStudentsByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
+    {
+        var students = await studentsRepository.GetStudentsByParentIdAsync(parentId, cancellationToken);
+        return [.. students.Select(s => s.ToStudentDto(includeReports: false))];
+    }
     public async Task AddMonthlyReport(Guid studentId, CreateMonthlyReportDto studentMonthlyReportDto)
         => await studentsRepository.AddMonthlyReport(studentId, studentMonthlyReportDto);
     public async Task<List<StudentDto>> GetStudentsAsync(List<Guid> studentIds, CancellationToken cancellationToken)

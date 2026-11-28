@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     { }
     public DbSet<Student> Students { get; set; }
     public DbSet<Instructor> Instructors { get; set; }
+    public DbSet<Parent> Parents { get; set; }
     public DbSet<Course> Courses { get; set; }
     public DbSet<Session> Sessions { get; set; }
     public DbSet<StudentMonthlyReport> StudentMonthlyReports { get; set; }
@@ -23,6 +24,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<ApplicationUser>().HasQueryFilter(u => !u.IsDeleted);
         builder.Entity<Student>().HasQueryFilter(u => !u.User.IsDeleted);
         builder.Entity<Instructor>().HasQueryFilter(u => !u.User.IsDeleted);
+        builder.ApplyConfiguration(new Configurations.ParentConfiguration());
+        builder.Entity<Parent>().HasQueryFilter(p => !p.User.IsDeleted);
         builder.Entity<Session>().HasQueryFilter(s => !s.IsDeleted);
     }
 }

@@ -227,6 +227,28 @@ namespace CrescentSchool.DAL.Migrations
                     b.ToTable("IslamicStudiesBook");
                 });
 
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.Parent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Parents", (string)null);
+                });
+
             modelBuilder.Entity("CrescentSchool.DAL.Entities.Session", b =>
                 {
                     b.Property<Guid>("Id")
@@ -280,6 +302,9 @@ namespace CrescentSchool.DAL.Migrations
                     b.Property<Guid>("InstructorId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -290,6 +315,8 @@ namespace CrescentSchool.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("InstructorId");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
 
@@ -736,6 +763,17 @@ namespace CrescentSchool.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.Parent", b =>
+                {
+                    b.HasOne("CrescentSchool.DAL.Entities.ApplicationUser", "User")
+                        .WithOne()
+                        .HasForeignKey("CrescentSchool.DAL.Entities.Parent", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CrescentSchool.DAL.Entities.Session", b =>
                 {
                     b.HasOne("CrescentSchool.DAL.Entities.Course", null)
@@ -767,6 +805,11 @@ namespace CrescentSchool.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CrescentSchool.DAL.Entities.Parent", "Parent")
+                        .WithMany("Students")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("CrescentSchool.DAL.Entities.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -774,6 +817,8 @@ namespace CrescentSchool.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Instructor");
+
+                    b.Navigation("Parent");
 
                     b.Navigation("User");
                 });
@@ -890,6 +935,11 @@ namespace CrescentSchool.DAL.Migrations
                 {
                     b.Navigation("Sessions");
 
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("CrescentSchool.DAL.Entities.Parent", b =>
+                {
                     b.Navigation("Students");
                 });
 

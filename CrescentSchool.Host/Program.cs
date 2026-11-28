@@ -82,6 +82,8 @@ public class Program
         builder.Services.AddScoped<IInstructorService, InstructorService>();
         builder.Services.AddScoped<IInstructorsRepository, InstructorsRepository>();
         builder.Services.AddScoped<IStudentsRepository, StudentsRepository>();
+        builder.Services.AddScoped<IParentsRepository, ParentsRepository>();
+        builder.Services.AddScoped<IParentService, ParentService>();
         builder.Services.AddScoped<IStudentService, StudentsService>();
         builder.Services.AddScoped<ISessionsRepository, SessionsRepository>();
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);

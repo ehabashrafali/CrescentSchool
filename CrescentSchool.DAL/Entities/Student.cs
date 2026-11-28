@@ -15,6 +15,8 @@ public class Student
     public ApplicationUser User { get; set; }
     public Guid InstructorId { get; set; }
     public StudentStatus Status { get; set; } = StudentStatus.Active;
+    public Guid? ParentId { get; set; }
+    public Parent? Parent { get; set; }
 
     public Student(Guid id, Guid instructorId, decimal fees, List<WeeklyAppointment> weeklyAppointments, string zoomMeeting, ApplicationUser user)
     {

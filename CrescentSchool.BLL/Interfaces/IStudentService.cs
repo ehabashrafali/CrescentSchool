@@ -16,4 +16,5 @@ public interface IStudentService
     Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken);
     Task DeleteStudentAsync(Guid id, CancellationToken cancellationToken);
     Task<Guid> UpdateReportAsync(MonthlyReportViewDto monthlyReportDto, CancellationToken cancellationToken);
+    Task<List<StudentDto>> GetStudentsByParentIdAsync(Guid parentId, CancellationToken cancellationToken);
 }

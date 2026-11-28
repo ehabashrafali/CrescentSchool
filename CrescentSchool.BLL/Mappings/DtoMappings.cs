@@ -54,6 +54,16 @@ internal static class DtoMappings
         })]
     };
 
+    public static ParentDto ToParentDto(this Parent parent) => new()
+    {
+        Id = parent.Id,
+        FirstName = parent.User.FirstName,
+        LastName = parent.User.LastName,
+        Email = parent.Email,
+        PhoneNumber = parent.User.PhoneNumber,
+        Children = [.. parent.Students.Select(s => s.ToStudentDto(includeReports: false))]
+    };
+
     public static InstructorDto ToInstructorDto(this Instructor instructor) => new()
     {
         Id = instructor.Id,

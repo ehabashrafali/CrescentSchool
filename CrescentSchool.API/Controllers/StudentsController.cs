@@ -74,6 +74,13 @@ public class StudentsController(IStudentService studentService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("parent/{parentId:guid}")]
+    public async Task<IActionResult> GetStudentsByParentId([FromRoute] Guid parentId, CancellationToken cancellationToken)
+    {
+        var result = await studentService.GetStudentsByParentIdAsync(parentId, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpPost("create-student")]
     public async Task<IActionResult> CreateStudent([FromBody] CreateStudentDto createStudentDto, CancellationToken cancellationToken)
     {

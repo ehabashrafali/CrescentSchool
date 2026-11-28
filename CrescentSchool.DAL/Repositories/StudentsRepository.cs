@@ -26,6 +26,14 @@ public class StudentsRepository(ApplicationDbContext context, UserManager<Applic
 
         return await query.Where(s => studentIds.Contains(s.Id)).ToListAsync(cancellation);
     }
+    public async Task<List<Student>> GetStudentsByParentIdAsync(Guid parentId, CancellationToken cancellationToken)
+    {
+        return await context.Students
+            .Where(s => s.ParentId == parentId)
+            .Include(s => s.User)
+            .Include(s => s.WeeklyAppointments)
+            .ToListAsync(cancellationToken);
+    }
     public async Task<Student?> GetStudentByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await context.Students

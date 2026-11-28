@@ -14,4 +14,5 @@ public interface IStudentsRepository
     Task ActivateStudent(Guid id, CancellationToken cancellationToken);
     Task UpdateStudentAsync(Student student, CancellationToken cancellationToken);
     Task<Guid> CreateStudentAsync(CreateStudentDto createStudentDto, CancellationToken cancellationToken);
+    Task<List<Student>> GetStudentsByParentIdAsync(Guid parentId, CancellationToken cancellationToken);
 }
